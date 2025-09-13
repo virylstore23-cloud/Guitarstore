@@ -524,3 +524,50 @@ function bindUI(){
 
 // Ensure tab title at runtime
 if (document && document.title !== "Alesis Soundstage") { document.title = "Alesis Soundstage"; }
+// --- helpers (safe to append) ---
+function deriveCategory(k) {
+  const cat = (k.category || '').toString().trim();
+  if (cat) return cat;
+  const n = (k.name||'').toLowerCase();
+  const d = (k.description||'').toLowerCase();
+  const blob = [n,d,...(k.features||[]),...(k.contents||[])].join(' ').toLowerCase();
+  if (/(amp|monitor|watt|woofer|tweeter|strike\s*amp)/.test(blob)) return 'Drum Amps';
+  if (/\bkit\b/.test(n) || /(mesh|strata|crimson|nitro|surge|turbo|club|core|prime)/.test(blob)) return 'Drum Kits';
+  return 'Accessories';
+}
+
+function isOnDemo(k) {
+  const v = (k.on_demo ?? k.on_demo_label ?? '').toString().toLowerCase();
+  return v === 'true' || v === 'on' || v === '1' || v === 'yes' || v.includes('demo');
+}
+
+// --- lightweight filter state (defaults keep current behavior) ---
+window.filterCategory = window.filterCategory || 'All';    // 'All' | 'Drum Kits' | 'Drum Amps' | 'Accessories'
+window.filterDemoOnly = !!window.filterDemoOnly;
+
+// Expose a small API you can call from your existing chip clicks:
+window.setFilter = (opts={})=>{
+  if (opts.category) window.filterCategory = opts.category;
+  if (typeof opts.demoOnly === 'boolean') window.filterDemoOnly = opts.demoOnly;
+  if (typeof window.render === 'function') window.render();
+};
+
+// Wrap render so it shows filtered items without changing your card markup
+(function wrapRenderOnce(){
+  if (!window.__renderWrapped && typeof window.render === 'function') {
+    const original = window.render;
+    window.render = function(){
+      const all = Array.isArray(window.kits) ? window.kits : [];
+      const filtered = all.filter(k=>{
+        const demoOk = !window.filterDemoOnly || isOnDemo(k);
+        const catOk  = (window.filterCategory === 'All') || (deriveCategory(k) === window.filterCategory);
+        return demoOk && catOk;
+      });
+      const snapshot = window.kits;
+      window.kits = filtered;
+      try { return original.apply(this, arguments); }
+      finally { window.kits = snapshot; }
+    };
+    window.__renderWrapped = true;
+  }
+})();
