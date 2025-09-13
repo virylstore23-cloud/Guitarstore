@@ -14,3 +14,7 @@
   overflow: hidden;      /* the "cut" effect */
   z-index: 30;           /* keep the rail on top of chips */
 }
+
+/* Chip row spacing + nice scroll-offset below sticky header */
+#chipRow{ scroll-margin-top: 84px; }
+@media (min-width:640px){ #chipRow{ scroll-margin-top: 96px; } }
