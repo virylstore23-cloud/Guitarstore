@@ -157,7 +157,7 @@ function ensureActionBar(){
         <div class="flex items-center justify-between gap-2">
           <div class="flex-1"></div>
           <div class="text-center">
-            <div class="text-sm sm:text-base font-extrabold tracking-tight">Alesis Drum Kit Explorer</div>
+            <div class="text-sm sm:text-base font-extrabold tracking-tight">Alesis Soundstage</div>
           </div>
           <div class="flex items-center gap-2">
             <button id="btnFind" class="text-xs sm:text-sm font-semibold px-3 py-2 rounded-lg bg-red-600 hover:bg-red-500 border border-red-600">Find My Kit</button>
