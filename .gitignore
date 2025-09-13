@@ -12,3 +12,7 @@ node_modules/
 .vercel/
 dist/
 out/
+
+# local backups
+public/*.bak
+public/index.html.bak
