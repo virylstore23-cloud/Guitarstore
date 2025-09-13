@@ -3,11 +3,13 @@
   const PLACEHOLDER = 'data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360"><rect width="640" height="360" fill="#111111"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#dddddd" font-family="Arial" font-size="20">Image coming soon</text></svg>');
 
   function classifyCategory(k) {
+    const c = (k.category||'').trim();
+    if (c === 'Drum Kits' || c === 'Drum Amps' || c === 'Accessories') return c;
+    /* fallback: old heuristic */
     const n = String(k.name || '').toLowerCase();
     const d = String(k.description || '').toLowerCase();
     if (/(amp|monitor|speaker)\b/.test(n) || /(drum monitor|amp|monitor)/.test(d)) return 'Drum Amps';
     if (/\bkit\b/.test(n) || /(mesh|strata|crimson|nitro|surge|turbo)/.test(n)) return 'Drum Kits';
-
     const blob = [n, d, ...(k.features||[]), ...(k.contents||[])].join(' ').toLowerCase();
     if (/(amp|monitor|watt|woofer|tweeter)/.test(blob)) return 'Drum Amps';
     if (/(kit|mesh|cymbal|snare|tom|rack|hi-hat|ride|crash)/.test(blob)) return 'Drum Kits';
