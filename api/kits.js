@@ -1,12 +1,12 @@
 // api/kits.js — Supabase REST (no supabase-js)
 
-// tolerant array parse
+// robust array coercion
 function toArray(v) {
   if (Array.isArray(v)) return v;
   if (typeof v === 'string') {
     const s = v.trim();
     if (s.startsWith('[') && s.endsWith(']')) {
-      try { return JSON.parse(s) } catch { return []; }
+      try { return JSON.parse(s); } catch { return []; }
     }
     return s ? s.split(',').map(x => x.trim()).filter(Boolean) : [];
   }
@@ -14,14 +14,12 @@ function toArray(v) {
 }
 
 module.exports = async (req, res) => {
-  const debug = req.query && (req.query.debug === '1' || req.query.debug === 'true');
-  const t0 = Date.now();
-
+  const started = Date.now();
   try {
     const { SUPABASE_URL, SUPABASE_ANON_KEY } = process.env;
     if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
       return res.status(500).json({
-        error: "Missing SUPABASE_URL or SUPABASE_ANON_KEY",
+        error: "Missing SUPABASE env vars",
         have: { SUPABASE_URL: !!SUPABASE_URL, SUPABASE_ANON_KEY: !!SUPABASE_ANON_KEY }
       });
     }
@@ -50,8 +48,8 @@ module.exports = async (req, res) => {
       return res.status(500).json({
         error: "Supabase non-200",
         status: r.status,
-        body: text.slice(0,500),
-        elapsed_ms: Date.now()-t0
+        body: text.slice(0,400),
+        elapsed_ms: Date.now()-started
       });
     }
 
@@ -73,11 +71,8 @@ module.exports = async (req, res) => {
       images: toArray(k.images)
     }));
 
-    const payload = { ok:true, count: kits.length, kits, elapsed_ms: Date.now()-t0 };
-    if (debug) payload._diag = { supabase_host: new URL(SUPABASE_URL).host };
-
     res.setHeader("Cache-Control","no-store");
-    return res.status(200).json(payload);
+    return res.status(200).json({ ok:true, count:kits.length, kits, elapsed_ms: Date.now()-started });
   } catch (e) {
     return res.status(500).json({ error: "Unhandled in /api/kits", message: String(e?.message || e) });
   }
