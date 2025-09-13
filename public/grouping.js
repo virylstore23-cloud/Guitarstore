@@ -95,3 +95,17 @@
   // Override the app’s renderer with the grouped one
   window.render = renderGrouped;
 })();
+
+// --- bootstrap: force grouped view after the app loads ---
+(function bootstrapGrouped(i=0){
+  const MAX_TRIES = 200;  // ~20s
+  // renderGrouped should be defined by this file; grid/root is from the app
+  const hasFunc = typeof window.renderGrouped === 'function';
+  const hasRoot = document.getElementById('root') || document.getElementById('grid') || document.querySelector('[data-grid]');
+  if (hasFunc && hasRoot) {
+    try { window.renderGrouped(); console.log('[Alesis] Grouped view rendered'); return; }
+    catch (e) { console.warn('[Alesis] renderGrouped error, retrying...', e); }
+  }
+  if (i < MAX_TRIES) setTimeout(() => bootstrapGrouped(i+1), 100);
+  else console.warn('[Alesis] Grouped bootstrap timed out');
+})();
