@@ -28,6 +28,8 @@
   const selected = (window.selected) || new Set();
 
   function renderGrouped(allKits = (window.kits||[])) {
+  // expose for console/tests
+  window.renderGrouped = renderGrouped;
     const root = document.getElementById('grid');
     if (!root) return;
     root.innerHTML = '';
