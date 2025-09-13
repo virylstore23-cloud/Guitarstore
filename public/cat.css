@@ -3,3 +3,14 @@
   background:rgba(99,102,241,.12);color:#c7d2fe;font-weight:600;font-size:.8rem}
 .cat-chip.active{background:rgba(99,102,241,.22)}
 .cat-bar{display:flex;flex-wrap:wrap;gap:.5rem;margin:.5rem 0 0 0}
+
+/* ——— Chips tuck under the sticky rail ——— */
+.chip-row-under {
+  margin-top: -10px;     /* pull chips upward so the rail trims their top */
+}
+
+/* Let the rail clip what overlaps it */
+.sticky-rail {
+  overflow: hidden;      /* the "cut" effect */
+  z-index: 30;           /* keep the rail on top of chips */
+}
