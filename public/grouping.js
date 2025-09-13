@@ -1,113 +1,101 @@
-/* public/grouping.js — group catalog into Drum Kits / Drum Amps / Accessories */
-(function () {
-  const PLACEHOLDER = 'data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360"><rect width="640" height="360" fill="#111111"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#dddddd" font-family="Arial" font-size="20">Image coming soon</text></svg>');
-
-  function classifyCategory(k) {
-    const c = (k.category||'').trim();
-    if (c === 'Drum Kits' || c === 'Drum Amps' || c === 'Accessories') return c;
-    /* fallback: old heuristic */
-    const n = String(k.name || '').toLowerCase();
-    const d = String(k.description || '').toLowerCase();
-    if (/(amp|monitor|speaker)\b/.test(n) || /(drum monitor|amp|monitor)/.test(d)) return 'Drum Amps';
-    if (/\bkit\b/.test(n) || /(mesh|strata|crimson|nitro|surge|turbo)/.test(n)) return 'Drum Kits';
-    const blob = [n, d, ...(k.features||[]), ...(k.contents||[])].join(' ').toLowerCase();
-    if (/(amp|monitor|watt|woofer|tweeter)/.test(blob)) return 'Drum Amps';
-    if (/(kit|mesh|cymbal|snare|tom|rack|hi-hat|ride|crash)/.test(blob)) return 'Drum Kits';
+/* Alesis grouped catalog: Drum Kits / Drum Amps / Accessories */
+(function(){
+  function guessCategory(k) {
+    const n = String(k.name||'').toLowerCase();
+    const d = String(k.description||'').toLowerCase();
+    const blob = [n,d,...(k.features||[]),...(k.contents||[])].join(' ').toLowerCase();
+    if (/(amp|monitor|speaker)\b/.test(n) || /(drum monitor|amp|monitor)/.test(d) || /(watt|woofer|tweeter)/.test(blob)) return 'Drum Amps';
+    if (/\bkit\b/.test(n) || /(mesh|strata|crimson|nitro|surge|turbo|cymbal|snare|tom|rack|hi-hat|ride|crash)/.test(blob)) return 'Drum Kits';
     return 'Accessories';
   }
 
-  const GROUP_ORDER = ['Drum Kits', 'Drum Amps', 'Accessories'];
-  function sortKitsWithinGroup(a, b) {
-    const pa = a.price ?? Infinity, pb = b.price ?? Infinity;
-    if (pa !== pb) return pa - pb;
-    return String(a.name).localeCompare(String(b.name));
+  function groupify(list){
+    const buckets = new Map([['Drum Kits',[]],['Drum Amps',[]],['Accessories',[]]]);
+    (list||[]).forEach(k=>{
+      const cat = (k.category || '').trim() || guessCategory(k);
+      if (!buckets.has(cat)) buckets.set(cat, []);
+      buckets.get(cat).push(k);
+    });
+    return [...buckets.entries()].filter(([,arr])=>arr.length>0);
   }
 
-  // fallback helpers if not defined by app.js yet
-  const money = (window.money) || (n => (n==null?'—':'AED '+Number(n).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})));
-  const selected = (window.selected) || new Set();
-
-  function renderGrouped(allKits = (window.kits||[])) {
-  // expose for console/tests
-  window.renderGrouped = renderGrouped;
-    const root = document.getElementById('grid');
-    if (!root) return;
-    root.innerHTML = '';
-
-    // buckets
-    const map = new Map();
-    allKits.filter(k=>k.is_active).forEach(k=>{
-      const g = classifyCategory(k);
-      if (!map.has(g)) map.set(g, []);
-      map.get(g).push(k);
-    });
-
-    const names = [
-      ...GROUP_ORDER.filter(g => map.has(g)),
-      ...[...map.keys()].filter(g => !GROUP_ORDER.includes(g))
-    ];
-
-    names.forEach(group => {
-      const items = (map.get(group)||[]).sort(sortKitsWithinGroup);
-      if (!items.length) return;
-
-      const section = document.createElement('section');
-      section.className = 'mb-10';
-      section.innerHTML = `
-        <h2 class="text-xl sm:text-2xl font-bold mb-3 tracking-tight">${group}</h2>
-        <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3"></div>
-      `;
-      const grid = section.querySelector('.grid');
-
-      items.forEach(k=>{
-        const el = document.createElement('article');
-        el.className = 'card p-4';
-        el.setAttribute('data-id', k.id);
-        el.innerHTML = `
-          <figure class="img-frame img-16x10 mb-3">
-            <img src="${k.image}" alt="${k.name}" class="img-fill" loading="lazy"
-                 onerror="this.onerror=null;this.src='${PLACEHOLDER}'" />
-          </figure>
-          <div class="flex items-start justify-between gap-3">
-            <div>
-              <h3 class="text-lg font-extrabold">${k.name}</h3>
-              <p class="text-zinc-300 text-sm line-clamp-2">${k.description||''}</p>
-              <div class="text-sm text-zinc-200 mt-1">Price: ${money(k.price)}</div>
-              <div class="text-xs text-zinc-400">UPC: ${k.upc || k.upc_code || '—'}</div>
-              ${k.on_demo ? `<div class="mt-1 inline-block text-xs bg-white/10 px-2 py-1 rounded">${k.on_demo_label || 'On demo'}</div>` : ''}
-            </div>
-            <div class="shrink-0 flex flex-col items-end gap-2">
-              <label class="text-xs text-zinc-300">
-                <input type="checkbox" data-sel="${k.id}" ${selected.has(k.id)?'checked':''} /> Select
-              </label>
-              <button class="btn" data-action="open" data-id="${k.id}">Explore</button>
-            </div>
+  function cardHTML(k, selected){
+    const sel = selected && selected.has && selected.has(k.id);
+    return `
+      <div class="bg-zinc-900/40 rounded-xl overflow-hidden shadow border border-zinc-800 hover:border-zinc-700 transition">
+        <div class="aspect-[4/3] bg-black/30 flex items-center justify-center overflow-hidden">
+          <img src="${k.primary_image_url || k.detail_image_url || (k.images&&k.images[0]) || ''}" alt="${k.name}" class="object-cover w-full h-full">
+        </div>
+        <div class="p-3 sm:p-4 space-y-1">
+          <div class="text-sm sm:text-base font-extrabold tracking-tight">${k.name}</div>
+          ${k.price ? `<div class="text-xs sm:text-sm text-zinc-400">AED ${k.price}</div>` : ''}
+          ${k.on_demo ? `<div class="inline-block text-[10px] px-2 py-0.5 rounded bg-emerald-600/20 text-emerald-300">${k.on_demo_label || 'On Demo'}</div>` : ''}
+          <div class="flex items-center gap-3 pt-2">
+            <label class="text-xs text-zinc-300">
+              <input type="checkbox" data-sel="${k.id}" ${sel?'checked':''}/> Select
+            </label>
+            <button class="btn" data-action="open" data-id="${k.id}">Explore</button>
           </div>
-        `;
-        grid.appendChild(el);
-      });
+        </div>
+      </div>`;
+  }
 
-      root.appendChild(section);
-    });
+  function sectionHTML(title, items, selected){
+    const cards = items.map(k=>`<div>${cardHTML(k, selected)}</div>`).join('');
+    return `
+      <section class="mb-10">
+        <h2 class="text-xl sm:text-2xl font-bold tracking-tight mb-3">${title}</h2>
+        <div class="grid gap-3 sm:gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+          ${cards}
+        </div>
+      </section>`;
+  }
+
+  // ---- The function we export ----
+  function renderGrouped() {
+    const root = document.getElementById('root') || document.body;
+    if (!root) return console.warn('[Alesis] no root to render into');
+
+    // prefer the app’s state if available
+    const kits = (window.kits && Array.isArray(window.kits)) ? window.kits
+               : (window.__KITS__ && Array.isArray(window.__KITS__)) ? window.__KITS__
+               : [];
+
+    if (!kits.length) return console.warn('[Alesis] kits not ready yet');
+
+    const selected = window.selected || new Set(); // app already uses a Set
+    const groups = groupify(kits);
+
+    const wrap = document.createElement('div');
+    wrap.id = 'grouped-root';
+    wrap.className = 'container mx-auto px-3 sm:px-6 pb-16';
+    wrap.innerHTML = groups.map(([title, items]) => sectionHTML(title, items, selected)).join('');
+
+    // Swap in
+    const existing = document.getElementById('grouped-root');
+    if (existing) existing.replaceWith(wrap);
+    else root.innerHTML = wrap.outerHTML;
 
     const btn = document.getElementById('btn-compare');
     if (btn) btn.disabled = selected.size < 2;
+
+    console.log('[Alesis] Grouped view rendered');
   }
 
-  // Override the app’s renderer with the grouped one
-  window.render = renderGrouped;
-})();
+  // expose for console/tests and to let app call it
+  window.renderGrouped = renderGrouped;
 
-// --- bootstrap: force grouped view after the app loads ---
-(function bootstrapGrouped(i=0){
-  const MAX_TRIES = 200;  // ~20s
-  // renderGrouped should be defined by this file; grid/root is from the app
-  const hasFunc = typeof window.renderGrouped === 'function';
-  const hasRoot = document.getElementById('root') || document.getElementById('grid') || document.querySelector('[data-grid]');
-  if (hasFunc && hasRoot) {
-    try { window.renderGrouped(); console.log('[Alesis] Grouped view rendered'); return; }
-    catch (e) { console.warn('[Alesis] renderGrouped error, retrying...', e); }
-  }
-  if (i < MAX_TRIES) setTimeout(() => bootstrapGrouped(i+1), 100);
-  else console.warn('[Alesis] Grouped bootstrap timed out');
+  // Override the app’s renderer after it sets up data.
+  // We poll briefly for kits being loaded, then call grouped.
+  (function waitForApp(i=0){
+    const ready = Array.isArray(window.kits) && window.kits.length;
+    if (ready) {
+      // If the app calls window.render(), make it point to grouped.
+      window.render = window.renderGrouped;
+      try { window.renderGrouped(); } catch(e){ console.warn('[Alesis] first grouped render failed', e); }
+      return;
+    }
+    if (i < 200) return setTimeout(()=>waitForApp(i+1), 100);
+    console.warn('[Alesis] waitForApp timed out; grouped not rendered');
+  })();
 })();
