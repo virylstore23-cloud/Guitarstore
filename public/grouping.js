@@ -1,6 +1,6 @@
 /* Alesis grouped catalog: Drum Kits / Drum Amps / Accessories */
 (function(){
-  function guessCategory(k) {
+  function guessCategory(k){
     const n = String(k.name||'').toLowerCase();
     const d = String(k.description||'').toLowerCase();
     const blob = [n,d,...(k.features||[]),...(k.contents||[])].join(' ').toLowerCase();
@@ -51,19 +51,37 @@
       </section>`;
   }
 
-  // ---- The function we export ----
-  function renderGrouped() {
+  async function ensureKits(){
+    // If the app already set them, use those.
+    if (Array.isArray(window.kits) && window.kits.length) return window.kits;
+
+    // Try to fetch directly from the API as a fallback.
+    try {
+      const res = await fetch('/api/kits?t=' + Date.now(), {cache:'no-store'});
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const {kits} = await res.json();
+      if (Array.isArray(kits) && kits.length) {
+        window.kits = kits;      // cache for the app
+        return kits;
+      }
+    } catch (e) {
+      console.warn('[Alesis] fallback fetch failed:', e);
+    }
+
+    return [];
+  }
+
+  async function renderGrouped(){
     const root = document.getElementById('root') || document.body;
     if (!root) return console.warn('[Alesis] no root to render into');
 
-    // prefer the app’s state if available
-    const kits = (window.kits && Array.isArray(window.kits)) ? window.kits
-               : (window.__KITS__ && Array.isArray(window.__KITS__)) ? window.__KITS__
-               : [];
+    const kits = (Array.isArray(window.kits) && window.kits.length)
+      ? window.kits
+      : await ensureKits();
 
-    if (!kits.length) return console.warn('[Alesis] kits not ready yet');
+    if (!kits.length) return console.warn('[Alesis] kits still not ready');
 
-    const selected = window.selected || new Set(); // app already uses a Set
+    const selected = window.selected || new Set();
     const groups = groupify(kits);
 
     const wrap = document.createElement('div');
@@ -71,10 +89,14 @@
     wrap.className = 'container mx-auto px-3 sm:px-6 pb-16';
     wrap.innerHTML = groups.map(([title, items]) => sectionHTML(title, items, selected)).join('');
 
-    // Swap in
     const existing = document.getElementById('grouped-root');
     if (existing) existing.replaceWith(wrap);
-    else root.innerHTML = wrap.outerHTML;
+    else {
+      // If the app already had a main grid, replace it. Otherwise append.
+      const grid = document.getElementById('grid');
+      if (grid && grid.parentElement) grid.parentElement.replaceWith(wrap);
+      else root.appendChild(wrap);
+    }
 
     const btn = document.getElementById('btn-compare');
     if (btn) btn.disabled = selected.size < 2;
@@ -82,20 +104,16 @@
     console.log('[Alesis] Grouped view rendered');
   }
 
-  // expose for console/tests and to let app call it
   window.renderGrouped = renderGrouped;
 
-  // Override the app’s renderer after it sets up data.
-  // We poll briefly for kits being loaded, then call grouped.
-  (function waitForApp(i=0){
-    const ready = Array.isArray(window.kits) && window.kits.length;
-    if (ready) {
-      // If the app calls window.render(), make it point to grouped.
-      window.render = window.renderGrouped;
-      try { window.renderGrouped(); } catch(e){ console.warn('[Alesis] first grouped render failed', e); }
+  // Try periodically; also react to a custom event if the app dispatches one.
+  (function waitLoop(i=0){
+    if ((Array.isArray(window.kits) && window.kits.length) || i >= 15) {
+      renderGrouped();
       return;
     }
-    if (i < 200) return setTimeout(()=>waitForApp(i+1), 100);
-    console.warn('[Alesis] waitForApp timed out; grouped not rendered');
+    setTimeout(()=>waitLoop(i+1), 200);
   })();
+
+  window.addEventListener('kits:ready', () => renderGrouped());
 })();
