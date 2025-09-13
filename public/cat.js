@@ -1,80 +1,76 @@
-/** Category chips from /api/kits (string .category); copy look of existing chips; never break page */
+/** Category chips from /api/kits (using string .category on each item) */
 (function () {
-  function ready(fn){ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',fn,{once:true}); else fn(); }
+  function ready(fn){document.readyState==='loading'?document.addEventListener('DOMContentLoaded',fn,{once:true}):fn();}
 
-  ready(async function init(){
-    try{
-      const res = await fetch('/api/kits', { credentials:'omit' });
-      const payload = await res.json();
-      const kits = Array.isArray(payload?.kits) ? payload.kits : [];
+  ready(async () => {
+    try {
+      const r = await fetch('/api/kits', { cache:'no-store' });
+      const { kits } = await r.json();
+      if (!Array.isArray(kits) || !kits.length) return;
 
-      // Build unique categories from string field
-      const categories = Array.from(new Set(
+      // 1) Find the existing chip row (All / On Demo) to copy styles from
+      const hostRow = document.querySelector('.flex.flex-wrap.gap-2') || document.querySelector('main');
+      const sampleChip = document.querySelector('button.chip') || document.querySelector('button');
+
+      const baseClass = sampleChip ? sampleChip.className :
+        'chip px-3 py-1.5 rounded-lg border border-zinc-500/40 text-zinc-200';
+
+      // 2) Build unique category list
+      const cats = Array.from(new Set(
         kits.map(k => (k.category || '').trim()).filter(Boolean)
       )).sort((a,b)=>a.localeCompare(b));
 
-      if(!categories.length) return; // nothing to show
+      if (!cats.length || !hostRow) return;
 
-      // Find existing chips to clone classes (“All”, “On Demo”)
-      const existing = Array.from(document.querySelectorAll('button, a'))
-        .filter(el => /all|on demo/i.test(el.textContent.trim()));
-      const styleSource = existing[0] || document.querySelector('button');
-
-      const fallback = 'px-3 py-1.5 rounded-full border border-blue-400 text-blue-200 bg-transparent shadow-sm inline-flex items-center gap-2 text-sm font-semibold';
-      const baseClasses = styleSource ? styleSource.className : fallback;
-
-      // Insert our chip row right after the existing row
-      const chipRow = styleSource ? styleSource.parentElement : document.querySelector('main');
-      if(!chipRow || !chipRow.parentElement) return;
-
+      // 3) Insert our row just after the existing chips; lift above overlays
       const row = document.createElement('div');
-      row.style.display='flex'; row.style.flexWrap='wrap'; row.style.gap='0.5rem'; row.style.marginTop='0.5rem';
-      chipRow.parentElement.insertBefore(row, chipRow.nextSibling);
+      row.style.display = 'flex';
+      row.style.flexWrap = 'wrap';
+      row.style.gap = '0.5rem';
+      row.style.marginTop = '0.75rem';
+      row.style.position = 'relative';
+      row.style.zIndex = '50';          // <-- ensures it’s clickable
+      hostRow.parentElement.insertBefore(row, hostRow.nextSibling);
 
-      // Build fast map: kit.name -> category
-      const catByName = new Map(kits.map(k => [String(k.name).trim().toLowerCase(), k.category]));
+      // 4) Map cards by their data-category
+      const cards = Array.from(document.querySelectorAll('[data-category]'));
 
-      // Build map of cards by their data attributes (added in step #2)
-      const cards = Array.from(document.querySelectorAll('[data-kit-name]'));
-      const byName = new Map(cards.map(el => [String(el.getAttribute('data-kit-name')).trim().toLowerCase(), el]));
-
-      // Helper to toggle active classes like existing chips
-      const ACTIVE = ['active','selected','bg-blue-600','text-white'];
-      function setActive(btn,on){
-        ACTIVE.forEach(c=>btn.classList.toggle(c,on));
-        if(existing[1]) {
-          existing[1].className.split(' ')
-            .filter(c => /active|selected|bg-|text-white/.test(c))
-            .forEach(c => btn.classList.toggle(c,on));
-        }
+      // visual active toggle
+      function setActive(el, on){
+        el.classList.toggle('bg-blue-600', on);
+        el.classList.toggle('text-white', on);
+        el.style.boxShadow = on ? '0 0 0 2px rgba(59,130,246,.6) inset' : '';
       }
 
       const buttons = [];
-      categories.forEach(cat=>{
+      cats.forEach(cat => {
         const btn = document.createElement('button');
-        btn.type='button';
-        btn.className = baseClasses;
+        btn.type = 'button';
+        btn.className = baseClass;
         btn.textContent = cat;
-        btn.setAttribute('data-cat',cat);
-        btn.addEventListener('click', ()=>{
-          buttons.forEach(b=>setActive(b, b===btn));
-          // Show cards whose kit belongs to this category
-          byName.forEach((el, name)=>{
-            const kitsCat = catByName.get(name);
-            el.style.display = (kitsCat === cat) ? '' : 'none';
+        btn.setAttribute('data-cat', cat);
+        btn.style.cursor = 'pointer';
+        btn.addEventListener('click', () => {
+          buttons.forEach(b => setActive(b, b===btn));
+          const want = cat.toLowerCase();
+          cards.forEach(card => {
+            const has = (card.getAttribute('data-category') || '').toLowerCase();
+            card.style.display = (has === want) ? '' : 'none';
           });
         });
         row.appendChild(btn);
         buttons.push(btn);
       });
 
-      // Wire “All” to clear our filter if present
-      if(existing[0]){
-        existing[0].addEventListener('click', ()=>{
-          buttons.forEach(b=>setActive(b,false));
-          cards.forEach(el => el.style.display='');
+      // 5) Make the existing "All" chip clear our filter (if present)
+      const allChip = Array.from(document.querySelectorAll('button.chip,button'))
+        .find(b => /all/i.test(b.textContent || ''));
+      if (allChip){
+        allChip.addEventListener('click', () => {
+          buttons.forEach(b => setActive(b,false));
+          cards.forEach(card => { card.style.display = ''; });
         });
       }
-    } catch(_e){ /* silent fail — never break the page */ }
+    } catch(_e){ /* never break the page */ }
   });
 })();
