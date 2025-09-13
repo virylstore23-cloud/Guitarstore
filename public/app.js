@@ -505,7 +505,7 @@ function bindUI(){
       state.activeFilter = btn.getAttribute('data-filter');
       $$('#app [data-filter]').forEach(b=>b.classList.remove('ring-2','ring-red-400'));
       btn.classList.add('ring-2','ring-red-400');
-      renderGrouped();
+      render();
     });
   });
 }
