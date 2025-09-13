@@ -111,12 +111,12 @@ function renderCard(k){
     <figure class="img-frame img-16x10 border border-zinc-700 cursor-pointer">
       <img src="${k.image}" alt="${k.name}" class="img-cover" loading="lazy"
            onerror="this.onerror=null;this.src='${PLACEHOLDER}'" />
-      ${k.on_demo?`<div class="absolute top-2 left-2 chip bg-emerald-600/90 text-white border-emerald-600">${k.on_demo_label}</div>`:''}
+      ${k.on_demo?`<div class="demo-badge">${k.on_demo_label}</div>`:''}
     </figure>
     <div class="flex-1">
       <h3 class="text-base font-semibold leading-tight cursor-pointer">${k.name}</h3>
       <p class="text-sm text-zinc-300 line-clamp-2">${getDesc(k)}</p>
-      <div class="mt-1 text-sm text-zinc-200">Price: ${money(k.price)}</div>
+      <div class="mt-1 text-sm text-zinc-200">${priceBadge(money(k.price))}</div>
       <div class="text-xs text-zinc-400">UPC: ${k.upc}</div>
       <div class="mt-1 flex flex-wrap gap-1">
         ${k.traits.category==='amp'?`<span class="chip">Drum Amp</span>`:''}
@@ -571,3 +571,8 @@ window.setFilter = (opts={})=>{
     window.__renderWrapped = true;
   }
 })();
+
+// --- UI helper: pretty price pill ---
+function priceBadge(aedText){
+  return `<span class="price-badge"><span class="label">Price</span><span class="value">${aedText}</span></span>`;
+}

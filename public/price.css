@@ -1,0 +1,9 @@
+.price-badge{
+  display:inline-flex;align-items:center;
+  padding:.25rem .6rem;border-radius:9999px;
+  background:linear-gradient(180deg,rgba(16,185,129,.18),rgba(16,185,129,.10));
+  color:#a7f3d0;border:1px solid rgba(16,185,129,.35);
+  box-shadow:0 0 0 1px rgba(255,255,255,.03) inset,0 4px 12px rgba(16,185,129,.12);
+  font-variant-numeric:tabular-nums;font-weight:700;font-size:.8rem;
+}
+.price-badge .label{display:none}
