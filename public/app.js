@@ -521,3 +521,6 @@ function bindUI(){
     $('#kitGrid').innerHTML = `<div class="col-span-full text-center text-red-300">Failed to load kits from /api/kits.</div>`;
   }
 })();
+
+// Ensure tab title at runtime
+if (document && document.title !== "Alesis Soundstage") { document.title = "Alesis Soundstage"; }
