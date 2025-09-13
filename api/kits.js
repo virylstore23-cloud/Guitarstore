@@ -29,7 +29,7 @@ module.exports = async (req, res) => {
       "id","name","slug","description","price","upc_code",
       "is_active","stock_level","on_demo","on_demo_label",
       "primary_image_url","detail_image_url","video_url",
-      "features","contents","images","updated_at"
+      "features","contents","updated_at"
     ].join(","));
     url.searchParams.set("is_active","eq.true");
     url.searchParams.set("order","name.asc");
@@ -68,7 +68,6 @@ module.exports = async (req, res) => {
       price: k.price == null ? null : Number(k.price),
       features: toArray(k.features),
       contents: toArray(k.contents),
-      images: toArray(k.images)
     }));
 
     res.setHeader("Cache-Control","no-store");
