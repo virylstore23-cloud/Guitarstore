@@ -157,3 +157,133 @@ window.addEventListener('DOMContentLoaded', () => {
   }, 400);
 });
 /* === end after-hydrate === */
+
+/* === chips+hydrate: robust attributes + chip builder + filter wiring === */
+(function(){
+  const normalize = s => (s||'').toLowerCase().replace(/[\s\W_]+/g,'').trim();
+
+  // Attach filtering behavior (idempotent).
+  function wireFilters(){
+    const row = document.querySelector('#chipRow');
+    if (!row) return;
+    const cards = Array.from(document.querySelectorAll('.kit-card'));
+    const buttons = Array.from(row.querySelectorAll('button'));
+
+    // Make one active
+    if (!buttons.some(b => b.getAttribute('aria-pressed') === 'true')) {
+      const first = buttons[0];
+      if (first) first.setAttribute('aria-pressed','true');
+    }
+
+    const apply = (label) => {
+      const l = (label||'').toLowerCase();
+      cards.forEach(card => {
+        const cat  = (card.getAttribute('data-category')||'').toLowerCase();
+        const demo = (card.getAttribute('data-demo')||'false') === 'true';
+        let show = true;
+        if (l === 'all') show = true;
+        else if (l === 'on demo') show = demo;
+        else show = (cat === l);
+        card.style.display = show ? '' : 'none';
+      });
+    };
+
+    buttons.forEach(btn => {
+      if (btn.__wired) return; // idempotent
+      btn.__wired = true;
+      btn.addEventListener('click', () => {
+        buttons.forEach(b => b.setAttribute('aria-pressed','false'));
+        btn.setAttribute('aria-pressed','true');
+        apply(btn.textContent.trim());
+      });
+    });
+
+    // Re-apply currently active chip (after hydration)
+    setTimeout(() => {
+      const active = row.querySelector('[aria-pressed="true"]') || buttons[0];
+      if (active) active.click();
+    }, 50);
+  }
+
+  // Ensure category chips exist based on API.
+  function ensureCategoryChips(categories){
+    const row = document.querySelector('#chipRow');
+    if (!row) return;
+    const have = new Set(Array.from(row.querySelectorAll('button')).map(b => b.textContent.trim().toLowerCase()));
+    categories.forEach(cat => {
+      const lc = (cat||'').toLowerCase();
+      if (!lc || have.has(lc) || /^(all|on demo)$/.test(lc)) return;
+      const b = document.createElement('button');
+      b.className = 'px-3 py-1 rounded-full border';
+      b.type = 'button';
+      b.textContent = cat; // pretty casing from API
+      b.setAttribute('aria-pressed','false');
+      row.appendChild(b);
+    });
+  }
+
+  // Hydrate cards with attributes from /api/kits (name-based matching).
+  window.addEventListener('DOMContentLoaded', () => {
+    const cards = Array.from(document.querySelectorAll('.kit-card'));
+    if (!cards.length) { wireFilters(); return; }
+
+    // Helper to get a “title” from the card using several fallbacks.
+    const cardTitle = (card) => {
+      const s =
+        card.querySelector('.name, h3, h2, [data-name], [data-title]')?.textContent ||
+        card.getAttribute('aria-label') ||
+        card.querySelector('img')?.getAttribute('alt') ||
+        card.textContent; // worst-case
+      return (s||'').trim();
+    };
+
+    fetch('/api/kits', {cache: 'no-store'})
+      .then(r => r.json())
+      .then(({kits}) => {
+        const list = Array.isArray(kits) ? kits : (kits?.kits || []);
+        // Build lookup by normalized name
+        const byName = new Map();
+        for (const k of list) {
+          const key = normalize(k.name);
+          if (key) byName.set(key, k);
+        }
+
+        // Apply attributes to each card
+        const misses = [];
+        cards.forEach(card => {
+          const t = cardTitle(card);
+          const key = normalize(t);
+          let k = byName.get(key);
+
+          // small fallback: try startsWith/contains match
+          if (!k && key) {
+            const found = [...byName.keys()].find(n => n === key || n.startsWith(key) || key.startsWith(n));
+            if (found) k = byName.get(found);
+          }
+
+          if (k) {
+            if (k.category) card.setAttribute('data-category', String(k.category).toLowerCase());
+            card.setAttribute('data-demo', String(!!k.on_demo));
+          } else {
+            misses.push(t);
+          }
+        });
+
+        // Create any missing chips from API categories
+        const cats = [...new Set(list.map(k => (k.category||'').trim()))].filter(Boolean).sort();
+        ensureCategoryChips(cats);
+
+        // Wire up filtering and apply current chip
+        wireFilters();
+
+        if (misses.length) {
+          console.warn('[chips/hydrate] no API match for cards:', misses);
+        }
+      })
+      .catch(e => {
+        console.error('[chips/hydrate] failed to load /api/kits:', e);
+        wireFilters(); // at least wire “All/On Demo”
+      });
+  });
+})();
+ /* === end chips+hydrate === */
