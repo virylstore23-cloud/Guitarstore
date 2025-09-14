@@ -285,3 +285,147 @@ window.addEventListener('DOMContentLoaded', () => {
 })();
 /* === end chips+hydrate === */
 
+/* === chips v2 (robust, idempotent) ======================================= */
+(function(){
+  const N = s => (s||'').toString().trim();
+  const L = s => N(s).toLowerCase();
+  const normTitle = s => L(N(s).replace(/\s+/g,' '));
+
+  let READY = false;        // we only filter after attributes are hydrated
+  let active = 'All';
+
+  function upcFromCard(card){
+    // look for data-upc="..." first
+    const d = card.getAttribute('data-upc');
+    if (d) return d.replace(/\D/g,'');
+    // else parse visible "UPC: 0694..." text inside the card
+    const t = card.textContent || '';
+    const m = t.match(/\bUPC:\s*([0-9]{10,})/i);
+    return m ? m[1] : '';
+  }
+
+  function titleFromCard(card){
+    const el = card.querySelector('.name,h3,h2,[data-name],[data-title]');
+    return el ? el.textContent : (card.getAttribute('aria-label')||'');
+  }
+
+  function ensureChipRow(categories){
+    const row = document.querySelector('#chipRow');
+    if (!row) return [];
+    // Wipe existing to avoid duplicate listeners/labels
+    row.innerHTML = '';
+    const mk = label => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'px-3 py-1 rounded-full border';
+      b.textContent = label;
+      b.setAttribute('aria-pressed', 'false');
+      row.appendChild(b);
+      return b;
+    };
+    const btns = [];
+    btns.push(mk('All'));
+    btns.push(mk('On Demo'));
+    (categories||[]).filter(Boolean).forEach(c=>{
+      if (!['all','on demo'].includes(L(c))) btns.push(mk(c));
+    });
+    return btns;
+  }
+
+  function applyFilter(){
+    const cards = Array.from(document.querySelectorAll('.kit-card'));
+    if (!cards.length) return;
+    if (!READY) { // before hydration, always show everything
+      cards.forEach(c=>{ c.style.display=''; });
+      return;
+    }
+    const lbl = L(active);
+    cards.forEach(card=>{
+      const cat  = L(card.getAttribute('data-category'));
+      const demo = /^(true|1|yes)$/i.test(N(card.getAttribute('data-demo')));
+      let show = true;
+      if (lbl === 'all')      show = true;
+      else if (lbl === 'on demo') show = demo;
+      else                    show = (cat === lbl);
+      card.style.display = show ? '' : 'none';
+    });
+  }
+
+  function wire(btns){
+    btns.forEach(b=>{
+      if (b.__wired) return;
+      b.__wired = true;
+      b.addEventListener('click', ()=>{
+        active = b.textContent.trim();
+        btns.forEach(x=>x.setAttribute('aria-pressed','false'));
+        b.setAttribute('aria-pressed','true');
+        applyFilter();
+      });
+    });
+    // set default to All
+    const first = btns[0];
+    if (first) { active = first.textContent.trim(); first.setAttribute('aria-pressed','true'); }
+  }
+
+  window.addEventListener('DOMContentLoaded', ()=>{
+    const cards = Array.from(document.querySelectorAll('.kit-card'));
+    const row   = document.querySelector('#chipRow');
+    if (!row || !cards.length) return;
+
+    // Show everything while we hydrate
+    applyFilter();
+
+    fetch('/api/kits', { cache:'no-store' })
+      .then(r=>r.json())
+      .then(json=>{
+        const list = Array.isArray(json?.kits) ? json.kits : (json?.kits?.kits || []);
+        // Build two maps for robust matching
+        const byUPC   = new Map();
+        const byTitle = new Map();
+        list.forEach(k=>{
+          const upc = (k.upc || k.UPC || '').toString().replace(/\D/g,'');
+          if (upc) byUPC.set(upc, k);
+          const nm = normTitle(k.name || k.title);
+          if (nm) byTitle.set(nm, k);
+        });
+
+        // Hydrate attributes for every card
+        const misses = [];
+        cards.forEach(card=>{
+          const upc = upcFromCard(card);
+          const t   = normTitle(titleFromCard(card));
+          const k   = (upc && byUPC.get(upc)) || (t && byTitle.get(t));
+          if (k){
+            const cat = L(k.category || '');
+            const demo = !!(k.on_demo || k.onDemo || k.demo);
+            if (cat)  card.setAttribute('data-category', cat);
+            card.setAttribute('data-demo', String(demo));
+            if (upc)  card.setAttribute('data-upc', upc);
+          } else {
+            misses.push({title:t, upc});
+          }
+        });
+
+        // Build chips from real categories
+        const cats = Array.from(new Set(list.map(k => N(k.category)).filter(Boolean))).sort();
+        const btns = ensureChipRow(cats);
+        wire(btns);
+
+        READY = true;
+        applyFilter();
+
+        if (misses.length){
+          console.warn('[chips v2] no API match for some cards (title/upc):', misses);
+        }
+      })
+      .catch(e=>{
+        console.error('[chips v2] hydrate failed:', e);
+        // Even if API fails, keep “All” working
+        READY = true;
+        const btns = ensureChipRow([]);
+        wire(btns);
+        applyFilter();
+      });
+  });
+})();
+ /* === end chips v2 ======================================================== */
