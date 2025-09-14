@@ -131,3 +131,16 @@ window.addEventListener('DOMContentLoaded', () => {
     .catch(err => console.error('[hydrate-attrs] failed:', err));
 });
 /* === end hydrate === */
+
+/* === after-hydrate: reapply the current chip filter === */
+window.addEventListener('DOMContentLoaded', () => {
+  // Give the hydration snippet a moment to set attributes
+  setTimeout(() => {
+    const btn =
+      document.querySelector('#chipRow [aria-pressed="true"]') ||
+      document.querySelector('#chipRow .active') ||
+      document.querySelector('#chipRow button:first-child');
+    if (btn) btn.click();
+  }, 400);
+});
+/* === end after-hydrate === */
