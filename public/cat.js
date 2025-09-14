@@ -158,132 +158,130 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 /* === end after-hydrate === */
 
+
 /* === chips+hydrate: robust attributes + chip builder + filter wiring === */
 (function(){
-  const normalize = s => (s||'').toLowerCase().replace(/[\s\W_]+/g,'').trim();
+  const norm = s => (s||'').toLowerCase().replace(/\s+/g,' ').trim();
 
-  // Attach filtering behavior (idempotent).
-  function wireFilters(){
+  let READY = false;
+  let currentLabel = 'All';
+
+  function ensureChips(categories){
     const row = document.querySelector('#chipRow');
-    if (!row) return;
-    const cards = Array.from(document.querySelectorAll('.kit-card'));
-    const buttons = Array.from(row.querySelectorAll('button'));
-
-    // Make one active
-    if (!buttons.some(b => b.getAttribute('aria-pressed') === 'true')) {
-      const first = buttons[0];
-      if (first) first.setAttribute('aria-pressed','true');
+    if (!row) return [];
+    // guarantee All + On Demo exist (first two)
+    const labels = Array.from(row.querySelectorAll('button')).map(b=>b.textContent.trim());
+    function need(lbl){
+      if (!labels.map(l=>l.toLowerCase()).includes(lbl.toLowerCase())) {
+        const b = document.createElement('button');
+        b.type = 'button'; b.className = 'px-3 py-1 rounded-full border';
+        b.textContent = lbl; b.setAttribute('aria-pressed','false');
+        row.insertBefore(b, row.firstChild);
+        labels.unshift(lbl);
+      }
     }
-
-    const apply = (label) => {
-      const l = (label||'').toLowerCase();
-      cards.forEach(card => {
-        const cat  = (card.getAttribute('data-category')||'').toLowerCase();
-        const demo = (card.getAttribute('data-demo')||'false') === 'true';
-        let show = true;
-        if (l === 'all') show = true;
-        else if (l === 'on demo') show = demo;
-        else show = (cat === l);
-        card.style.display = show ? '' : 'none';
-      });
-    };
-
-    buttons.forEach(btn => {
-      if (btn.__wired) return; // idempotent
-      btn.__wired = true;
-      btn.addEventListener('click', () => {
-        buttons.forEach(b => b.setAttribute('aria-pressed','false'));
-        btn.setAttribute('aria-pressed','true');
-        apply(btn.textContent.trim());
-      });
+    need('On Demo'); need('All'); // insert “All” last so it ends up first
+    // add missing category chips from API
+    (categories||[]).forEach(cat=>{
+      if (!cat) return;
+      const lc = cat.toLowerCase();
+      if (['all','on demo'].includes(lc)) return;
+      if (!labels.some(l=>l.toLowerCase()===lc)) {
+        const b = document.createElement('button');
+        b.type='button'; b.className='px-3 py-1 rounded-full border';
+        b.textContent = cat; b.setAttribute('aria-pressed','false');
+        document.querySelector('#chipRow').appendChild(b);
+      }
     });
-
-    // Re-apply currently active chip (after hydration)
-    setTimeout(() => {
-      const active = row.querySelector('[aria-pressed="true"]') || buttons[0];
-      if (active) active.click();
-    }, 50);
+    return Array.from(row.querySelectorAll('button'));
   }
 
-  // Ensure category chips exist based on API.
-  function ensureCategoryChips(categories){
-    const row = document.querySelector('#chipRow');
-    if (!row) return;
-    const have = new Set(Array.from(row.querySelectorAll('button')).map(b => b.textContent.trim().toLowerCase()));
-    categories.forEach(cat => {
-      const lc = (cat||'').toLowerCase();
-      if (!lc || have.has(lc) || /^(all|on demo)$/.test(lc)) return;
-      const b = document.createElement('button');
-      b.className = 'px-3 py-1 rounded-full border';
-      b.type = 'button';
-      b.textContent = cat; // pretty casing from API
-      b.setAttribute('aria-pressed','false');
-      row.appendChild(b);
-    });
-  }
-
-  // Hydrate cards with attributes from /api/kits (name-based matching).
-  window.addEventListener('DOMContentLoaded', () => {
+  function applyFilter(){
     const cards = Array.from(document.querySelectorAll('.kit-card'));
-    if (!cards.length) { wireFilters(); return; }
+    if (!cards.length) return;
+    // Before READY, always show everything (avoid “flash then hide”)
+    if (!READY) {
+      cards.forEach(c=>c.style.display='');
+      return;
+    }
+    const label = (currentLabel||'All').toLowerCase();
+    cards.forEach(card=>{
+      const cat  = (card.getAttribute('data-category')||'').toLowerCase();
+      const demo = /^(true|1|yes)$/i.test(card.getAttribute('data-demo')||'false');
+      let show = true;
+      if (label==='all') show = true;
+      else if (label==='on demo') show = demo;
+      else show = (cat===label);
+      card.style.display = show ? '' : 'none';
+    });
+  }
 
-    // Helper to get a “title” from the card using several fallbacks.
-    const cardTitle = (card) => {
-      const s =
-        card.querySelector('.name, h3, h2, [data-name], [data-title]')?.textContent ||
-        card.getAttribute('aria-label') ||
-        card.querySelector('img')?.getAttribute('alt') ||
-        card.textContent; // worst-case
-      return (s||'').trim();
-    };
+  function wireClicks(btns){
+    btns.forEach(btn=>{
+      if (btn.__wired) return;
+      btn.__wired = true;
+      btn.addEventListener('click', ()=>{
+        currentLabel = btn.textContent.trim();
+        btns.forEach(b=>b.setAttribute('aria-pressed','false'));
+        btn.setAttribute('aria-pressed','true');
+        applyFilter();
+      });
+    });
+    // pick a default active if none
+    const active = btns.find(b=>b.getAttribute('aria-pressed')==='true') || btns[0];
+    if (active) { currentLabel = active.textContent.trim(); active.setAttribute('aria-pressed','true'); }
+  }
 
-    fetch('/api/kits', {cache: 'no-store'})
-      .then(r => r.json())
-      .then(({kits}) => {
-        const list = Array.isArray(kits) ? kits : (kits?.kits || []);
-        // Build lookup by normalized name
-        const byName = new Map();
-        for (const k of list) {
-          const key = normalize(k.name);
-          if (key) byName.set(key, k);
-        }
+  function cardTitle(card){
+    const s = card.querySelector('.name, h3, h2, [data-name], [data-title]')?.textContent
+           || card.getAttribute('aria-label')
+           || card.querySelector('img')?.getAttribute('alt')
+           || '';
+    return s.trim();
+  }
 
-        // Apply attributes to each card
+  window.addEventListener('DOMContentLoaded', ()=>{
+    const cards = Array.from(document.querySelectorAll('.kit-card'));
+    const row = document.querySelector('#chipRow');
+    if (!row || !cards.length) return;
+
+    // Start by building/wiring chips (safe if repeated) and show all
+    wireClicks(ensureChips([]));
+    applyFilter();
+
+    // Hydrate attributes from API, then rebuild chips with real categories
+    fetch('/api/kits',{cache:'no-store'})
+      .then(r=>r.json())
+      .then(({kits})=>{
+        const list = Array.isArray(kits)?kits:(kits?.kits||[]);
+        const byName = new Map(list.map(k=>[norm(k.name),k]));
         const misses = [];
-        cards.forEach(card => {
-          const t = cardTitle(card);
-          const key = normalize(t);
-          let k = byName.get(key);
 
-          // small fallback: try startsWith/contains match
-          if (!k && key) {
-            const found = [...byName.keys()].find(n => n === key || n.startsWith(key) || key.startsWith(n));
-            if (found) k = byName.get(found);
-          }
-
+        cards.forEach(card=>{
+          const k = byName.get(norm(cardTitle(card)));
           if (k) {
             if (k.category) card.setAttribute('data-category', String(k.category).toLowerCase());
             card.setAttribute('data-demo', String(!!k.on_demo));
           } else {
-            misses.push(t);
+            misses.push(cardTitle(card));
           }
         });
 
-        // Create any missing chips from API categories
-        const cats = [...new Set(list.map(k => (k.category||'').trim()))].filter(Boolean).sort();
-        ensureCategoryChips(cats);
+        const cats = Array.from(new Set(list.map(k=>(k.category||'').trim()))).filter(Boolean).sort();
+        const btns = ensureChips(cats);
+        wireClicks(btns);
 
-        // Wire up filtering and apply current chip
-        wireFilters();
+        READY = true;          // now filtering is meaningful
+        applyFilter();         // re-apply for the active chip
 
-        if (misses.length) {
-          console.warn('[chips/hydrate] no API match for cards:', misses);
-        }
+        if (misses.length) console.warn('[chips] no API match for:', misses);
       })
-      .catch(e => {
-        console.error('[chips/hydrate] failed to load /api/kits:', e);
-        wireFilters(); // at least wire “All/On Demo”
+      .catch(e=>{
+        console.error('[chips] hydrate failed', e);
+        READY = true;          // even if API fails, allow All/On Demo to work
+        applyFilter();
       });
   });
 })();
- /* === end chips+hydrate === */
+/* === end chips+hydrate === */
+
