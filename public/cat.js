@@ -106,3 +106,28 @@
     if (allBtn) setActive(allBtn, true);
   });
 })();
+
+/* === hydrate data-category/data-demo on cards from API (safe, idempotent) === */
+window.addEventListener('DOMContentLoaded', () => {
+  fetch('/api/kits', { cache: 'no-store' })
+    .then(r => r.json())
+    .then(d => {
+      const map = new Map(
+        (d.kits || []).map(k => [
+          (k.name || '').trim().toLowerCase(),
+          { cat: (k.category || '').toLowerCase(), demo: !!k.on_demo }
+        ])
+      );
+
+      document.querySelectorAll('.kit-card').forEach(card => {
+        const title = (card.querySelector('.name, h3, [data-name]')?.textContent || '').trim().toLowerCase();
+        const m = map.get(title);
+        if (m) {
+          card.setAttribute('data-category', m.cat);
+          card.setAttribute('data-demo', String(m.demo));
+        }
+      });
+    })
+    .catch(err => console.error('[hydrate-attrs] failed:', err));
+});
+/* === end hydrate === */
