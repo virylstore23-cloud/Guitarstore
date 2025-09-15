@@ -576,3 +576,99 @@ window.setFilter = (opts={})=>{
 function priceBadge(aedText){
   return `<span class="price-badge"><span class="label">Price</span><span class="value">${aedText}</span></span>`;
 }
+
+// --- kiosk renderer: chips + key features + what's included ---
+(async function initKioskExtras() {
+  try {
+    const resp = await fetch('/api/kits', { cache: 'no-store' });
+    if (!resp.ok) throw new Error(`API ${resp.status}`);
+    const kits = await resp.json();
+
+    // CATEGORY CHIPS
+    const chipWrap = document.getElementById('category-chips');
+    if (!chipWrap) return; // page doesn't have chips mount
+
+    const categories = [...new Set(kits.map(k => k.category).filter(Boolean))].sort();
+    let activeCat = null;
+
+    function renderChips() {
+      chipWrap.innerHTML = '';
+      const mkBtn = (label, active, onClick) => {
+        const b = document.createElement('button');
+        b.textContent = label;
+        b.className =
+          'px-3 py-1 rounded-full border transition ' +
+          (active ? 'bg-black text-white' : 'bg-white text-black hover:bg-neutral-100');
+        b.onclick = onClick;
+        return b;
+      };
+      chipWrap.appendChild(mkBtn('All', !activeCat, () => { activeCat = null; renderChips(); renderGrid(); }));
+      for (const c of categories) {
+        chipWrap.appendChild(mkBtn(c, activeCat === c, () => { activeCat = c; renderChips(); renderGrid(); }));
+      }
+    }
+
+    // HELPERS
+    function keyFeatures(k) {
+      const feats = [];
+      if (k.snare_in) feats.push(`${k.snare_in}" snare${k.snare_zones ? ` (${k.snare_zones}-zone)` : ''}`);
+      if (k.toms_count) feats.push(`${k.toms_count} toms${Array.isArray(k.toms_sizes_in) ? ` (${k.toms_sizes_in.join('", ')}")` : ''}`);
+      if (k.crash_count) feats.push(`${k.crash_count} crash cymbal${k.crash_count > 1 ? 's' : ''}`);
+      if (k.ride_zones != null) feats.push(`Ride: ${k.ride_zones}-zone`);
+      if (k.usb_midi) feats.push('USB-MIDI');
+      if (k.bluetooth_audio) feats.push('Bluetooth audio');
+      if (k.module_engine) feats.push(`Module: ${k.module_engine}`);
+      if (k.sounds) feats.push(`${k.sounds} sounds`);
+      return feats;
+    }
+    function whatsIncluded(k) {
+      const items = [];
+      if (k.kick_tower) items.push('Kick tower');
+      if (k.hihat_in) items.push(`${k.hihat_in}" hi-hat pad + controller`);
+      if (k.toms_count && Array.isArray(k.toms_sizes_in)) items.push(`Toms: ${k.toms_sizes_in.map(x => `${x}"`).join(', ')}`);
+      if (k.crash_count) items.push(`${k.crash_count} crash cymbal${k.crash_count > 1 ? 's' : ''}`);
+      if (k.ride_zones != null) items.push('Ride cymbal pad');
+      items.push('Rack, cables, power supply');
+      return items;
+    }
+
+    // GRID
+    const grid = document.getElementById('kits-grid');
+    function renderGrid() {
+      if (!grid) return;
+      grid.innerHTML = '';
+      const rows = activeCat ? kits.filter(k => k.category === activeCat) : kits;
+      for (const k of rows) {
+        const card = document.createElement('div');
+        card.className = 'bg-white border rounded-2xl p-4 shadow-sm';
+        card.innerHTML = `
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <div class="text-lg font-semibold">${k.name ?? ''}</div>
+              <div class="text-sm text-neutral-600">${k.category ?? ''}</div>
+            </div>
+            <div class="text-right text-sm font-medium">${k.price ? `AED ${k.price}` : ''}</div>
+          </div>
+          <div class="mt-3">
+            <div class="text-sm font-semibold">Key Features</div>
+            <ul class="mt-1 list-disc pl-5 text-sm text-neutral-800">
+              ${keyFeatures(k).map(li => `<li>${li}</li>`).join('')}
+            </ul>
+          </div>
+          <div class="mt-3">
+            <div class="text-sm font-semibold">What’s Included</div>
+            <ul class="mt-1 list-disc pl-5 text-sm text-neutral-800">
+              ${whatsIncluded(k).map(li => `<li>${li}</li>`).join('')}
+            </ul>
+          </div>
+        `;
+        grid.appendChild(card);
+      }
+    }
+
+    renderChips();
+    renderGrid();
+  } catch (e) {
+    console.error('kiosk init error:', e);
+  }
+})();
