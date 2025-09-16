@@ -29,7 +29,7 @@ export default async function handler(req, res) {
       k.contents = toArray(k.contents);
     }
 
-    res.setHeader('cache-control','s-maxage=300, stale-while-revalidate=86400');
+    res.setHeader('cache-control','no-store');
     res.status(200).json(rows);
   } catch (err) {
     res.status(500).json({ error: err?.message || String(err) });
