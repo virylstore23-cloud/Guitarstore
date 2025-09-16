@@ -1,45 +1,61 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Alesis Kiosk</title>
-  <link rel="icon" href="/favicon.ico" />
-  <!-- Use built Tailwind (no CDN) -->
-  <link rel="stylesheet" href="/styles.build.css" />
+  <title>Alesis Soundstage</title>
+  <!-- Keep Tailwind CDN for now (fastest fix). We can move to a build step later. -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .img-frame{position:relative;overflow:hidden;border-radius:12px;background:#111}
+    .img-16x10{aspect-ratio:16/10}
+    .img-fill{width:100%;height:100%;object-fit:cover;display:block}
+    .kit-card{transition:transform .12s ease, box-shadow .12s ease}
+    .kit-card:hover{transform:translateY(-2px)}
+    .chip{font-size:.7rem;padding:.15rem .45rem;border-radius:.4rem;border:1px solid #334155;color:#cbd5e1}
+  </style>
+<style id="price-pill-css">
+.price-badge{display:inline-flex;align-items:center;gap:.5rem;padding:.375rem .75rem;border-radius:9999px;
+background:linear-gradient(180deg,rgba(16,185,129,.18),rgba(16,185,129,.10));color:#a7f3d0;border:1px solid rgba(16,185,129,.35);
+box-shadow:0 0 0 1px rgba(255,255,255,.03) inset,0 6px 20px rgba(16,185,129,.15)}
+.price-badge .label{font-size:.65rem;text-transform:uppercase;letter-spacing:.075em;opacity:.85}
+.price-badge .value{font-variant-numeric:tabular-nums;font-weight:700}
+</style>
+<style id="demo-pill-css">
+.demo-badge{position:absolute;top:.75rem;left:.75rem;background:#FFD300;color:#111827;font-weight:800;font-size:.8rem;
+padding:.3rem .9rem;border-radius:9999px;text-transform:uppercase;letter-spacing:.05em;box-shadow:0 2px 8px rgba(0,0,0,.35);z-index:20}
+</style>
+
+  <link rel="stylesheet" href="/price.css?v=1757800344">
+  <link rel="stylesheet" href="/cat.css?v=1757801514">
 </head>
-<body class="bg-neutral-50 text-neutral-900">
-  <header class="p-4 md:p-6">
-    <h1 class="text-2xl md:text-3xl font-bold">Alesis Kiosk</h1>
-    <!-- Category chips mount -->
-    <div id="category-chips" class="mt-4 flex flex-wrap gap-2"></div>
+<body class="bg-zinc-900 text-zinc-100">
+  <header class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <h1 class="text-2xl font-semibold tracking-tight">Alesis Soundstage</h1>
+    <p class="text-zinc-400 text-sm mt-1">Tap a kit to view details. Data comes live from Supabase via <code>/api/kits</code>.</p>
   </header>
 
-  <main class="p-4 md:p-6">
-    <!-- Kits list mount -->
-    <div id="kits-grid" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4"></div>
+  <main id="app" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+    <!-- Filters / helper chips -->
+    <div class="flex flex-wrap gap-2 mb-4">
+      <button data-filter="all"  class="chip">All</button>
+      <button data-filter="demo" class="chip">On Demo</button>
+    </div>
+
+    <!-- Grid rendered by app.js -->
+    <div id="kitGrid" class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3"></div>
+
+    <!-- Minimal compare shelf (optional; shows count only for now) -->
+    <div id="compareShelf" class="fixed bottom-3 inset-x-0 flex justify-center pointer-events-none">
+      <div class="pointer-events-auto hidden bg-zinc-800/90 backdrop-blur rounded-full px-4 py-2 shadow border border-zinc-700 text-sm">
+        <span id="compareCount">0</span> selected for compare
+      </div>
+    </div>
   </main>
 
-  <!-- Product detail side panel (if your app.js uses it) -->
-  <aside id="kit-detail" class="hidden fixed inset-y-0 right-0 w-full max-w-xl bg-white shadow-2xl overflow-y-auto">
-    <div class="p-6 space-y-6">
-      <div>
-        <h2 id="kit-name" class="text-xl font-semibold"></h2>
-        <p id="kit-price" class="text-sm text-neutral-600"></p>
-      </div>
-
-      <section>
-        <h3 class="text-lg font-semibold">Key Features</h3>
-        <ul id="key-features" class="mt-2 list-disc pl-5 space-y-1"></ul>
-      </section>
-
-      <section>
-        <h3 class="text-lg font-semibold">What’s Included</h3>
-        <ul id="whats-included" class="mt-2 list-disc pl-5 space-y-1"></ul>
-      </section>
-    </div>
-  </aside>
-
-  <script src="/app.js" defer></script>
+  <!-- Our robust data-driven UI -->
+  <script type="module" src="/app.js"></script>
+<script src="/ux-fixes.js?v=1757542878"></script>
+  <script src="/cat.js?v=1757801639"></script>
 </body>
 </html>
