@@ -255,3 +255,65 @@ sb.channel('public:drum_kits')
     render();
   })
   .subscribe();
+
+// ===== Detail modal v2 (clean two-column sheet) =====
+(function(){
+  const fmt = (typeof AED==='function')
+    ? AED
+    : (v)=>new Intl.NumberFormat('en-AE',{style:'currency',currency:'AED',maximumFractionDigits:2}).format(v);
+
+  window.openDetail = function openDetail(id){
+    const r = (window.state?.byId?.get(String(id))) ||
+              (window.state?.rows||[]).find(x => String(x.id)===String(id));
+    if (!r) return;
+
+    const img = r.detail_image_url || r.primary_image_url ||
+      'https://dummyimage.com/1200x800/ffffff/222&text=Alesis+Drums';
+
+    const html = `
+    <div class="detail-card">
+      <div class="detail-head">
+        <div class="detail-title">${r.name ?? ''}</div>
+        <button class="x" data-close="1">Close</button>
+      </div>
+
+      <div class="detail-body">
+        <!-- LEFT: image -->
+        <div class="imgwrap">
+          ${r.on_demo && r.on_demo_label ? `<span class="demo-ribbon">${r.on_demo_label}</span>` : ''}
+          <img data-detail-img src="${img}" alt="${r.name ?? ''}">
+        </div>
+
+        <!-- RIGHT: sheet -->
+        <div class="sheet">
+          <div style="margin-bottom:8px">
+            <span class="chip price">${fmt(r.price ?? 0)}</span>
+            ${r.upc_code ? `<span class="chip">UPC: ${r.upc_code}</span>` : ``}
+            ${r.category ? `<span class="chip">${r.category}</span>` : ``}
+          </div>
+
+          ${r.description ? `
+            <div class="section">
+              <h4>Description</h4>
+              <div class="muted">${r.description}</div>
+            </div>` : ``}
+
+          ${Array.isArray(r.features) && r.features.length ? `
+            <div class="section">
+              <h4>Key Features</h4>
+              <ul>${r.features.map(f=>`<li>${f}</li>`).join('')}</ul>
+            </div>` : ``}
+
+          ${Array.isArray(r.contents) && r.contents.length ? `
+            <div class="section">
+              <h4>What's Included</h4>
+              <ul>${r.contents.map(c=>`<li>${c}</li>`).join('')}</ul>
+            </div>` : ``}
+        </div>
+      </div>
+    </div>`;
+    const dlg = document.getElementById('detailWrap');
+    dlg.innerHTML = html;
+    dlg.showModal();
+  };
+})();
