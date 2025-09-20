@@ -1,13 +1,19 @@
+/* === Supabase bootstrap (idempotent) === */
+const __ENV__ = window.ENV || {};
+if (!__ENV__.SUPABASE_URL || !__ENV__.SUPABASE_ANON_KEY) { throw new Error('env.js missing SUPABASE values'); }
+if (!window.supabase) {
+  const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2');
+  window.supabase = createClient(__ENV__.SUPABASE_URL, __ENV__.SUPABASE_ANON_KEY);
+}
+const supabase = window.supabase;
+/* === end bootstrap === */
 // public/app.js
 const SUPABASE_URL = window.ENV?.SUPABASE_URL;
 const SUPABASE_ANON_KEY = window.ENV?.SUPABASE_ANON_KEY;
 if (!SUPABASE_URL || !SUPABASE_ANON_KEY) throw new Error('env.js missing');
 
-const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2');
 
 // Create once, reuse (prevents “already declared” errors)
-window.supabase = window.supabase || createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-const supabase = window.supabase;
 
 const grid = document.getElementById('kitGrid') || (()=>{
   const d=document.createElement('div'); d.id='kitGrid';

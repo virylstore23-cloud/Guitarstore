@@ -1,64 +1,157 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="en" class="h-full bg-neutral-950">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Alesis Soundstage</title>
-  <!-- Keep Tailwind CDN for now (fastest fix). We can move to a build step later. -->
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>GuitarStore.ae — Electronic Drum Kits</title>
+  <meta name="description" content="Shop electronic drum kits, amps and accessories at GuitarStore.ae" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Crect width='64' height='64' rx='12' fill='%23c4161c'/%3E%3Cpath d='M45 18l-2 2-6 6v14a6 6 0 11-3-5.2V26l7-7c2-2 4-3 6-1s1 4-2 6Z' fill='white'/%3E%3C/svg%3E" />
+
+  <!-- Tailwind CDN (quick). For production, later move to Tailwind CLI/PostCSS. -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { brand:'#c4161c', brandDark:'#9f1216', ink:'#0b0b0b' },
+          boxShadow: { card:'0 1px 0 0 rgba(255,255,255,0.06) inset, 0 10px 20px -12px rgba(0,0,0,0.6)' }
+        }
+      }
+    }
+  </script>
   <style>
-    .img-frame{position:relative;overflow:hidden;border-radius:12px;background:#111}
-    .img-16x10{aspect-ratio:16/10}
-    .img-fill{width:100%;height:100%;object-fit:cover;display:block}
-    .kit-card{transition:transform .12s ease, box-shadow .12s ease}
-    .kit-card:hover{transform:translateY(-2px)}
-    .chip{font-size:.7rem;padding:.15rem .45rem;border-radius:.4rem;border:1px solid #334155;color:#cbd5e1}
+    .container { max-width: 1200px; }
+    .ring-brand { box-shadow: 0 0 0 2px #c4161c inset; }
+    .hero-grad {
+      background: radial-gradient(1200px 600px at 20% -10%, rgba(196,22,28,0.35), transparent 60%),
+                  radial-gradient(900px 500px at 90% 10%, rgba(196,22,28,0.2), transparent 60%),
+                  linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0));
+    }
+    .glass { background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02)); backdrop-filter: blur(8px); }
+    .card { transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease; }
+    .card:hover { transform: translateY(-2px); box-shadow: 0 18px 32px -22px rgba(0,0,0,.9); border-color: rgba(196,22,28,.5); }
+    .img-box { position: relative; overflow: hidden; border-radius: .75rem; }
+    .img-box img { width: 100%; height: 100%; object-fit: cover; display: block; }
   </style>
-<style id="price-pill-css">
-.price-badge{display:inline-flex;align-items:center;gap:.5rem;padding:.375rem .75rem;border-radius:9999px;
-background:linear-gradient(180deg,rgba(16,185,129,.18),rgba(16,185,129,.10));color:#a7f3d0;border:1px solid rgba(16,185,129,.35);
-box-shadow:0 0 0 1px rgba(255,255,255,.03) inset,0 6px 20px rgba(16,185,129,.15)}
-.price-badge .label{font-size:.65rem;text-transform:uppercase;letter-spacing:.075em;opacity:.85}
-.price-badge .value{font-variant-numeric:tabular-nums;font-weight:700}
-</style>
-<style id="demo-pill-css">
-.demo-badge{position:absolute;top:.75rem;left:.75rem;background:#FFD300;color:#111827;font-weight:800;font-size:.8rem;
-padding:.3rem .9rem;border-radius:9999px;text-transform:uppercase;letter-spacing:.05em;box-shadow:0 2px 8px rgba(0,0,0,.35);z-index:20}
-</style>
-
-  <link rel="stylesheet" href="/price.css?v=1757800344">
-  <link rel="stylesheet" href="/cat.css?v=1757801514">
 </head>
-<body class="bg-zinc-900 text-zinc-100">
-  <header class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-    <h1 class="text-2xl font-semibold tracking-tight">Alesis Soundstage</h1>
-    <p class="text-zinc-400 text-sm mt-1">Tap a kit to view details. Data comes live from Supabase via <code>/api/kits</code>.</p>
-  </header>
-
-  <main id="app" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-    <!-- Filters / helper chips -->
-    <div class="flex flex-wrap gap-2 mb-4">
-      <button data-filter="all"  class="chip">All</button>
-      <button data-filter="demo" class="chip">On Demo</button>
-    </div>
-
-    <!-- Grid rendered by app.js -->
-    <div id="kitGrid" class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3"></div>
-
-    <!-- Minimal compare shelf (optional; shows count only for now) -->
-    <div id="compareShelf" class="fixed bottom-3 inset-x-0 flex justify-center pointer-events-none">
-      <div class="pointer-events-auto hidden bg-zinc-800/90 backdrop-blur rounded-full px-4 py-2 shadow border border-zinc-700 text-sm">
-        <span id="compareCount">0</span> selected for compare
+<body class="min-h-full text-zinc-100 selection:bg-brand/30 selection:text-white">
+  <!-- Top bar -->
+  <header class="sticky top-0 z-40 border-b border-white/5 glass">
+    <div class="container mx-auto px-4 py-3 flex items-center gap-3">
+      <a href="/" class="flex items-center gap-2 group">
+        <span class="inline-flex h-8 w-8 items-center justify-center rounded-md bg-brand ring-1 ring-white/10">
+          <svg viewBox="0 0 24 24" class="h-5 w-5 text-white" aria-hidden="true"><path fill="currentColor" d="M17.5 7.1c-1.1 0-2 .9-2 2v5.8a3.2 3.2 0 1 1-1.6-2.8V9.1c0-1 .4-1.9 1.1-2.6l2.2-2.2c.8-.8 1.9-.9 2.7-.1c.8.8.7 1.9-.1 2.7l-2.2 2.2c-.1.1-.1.1-.1.2Z"/></svg>
+        </span>
+        <span class="font-extrabold tracking-tight text-lg">
+          <span class="text-white">GuitarStore</span><span class="text-brand">.ae</span>
+        </span>
+      </a>
+      <nav class="ml-auto hidden md:flex items-center gap-2">
+        <a class="px-3 py-2 rounded-lg hover:bg-white/5 border border-white/5" href="#">Guitars</a>
+        <a class="px-3 py-2 rounded-lg hover:bg-white/5 border border-white/5" href="#">Amps</a>
+        <a class="px-3 py-2 rounded-lg hover:bg-white/5 border border-white/5 ring-brand" href="#drums">Electronic Drums</a>
+      </nav>
+      <div class="ml-2 flex items-center gap-2">
+        <button id="btnFind" class="px-3 py-2 rounded-lg border border-brand bg-brand hover:bg-brandDark text-white text-sm font-semibold">
+          Find My Kit
+        </button>
       </div>
     </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero-grad border-b border-white/5">
+    <div class="container mx-auto px-4 py-10 md:py-14 grid md:grid-cols-5 gap-6 items-center">
+      <div class="md:col-span-3">
+        <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight">
+          Electronic Drum Kits, Amps & Accessories
+        </h1>
+        <p class="mt-2 text-zinc-300 max-w-2xl">
+          Curated selection for practice, performance and studio—updated live from our Supabase catalog.
+        </p>
+        <div class="mt-4 flex flex-wrap gap-2">
+          <a href="#drums" class="px-4 py-2 rounded-lg border border-white/10 hover:bg-white/5">Browse Kits</a>
+          <a href="#drums" class="px-4 py-2 rounded-lg border border-brand bg-brand hover:bg-brandDark text-white font-semibold">Best Value</a>
+        </div>
+      </div>
+      <div class="md:col-span-2">
+        <div class="aspect-[16/10] rounded-2xl border border-white/10 overflow-hidden shadow-card">
+          <img alt="Electronic Drum Kits" src="https://images.unsplash.com/photo-1543163521-1bf539c55dd2?q=80&w=1600&auto=format&fit=crop" class="w-full h-full object-cover" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Filters -->
+  <section id="drums" class="container mx-auto px-4 pt-6">
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-2">
+        <span class="text-sm text-zinc-300">Filter:</span>
+        <button data-filter="all"  class="px-3 py-1.5 rounded-lg border border-white/10 hover:bg-white/5 text-sm ring-brand">All</button>
+        <button data-filter="kits" class="px-3 py-1.5 rounded-lg border border-white/10 hover:bg-white/5 text-sm">Drum Kits</button>
+        <button data-filter="amps" class="px-3 py-1.5 rounded-lg border border-white/10 hover:bg-white/5 text-sm">Drum Amps</button>
+        <button data-filter="acc"  class="px-3 py-1.5 rounded-lg border border-white/10 hover:bg-white/5 text-sm">Accessories</button>
+      </div>
+      <div class="flex items-center gap-2">
+        <label class="inline-flex items-center gap-2 text-sm text-zinc-300">
+          <input id="demoOnly" type="checkbox" class="h-4 w-4 rounded border-white/10 bg-neutral-900" />
+          On demo only
+        </label>
+      </div>
+    </div>
+  </section>
+
+  <!-- Grid target -->
+  <main class="container mx-auto px-4 py-6">
+    <div id="kitGrid" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"></div>
   </main>
 
-  <!-- Our robust data-driven UI -->
+  <!-- Footer -->
+  <footer class="border-t border-white/5">
+    <div class="container mx-auto px-4 py-8 text-sm text-zinc-400">
+      © <span id="y"></span> GuitarStore.ae — All rights reserved.
+    </div>
+  </footer>
+
+  <!-- Load env BEFORE app.js -->
   <script src="/env.js"></script>
-  <script src="/env.js"></script>
-  <script type="module" src="/app.js?v=1758394441"></script>
-<script src="/ux-fixes.js?v=1757542878"></script>
-  <!-- cat.js disabled -->
-  <!-- auto-refresh disabled -->
+  <!-- Your app (should read public.drum_kits and render into #kitGrid) -->
+  <script type="module" src="/app.js?v=1"></script>
+
+  <!-- Tiny filter glue (DOM-only, works with your current render) -->
+  <script>
+    (function(){
+      const btns = document.querySelectorAll('[data-filter]');
+      const kitGrid = document.getElementById('kitGrid');
+      const state = { demoOnly:false, cat:'all' };
+      function categoryOf(el){
+        const name = (el.querySelector('h3')?.textContent || '').toLowerCase();
+        const blob = el.textContent.toLowerCase();
+        if (/(amp|monitor|watt|woofer|tweeter|strike\s*amp)/.test(blob)) return 'amps';
+        if (/\bkit\b/.test(name) || /(mesh|strata|crimson|nitro|surge|turbo|club|core|prime)/.test(blob)) return 'kits';
+        return 'acc';
+      }
+      function applyFilters(){
+        const cards = kitGrid.querySelectorAll('article');
+        cards.forEach(card => {
+          const demo = /on demo/i.test(card.textContent);
+          const cat  = categoryOf(card);
+          const passDemo = !state.demoOnly || demo;
+          const passCat  = state.cat === 'all' || state.cat === cat;
+          card.style.display = (passDemo && passCat) ? '' : 'none';
+        });
+      }
+      btns.forEach(b=>{
+        b.addEventListener('click', ()=>{
+          btns.forEach(x=>x.classList.remove('ring-brand'));
+          b.classList.add('ring-brand');
+          state.cat = b.dataset.filter;
+          applyFilters();
+        });
+      });
+      document.getElementById('demoOnly').addEventListener('change', e => { state.demoOnly = e.target.checked; applyFilters(); });
+      document.getElementById('y').textContent = new Date().getFullYear();
+    })();
+  </script>
 </body>
 </html>
