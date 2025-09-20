@@ -1,39 +1,20 @@
 :root { --modal-w: min(1100px, 96vw); }
-
-/* Detail modal chrome */
-#detailWrap { padding:0; border:0; background:transparent; }
-.detail-card{
-  width:var(--modal-w); margin:auto; background:var(--panel);
-  border:1px solid #2b3642; border-radius:18px; box-shadow:0 14px 50px rgba(0,0,0,.55);
-}
+#detailWrap{padding:0;border:0;background:transparent}
+.detail-card{width:var(--modal-w);margin:auto;background:var(--panel,#0f1720);
+  border:1px solid #2b3642;border-radius:18px;box-shadow:0 14px 50px rgba(0,0,0,.55)}
 .detail-head{display:flex;align-items:center;justify-content:space-between;padding:14px 18px}
 .detail-title{font-weight:700}
 .detail-body{display:grid;grid-template-columns:1.1fr 1fr;gap:16px;padding:0 18px 18px}
-@media (max-width: 900px){ .detail-body{grid-template-columns:1fr} }
-
-/* White image block */
-.imgwrap{
-  position:relative; background:#fff; border-radius:14px; padding:12px;
-  height:min(58vh,520px); display:flex; align-items:center; justify-content:center;
-  box-shadow: inset 0 0 0 1px #e9eef3;
-}
-.imgwrap img{max-width:100%; max-height:100%; object-fit:contain; display:block}
-
-/* Demo ribbon */
-.demo-ribbon{
-  position:absolute; top:12px; left:12px; background:#FDE047; color:#111;
-  padding:6px 10px; border-radius:999px; font-weight:700; box-shadow:0 2px 10px rgba(0,0,0,.2)
-}
-
-/* Right column sheet */
-.sheet .chip{margin-right:8px;margin-bottom:8px}
+@media (max-width:900px){.detail-body{grid-template-columns:1fr}}
+.imgwrap{position:relative;background:#fff;border-radius:14px;padding:12px;height:min(58vh,520px);
+  display:flex;align-items:center;justify-content:center;box-shadow:inset 0 0 0 1px #e9eef3}
+.imgwrap img{max-width:100%;max-height:100%;object-fit:contain;display:block}
+.demo-ribbon{position:absolute;top:12px;left:12px;background:#FDE047;color:#111;
+  padding:6px 10px;border-radius:999px;font-weight:700;box-shadow:0 2px 10px rgba(0,0,0,.2)}
+.sheet .chip{margin:0 8px 8px 0}
 .chip.price{background:#032e36;border-color:#0e3e47;color:#00e5ff;font-weight:800}
-.sheet .section{
-  border:1px solid #2b3642; border-radius:12px; padding:12px; margin-top:12px
-}
-.sheet .section h4{margin:0 0 6px 0; font-weight:700; color:#c8d3e0}
-.sheet .section ul{padding-left:18px; margin:0}
-.sheet .section li{list-style:disc; padding:3px 0}
-
-/* Hide “Save” overlays some extensions inject on images */
-[data-detail-img] { pointer-events:none; }
+.sheet .section{border:1px solid #2b3642;border-radius:12px;padding:12px;margin-top:12px}
+.sheet .section h4{margin:0 0 6px 0;font-weight:700;color:#c8d3e0}
+.sheet .section ul{padding-left:18px;margin:0}
+.sheet .section li{list-style:disc;padding:3px 0}
+[data-detail-img]{pointer-events:none}
