@@ -65,11 +65,10 @@ async function load(){
 /* ---------- image helpers ---------- */
 /* choose declared image or local fallback path by slug */
 function pickImage(r){
-  const u = r?.image_url || r?.image || r?.main_image || r?.photo || '';
-  if (u) return u;
-  // try local /img/<slug>.jpg if you later add assets
-  return `/img/${r.slug||'placeholder'}.jpg`;
+  const u = r?.image_url || r?.image || r?.main_image || r?.photo;
+  return u || PLACEHOLDER;
 }
+
 function wireImageFallbacks(root=document){
   root.querySelectorAll('img[data-fallback]').forEach(img=>{
     img.onerror = ()=>{ img.src = PLACEHOLDER; img.removeAttribute('data-fallback'); };
