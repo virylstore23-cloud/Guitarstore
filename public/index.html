@@ -5,6 +5,7 @@
 <title>Alesis Soundstage</title>
 <style>
 :root{
+  /* keep your palette */
   --bg1:#0b1016; --bg2:#101a23;
   --panel:#111922; --line:#2b3642; --shadow:0 15px 40px rgba(0,0,0,.35);
   --text:#e6eef8; --muted:#9fb1c3;
@@ -21,7 +22,7 @@ body{
             linear-gradient(180deg,var(--bg1),var(--bg2));
   font:14px/1.35 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
 }
-.wrap{max-width:1100px;margin:26px auto;padding:0 16px}
+.wrap{max-width:1150px;margin:26px auto;padding:0 16px}
 .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
 .brand{display:flex;gap:10px;align-items:center}
 .brand .logo{font-weight:800}
@@ -31,50 +32,59 @@ body{
 .btn-primary{background:var(--alesis);color:#00131a;border-color:#00a8be;font-weight:800}
 .btn-ghost{background:transparent}
 .btn[disabled]{opacity:.55;cursor:not-allowed}
-.chips{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 16px}
+
+h2{margin:0 0 2px}
+.muted{color:var(--muted)}
+
+.chips{position:sticky;top:0.25rem;z-index:5;display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 16px;padding:6px 4px 6px 0;background:linear-gradient(180deg,rgba(11,16,22,.82),rgba(11,16,22,0))}
 .chip{background:#0b1c25;border:1px solid #22303b;color:#cde9f2;border-radius:999px;padding:6px 10px;cursor:pointer}
 .chip.active{background:#0e2f3a;color:#8df2ff;border-color:#184b59}
+
 .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--shadow)}
-.imgbox{background:#fff;border-bottom:1px solid var(--line);padding:10px 10px 0 10px;position:relative}
-.imgbox .demo{position:absolute;left:16px;top:12px;background:var(--warn);color:#111;padding:6px 10px;border-radius:999px;font-weight:800}
-.imgbox img{width:100%;height:220px;object-fit:contain;border-radius:10px 10px 0 0;display:block;background:#fff}
+@media (max-width:980px){.grid{grid-template-columns:1fr 1fr}}
+@media (max-width:640px){.grid{grid-template-columns:1fr}}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--shadow);transition:transform .15s ease, border-color .15s}
+.card:hover{transform:translateY(-2px);border-color:#344658}
+.imgbox{background:#fff;border-bottom:1px solid var(--line);padding:12px;position:relative}
+.imgbox img{width:100%;height:230px;object-fit:contain;border-radius:12px;background:#fff;display:block}
+.imgbox .demo{position:absolute;left:18px;top:18px;background:var(--warn);color:#111;padding:6px 10px;border-radius:999px;font-weight:800;box-shadow:0 6px 18px rgba(0,0,0,.25)}
 .content{padding:10px 12px}
 .title{font-weight:800;margin:6px 0 2px}
-.upc{color:var(--muted);font-size:12px;margin:2px 0 8px}
+.subtitle{color:#cfe1f2;opacity:.9}
+.upc{color:var(--muted);font-size:12px;margin:5px 0 8px}
 .price{display:inline-block;background:var(--priceBg);color:var(--priceText);border:1px solid var(--priceEdge);border-radius:999px;padding:6px 10px;font-weight:800}
 .tags{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
 .tag{border-radius:10px;border:1px solid #283644;background:#0e1a23;padding:3px 8px;color:#cfe1f2}
-.compare{display:flex;align-items:center;gap:6px;margin-top:10px;color:#cfe1f2}
-.muted{color:var(--muted)}
-/* dialogs */
+.row{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
+.compare{display:flex;align-items:center;gap:6px;color:#cfe1f2}
+
 dialog{border:none;background:transparent}
 .sheet{background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:10px}
 .sheet .head{display:flex;justify-content:space-between;align-items:center;padding:6px 10px 10px}
 .sheet .x{border:1px solid var(--line);background:#111a22;color:#cfe1f2;border-radius:10px;padding:6px 10px}
+
 .detail{display:grid;grid-template-columns:1.25fr 1fr;gap:14px;padding:10px}
 .detail .left{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px}
 .detail .left .big{width:100%;height:360px;object-fit:contain;border-radius:10px;background:#fff}
 .detail .right .sec{border:1px solid var(--line);border-radius:12px;padding:10px;margin-top:10px}
 .detail h4{margin:0 0 6px 0}
 .hr{height:1px;background:var(--line);margin:10px 0}
-@media (max-width:900px){.grid{grid-template-columns:1fr 1fr}.detail{grid-template-columns:1fr}}
-@media (max-width:600px){.grid{grid-template-columns:1fr}}
+
+@media (max-width:980px){.detail{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
   <div class="wrap">
     <div class="top">
-      <div class="brand">
-        <div class="logo">ALESIS</div><div class="pill">DRUMS</div>
-      </div>
+      <div class="brand"><div class="logo">ALESIS</div><div class="pill">DRUMS</div></div>
       <div class="header-ctas">
         <button id="btnCompare" class="btn">Compare <span id="cmpCount" style="opacity:.7">(0)</span></button>
         <button id="btnFind" class="btn btn-primary">Find my kit</button>
       </div>
     </div>
 
-    <h2 style="margin:0 0 2px">Electronic Drum Range</h2>
+    <h2>Electronic Drum Range</h2>
     <div class="muted">Compare features and choose the perfect Alesis kit for practice, recording, or performance.</div>
 
     <div class="chips" id="chips">
@@ -141,6 +151,6 @@ dialog{border:none;background:transparent}
   <!-- ENV + Supabase + App -->
   <script src="/env.js"></script>
   <script type="module" src="/boot-supabase.js?v=1"></script>
-  <script type="module" src="/app.js?v=9"></script>
+  <script type="module" src="/app.js?v=10"></script>
 </body>
 </html>

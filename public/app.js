@@ -3,10 +3,9 @@ const AED=n=>`AED ${Number(n).toLocaleString('en-AE',{minimumFractionDigits:2,ma
 const PLACEHOLDER='data:image/svg+xml;utf8,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="800" height="520"><rect width="100%" height="100%" fill="#f4f6f8"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="system-ui,Segoe UI,Arial" font-size="22" fill="#8a97a6">Image coming soon</text></svg>`);
 const CHIP_MAP={'Electronic Drum Kits':'Drum Kits','Drum Amplification':'Drum Amps','Accessories':'Accessories','Multipads & Drum Machines':'Multipads','On Demo':'__DEMO__'};
 const state={rows:[],byId:new Map(),filter:'All',compare:new Set()};
-
 const sb=window.supabase;
 
-/* pick best image */
+/* Select best image from row (prefer detail for modal, primary for card) */
 function pickImage(r,kind='card'){
   const direct = (kind==='detail' && (r.detail_image_url || (Array.isArray(r.images)&&r.images[1]))) ||
                  r.primary_image_url || r.image_url || (Array.isArray(r.images)?r.images[0]:null);
@@ -14,32 +13,33 @@ function pickImage(r,kind='card'){
   return direct || storage || PLACEHOLDER;
 }
 
-/* parse maybe-json arrays */
+/* Normalize arrays (features/contents may be JSON or newline bullets) */
 function toList(v){
   if(!v) return [];
   if(Array.isArray(v)) return v;
   if(typeof v==='string'){
-    try{const j=JSON.parse(v); return Array.isArray(j)?j:[];}catch{ return v.split(/\s*[\n•]\s*/).filter(Boolean); }
+    try{const j=JSON.parse(v); if(Array.isArray(j)) return j;}catch{}
+    return v.split(/\r?\n/).map(s=>s.replace(/^[•-]\s*/,'').trim()).filter(Boolean);
   }
   return [];
 }
 
-/* load */
+/* Query + realtime */
 async function load(){
   let rows=[];
   if(sb){
     const {data,error}=await sb.from('drum_kits').select('*').order('price',{ascending:true});
-    if(error){console.error(error);} rows=data||[];
+    if(error) console.error(error);
+    rows=data||[];
   }else{
     const u=`${window.ENV.SUPABASE_URL}/rest/v1/drum_kits?select=*&order=price.asc`;
     const res=await fetch(u,{headers:{apikey:window.ENV.SUPABASE_ANON_KEY,Authorization:`Bearer ${window.ENV.SUPABASE_ANON_KEY}`}});
     rows=await res.json();
   }
-  // treat NULL as active
-  rows=rows.filter(r=>r.is_active!==false);
+  rows=rows.filter(r=>r.is_active!==false); // treat NULL as active
   state.rows=rows; state.byId=new Map(rows.map(r=>[String(r.id),r]));
   render();
-  // realtime
+
   if(sb){
     sb.channel('public:drum_kits').on('postgres_changes',{event:'*',schema:'public',table:'drum_kits'},p=>{
       const id=String((p.new??p.old).id);
@@ -49,23 +49,24 @@ async function load(){
   }
 }
 
-/* visible list */
+/* View list by chip */
 function listForView(){
-  const rows=[...state.rows];
-  const label=state.filter;
+  const rows=[...state.rows]; const label=state.filter;
   if(label==='All') return rows;
   if(label==='On Demo') return rows.filter(r=>r.on_demo===true);
   if(CHIP_MAP[label]==='Multipads') return rows.filter(r=>/Multi|Sample|SR-?1/i.test(r.name||''));
   const cat=CHIP_MAP[label]; return rows.filter(r=>(r.category||'').trim()===cat);
 }
 
-/* render grid */
+/* Render cards */
 function render(){
   const grid=$('#grid'), empty=$('#empty');
   const list=listForView();
   $('#cmpCount').textContent=`(${state.compare.size})`;
+
   if(!list.length){grid.innerHTML=''; empty.style.display='block'; return;}
   empty.style.display='none';
+
   grid.innerHTML=list.map(r=>{
     const img=pickImage(r,'card');
     const demo=r.on_demo?`<div class="demo">${r.on_demo_label||'On Demo'}</div>`:'';
@@ -79,10 +80,10 @@ function render(){
       <div class="content">
         <div class="price">${AED(r.price)}</div>
         <div class="title">${r.name||''}</div>
-        <div class="muted" style="margin:2px 0">${r.subtitle||''}</div>
+        ${r.subtitle?`<div class="subtitle">${r.subtitle}</div>`:''}
         ${r.upc?`<div class="upc">UPC: ${r.upc}</div>`:''}
         <div class="tags">${tags}</div>
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px">
+        <div class="row">
           <button class="btn btn-ghost" data-explore="${r.id}">Explore</button>
           <label class="compare"><input type="checkbox" data-compare="${r.id}" ${state.compare.has(String(r.id))?'checked':''}/> Add to compare</label>
         </div>
@@ -90,12 +91,11 @@ function render(){
     </div>`;
   }).join('');
 
-  // wire explore + compare
   $$('[data-explore]').forEach(b=>b.onclick=()=>openDetail(b.dataset.explore));
   $$('[data-compare]').forEach(cb=>cb.onchange=()=>{const id=String(cb.dataset.compare); cb.checked?state.compare.add(id):state.compare.delete(id); $('#cmpCount').textContent=`(${state.compare.size})`;});
 }
 
-/* open detail */
+/* Detail modal (2-column, clean) */
 function openDetail(id){
   const r=state.byId.get(String(id)); if(!r) return;
   $('#dTitle').textContent=r.name||'';
@@ -113,14 +113,13 @@ function openDetail(id){
   $('#dFeatSec').style.display=feats.length?'block':'none'; $('#dFeat').innerHTML=feats.map(x=>`<li>${x}</li>`).join('');
   $('#dInclSec').style.display=incl.length?'block':'none'; $('#dIncl').innerHTML=incl.map(x=>`<li>${x}</li>`).join('');
 
-  // top tags in detail (USB/MIDI, Bluetooth, Mesh if present)
   const usb=r.usb_midi?'USB/MIDI':''; const bt=r.bluetooth_audio?'Bluetooth':''; const mesh=/(mesh)/i.test(`${r.name} ${r.description||''}`)?'Mesh':'';
   $('#dTopTags').innerHTML=[mesh,usb,bt].filter(Boolean).map(t=>`<span class="tag">${t}</span>`).join('');
 
   $('#detailDlg').showModal();
 }
 
-/* compare modal */
+/* Compare modal */
 function showCompare(){
   const ids=[...state.compare]; const rows=ids.map(id=>state.byId.get(String(id))).filter(Boolean);
   const el=$('#compareGrid'); el.innerHTML = rows.length? rows.map(r=>{
@@ -138,11 +137,10 @@ function showCompare(){
     </div>`;
   }).join('') : `<div class="muted" style="grid-column:1/-1;border:1px dashed var(--line);padding:16px;border-radius:12px">Nothing to compare yet. Tick “Add to compare” on any card.</div>`;
   $('#compareDlg').showModal();
-  // make "View" buttons work inside
   el.querySelectorAll('[data-explore]').forEach(b=>b.onclick=()=>{openDetail(b.dataset.explore); $('#compareDlg').close();});
 }
 
-/* wizard */
+/* Wizard */
 function showWizard(){ $('#wizDlg').showModal(); }
 function scoreAndSuggest(){
   const [min,max]=($('#wBudget').value).split('-').map(Number);
@@ -162,7 +160,7 @@ function scoreAndSuggest(){
   $('#wOut').querySelector('[data-explore]').onclick=()=>{openDetail(r.id); $('#wizDlg').close();};
 }
 
-/* events */
+/* Events */
 $('#chips').addEventListener('click',e=>{
   const b=e.target.closest('.chip'); if(!b) return;
   $$('#chips .chip').forEach(x=>x.classList.remove('active')); b.classList.add('active');
@@ -171,6 +169,7 @@ $('#chips').addEventListener('click',e=>{
 $('#btnFind').onclick=showWizard;
 $('#btnCompare').onclick=showCompare;
 $$('dialog [data-close]').forEach(x=>x.onclick=()=>x.closest('dialog').close());
+$('#wGo').onclick=scoreAndSuggest;
 
-/* boot */
+/* Boot */
 load();
