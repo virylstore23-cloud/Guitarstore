@@ -65,8 +65,9 @@ async function load(){
 /* ---------- image helpers ---------- */
 /* choose declared image or local fallback path by slug */
 function pickImage(r){
-  const u = r?.image_url || r?.image || r?.main_image || r?.photo;
-  return u || PLACEHOLDER;
+  const direct = r?.primary_image_url || r?.detail_image_url || r?.image_url || (Array.isArray(r?.images) ? r.images[0] : null);
+  const fromStorage = r?.image_path ? (window.ENV?.SUPABASE_URL + "/storage/v1/object/public/" + r.image_path) : null;
+  return direct || fromStorage || PLACEHOLDER;
 }
 
 function wireImageFallbacks(root=document){
