@@ -58,3 +58,35 @@ supabase
   .channel('public:drum_kits')
   .on('postgres_changes', { event: '*', schema: 'public', table: 'drum_kits' }, load)
   .subscribe();
+
+// === public bindings (so index.html buttons work) ===
+(function(){
+  try {
+    if (typeof window.openFinder   !== 'function' && typeof openFinder   === 'function') window.openFinder = openFinder;
+    if (typeof window.openDetail   !== 'function' && typeof openDetail   === 'function') window.openDetail = openDetail;
+    if (typeof window.openCompare  !== 'function' && typeof openCompare  === 'function') window.openCompare = openCompare;
+    if (typeof window.render       !== 'function' && typeof render       === 'function') window.render       = render;
+  } catch (_) {}
+  // Best Value = cheapest active drum KIT (ignore amps/accessories) with a price
+  function bestValueId() {
+    const items = Array.from((window.state?.byId || new Map()).values() || []);
+    const list = items.filter(k => k?.is_active && k?.price!=null && (window.deriveCategory ? (window.deriveCategory(k) !== 'Drum Amps') : true));
+    if (!list.length) return null;
+    list.sort((a,b)=> Number(a.price)-Number(b.price));
+    return String(list[0].id);
+  }
+  if (typeof window.openBestValue !== 'function') {
+    window.openBestValue = function(){
+      const id = bestValueId();
+      if (id && typeof openDetail === 'function') openDetail(id);
+      else alert('No kits available yet.');
+    }
+  }
+  if (typeof window.browseKits !== 'function') {
+    window.browseKits = function(){
+      const g=document.getElementById('kitGrid');
+      if(g) window.scrollTo({top:g.getBoundingClientRect().top + window.scrollY - 60, behavior:'smooth'});
+    }
+  }
+})();
+ // === end bindings ===

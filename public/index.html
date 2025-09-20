@@ -1,167 +1,106 @@
-<!DOCTYPE html>
-<html lang="en" class="h-full">
+<!doctype html>
+<html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Alesis Soundstage • Electronic Drum Kits, Amps & Accessories</title>
-  <meta name="theme-color" content="#111111" />
-  <meta name="color-scheme" content="dark" />
-
-  <!-- Tailwind CDN (swap to compiled Tailwind later to silence the console notice) -->
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Electronic Drums | GuitarStore.ae</title>
+  <meta name="description" content="Electronic Drum Kits, Amps & Accessories—live from Supabase." />
+  <link rel="icon" href="/img/alesis.svg">
   <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: { extend: { colors: { brand: { red:'#ef4444', redDark:'#dc2626' } } } }
-    };
-  </script>
-
   <style>
-    .chip{font-size:.78rem;padding:.22rem .6rem;border-radius:.5rem;border:1px solid #334155;color:#cbd5e1;background:#111827aa}
-    .pill{font-size:.78rem;padding:.35rem .7rem;border-radius:.625rem;border:1px solid #3f3f46;background:#111827aa}
-    .shadow-card{box-shadow:0 1px 0 rgba(255,255,255,.04),0 12px 30px rgba(0,0,0,.35)}
-    .img-frame{position:relative;overflow:hidden;border-radius:12px;background:#0b0b0b}
+    body{background:#0b0b0d;color:#e5e7eb}
+    .glass{background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.1)}
+    .chip{font-size:.8rem;padding:.22rem .6rem;border-radius:.5rem;border:1px solid #334155;color:#cbd5e1;background:#111827aa}
+    .btn{display:inline-flex;align-items:center;gap:.5rem;border:1px solid #3f3f46;border-radius:.7rem;padding:.55rem .9rem}
+    .btn:hover{background:#18181b}
+    .btn-primary{background:#ef4444;border-color:#ef4444;color:white}
+    .btn-primary:hover{background:#f05252}
+    .price-pill{display:inline-flex;align-items:center;gap:.35rem;padding:.2rem .55rem;border-radius:999px;background:#065f46;color:#d1fae5;font-size:.72rem;border:1px solid #064e3b}
+    .hero-wrap{background:radial-gradient(80% 80% at 0% 0%, rgba(239,68,68,.12), transparent 60%)}
+    .img-frame{position:relative;overflow:hidden;border-radius:16px;background:#0a0a0a;border:1px solid #27272a}
     .img-16x10{aspect-ratio:16/10}
     .img-cover{width:100%;height:100%;object-fit:cover;display:block}
-    .img-contain{width:100%;height:100%;object-fit:contain;display:block;background:#000}
-    .price-badge{display:inline-flex;gap:.4rem;align-items:center;border:1px solid #065f46;background:#064e3b;color:#e7f8f2;border-radius:999px;padding:.15rem .55rem}
-    .price-badge .label{font-size:.72rem;opacity:.9}
-    .price-badge .value{font-weight:700;font-size:.82rem}
-    .demo-badge{position:absolute;left:.5rem;top:.5rem;background:#111827d9;border:1px solid #334155;border-radius:.5rem;padding:.15rem .4rem;font-size:.7rem}
-    .navGlass{background:linear-gradient(180deg, rgba(24,24,27,.75), rgba(24,24,27,.55));backdrop-filter:blur(8px)}
   </style>
 </head>
-
-<body class="h-full bg-black text-zinc-100">
-  <!-- Top bar (only Find My Kit) -->
-  <header class="sticky top-0 z-40 border-b border-zinc-800 navGlass">
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-2">
-      <div class="flex items-center justify-between">
-        <div class="flex items-center gap-2">
-          <span class="inline-flex h-3.5 w-3.5 rounded-full bg-brand-red"></span>
-          <span class="font-extrabold tracking-tight">GuitarStore<span class="text-brand-red">.ae</span></span>
-        </div>
-        <button id="btnFindTop"
-                class="text-xs sm:text-sm font-semibold px-3 py-2 rounded-lg bg-brand-red hover:bg-brand-redDark border border-brand-red">
-          Find My Kit
-        </button>
-      </div>
+<body class="hero-wrap">
+  <!-- Header -->
+  <header class="sticky top-0 z-30 backdrop-blur border-b border-zinc-800/60">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-2 font-extrabold tracking-tight">
+        <img src="/img/alesis.svg" alt="Alesis" class="h-5 opacity-90">
+        <span class="text-sm text-zinc-400">on</span>
+        <span class="text-white">GuitarStore<span class="text-red-500">.ae</span></span>
+      </a>
+      <button class="btn btn-primary text-sm font-semibold" onclick="window.openFinder && window.openFinder()">
+        Find My Kit
+      </button>
     </div>
   </header>
 
-  <!-- Hero -->
-  <section class="border-b border-zinc-900">
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
-      <div class="grid md:grid-cols-2 gap-8 items-center">
-        <div>
-          <h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold leading-tight">
-            Electronic Drum Kits, Amps & Accessories
-          </h1>
-          <p class="mt-2 text-zinc-300 max-w-xl">
-            Curated selection for practice, performance and studio—updated live from our Supabase catalog.
-          </p>
+  <main class="max-w-7xl mx-auto px-4">
+    <!-- Hero -->
+    <section class="grid md:grid-cols-2 gap-6 md:gap-10 mt-8 items-center">
+      <div>
+        <h1 class="text-3xl sm:text-4xl font-black tracking-tight">
+          Electronic Drum Kits, Amps & Accessories
+        </h1>
+        <p class="mt-2 text-zinc-300 max-w-prose">
+          Curated selection for practice, performance and studio—updated live from our Supabase catalog.
+        </p>
+        <div class="mt-4 flex items-center gap-3">
+          <button class="btn" onclick="window.browseKits && window.browseKits()">Browse Kits</button>
+          <button class="btn btn-primary" onclick="window.openBestValue && window.openBestValue()">Best Value</button>
+        </div>
+      </div>
+      <figure class="img-frame img-16x10">
+        <!-- Replaceable hero image (we use local Alesis logo by default) -->
+        <img src="/img/alesis.svg" alt="Alesis" class="img-cover p-6 bg-zinc-900">
+      </figure>
+    </section>
 
-          <div class="mt-5 flex items-center gap-3">
-            <button id="btnBrowse" class="pill hover:bg-zinc-800">Browse Kits</button>
-            <button id="btnBest" class="pill border-brand-red text-white bg-brand-red hover:bg-brand-redDark hover:border-brand-red">Best Value</button>
+    <!-- Filters -->
+    <section class="mt-8">
+      <div class="glass rounded-xl px-3 sm:px-4 py-3">
+        <div class="flex items-center justify-between gap-2">
+          <div class="flex items-center gap-2 text-sm">
+            <span class="text-zinc-400">Filter:</span>
+            <button class="chip" onclick="window.setFilter && window.setFilter({category:'All'})">All</button>
+            <button class="chip" onclick="window.setFilter && window.setFilter({category:'Drum Kits'})">Drum Kits</button>
+            <button class="chip" onclick="window.setFilter && window.setFilter({category:'Drum Amps'})">Drum Amps</button>
+            <button class="chip" onclick="window.setFilter && window.setFilter({category:'Accessories'})">Accessories</button>
           </div>
-        </div>
-
-        <!-- Right hero image: Alesis logo -->
-        <div class="img-frame img-16x10 border border-zinc-800 shadow-card">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/0/0d/Alesis_logo.svg" alt="Alesis" class="img-contain" />
+          <label class="flex items-center gap-2 text-xs text-zinc-300">
+            <input type="checkbox" id="demoOnly" onchange="window.setFilter && window.setFilter({demoOnly:this.checked})">
+            On demo only
+          </label>
         </div>
       </div>
+    </section>
+
+    <!-- Grid -->
+    <section id="kitGrid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+      <div class="col-span-full text-center text-zinc-400 py-10">Loading kits…</div>
+    </section>
+
+    <!-- Compare shelf (your existing app.js will manage) -->
+    <div id="compareShelf" class="max-w-7xl mx-auto mt-4">
+      <div class="hidden text-sm text-zinc-300">Compare selected: <span id="compareCount">0</span></div>
     </div>
-  </section>
 
-  <!-- Catalog wrapper needs id="app" so your existing app.js binds its listeners -->
-  <div id="app">
-    <main id="catalog" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
-      <!-- Filters -->
-      <div class="flex items-center justify-between">
-        <div class="flex items-center gap-2">
-          <span class="text-sm text-zinc-400 mr-1">Filter:</span>
-          <button class="chip ring-2 ring-red-400" data-filter="All">All</button>
-          <button class="chip" data-filter="Drum Kits">Drum Kits</button>
-          <button class="chip" data-filter="Drum Amps">Drum Amps</button>
-          <button class="chip" data-filter="Accessories">Accessories</button>
-        </div>
-        <label class="text-xs flex items-center gap-2 select-none">
-          <input id="demoToggle" type="checkbox" />
-          On demo only
-        </label>
-      </div>
+    <footer class="py-10 text-xs text-zinc-500">© 2025 GuitarStore.ae — All rights reserved.</footer>
+  </main>
 
-      <!-- Grid (cards injected by public/app.js; each card uses primary_image_url) -->
-      <div id="kitGrid" class="mt-4 grid sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-
-      <!-- Compare shelf (app.js toggles visibility and count) -->
-      <div id="compareShelf" class="mt-6">
-        <div class="hidden bg-zinc-900/70 border border-zinc-800 rounded-xl p-3 flex items-center justify-between">
-          <div class="text-sm">Selected for compare: <b id="compareCount">0</b></div>
-          <button id="btnCompareShelf" class="text-xs sm:text-sm font-semibold px-3 py-2 rounded-lg border border-zinc-600 hover:bg-zinc-800">
-            Open Compare
-          </button>
-        </div>
-      </div>
-    </main>
-  </div>
-
-  <!-- Footer -->
-  <footer class="mt-12 border-t border-zinc-900">
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 text-sm text-zinc-400">
-      © <span id="year"></span> GuitarStore.ae — All rights reserved.
-    </div>
-  </footer>
-
-  <!-- Env + app (your app.js already reads drum_kits and uses primary_image_url/detail_image_url) -->
+  <!-- Scripts: env first, then app -->
   <script src="/env.js"></script>
-  <script type="module" src="/app.js?v=3"></script>
-
-  <!-- Page glue: buttons + Best Value (no globals re-declared) -->
+  <script type="module" src="/app.js?v=1758398407"></script>
   <script>
-    const $=(s,r=document)=>r.querySelector(s);
-    document.getElementById('year').textContent=new Date().getFullYear();
-
-    // Scroll to grid
-    $('#btnBrowse')?.addEventListener('click',()=>document.getElementById('catalog')?.scrollIntoView({behavior:'smooth'}));
-
-    // Open Finder
-    $('#btnFindTop')?.addEventListener('click',()=>{ if(typeof window.openFinder==='function') window.openFinder(); });
-
-    // Demo-only toggle -> hand off to app helper if present
-    $('#demoToggle')?.addEventListener('change',e=>{
-      if(typeof window.setFilter==='function'){ window.setFilter({demoOnly:e.target.checked}); }
-      if(typeof window.render==='function'){ window.render(); }
-    });
-
-    // Wait for kits to load, then wire Best Value & Compare
-    function whenKitsReady(cb){
-      if(window.state?.byId?.size){ cb(); return; }
-      const t=setInterval(()=>{ if(window.state?.byId?.size){ clearInterval(t); cb(); } },150);
-      setTimeout(()=>clearInterval(t),10000);
+    // tiny fallback so "Browse Kits" always works
+    if (!window.browseKits) {
+      window.browseKits = function(){
+        const g=document.getElementById('kitGrid');
+        if(g) window.scrollTo({top:g.getBoundingClientRect().top + window.scrollY - 60, behavior:'smooth'});
+      }
     }
-
-    function pickBestValue(){
-      const items = Array.from(window.state?.byId?.values?.()||[]).filter(k=>k?.is_active && typeof k.price==='number' && k.price>0);
-      if(!items.length) return null;
-      // score = (features + useful traits) / price
-      const scoreOf = (k)=>{
-        const feats = Array.isArray(k.features)?k.features.length:0;
-        const t = k.traits||{};
-        const bonus = (t.triple?2:0)+(t.dual?1:0)+(t.mesh?1:0)+(t.bluetooth?.5:0)+(t.usb?.5:0);
-        return (1 + feats + bonus) / k.price;
-      };
-      return items.map(k=>({k,s:scoreOf(k)})).sort((a,b)=>b.s-a.s)[0].k;
-    }
-
-    whenKitsReady(()=>{
-      $('#btnBest')?.addEventListener('click',()=>{
-        const best = pickBestValue() || Array.from(window.state.byId.values())[0];
-        if(best && typeof window.openDetail==='function'){ window.openDetail(best.id); }
-      });
-      $('#btnCompareShelf')?.addEventListener('click',()=>{ if(window.state?.selected?.size>=2 && typeof window.openCompare==='function') window.openCompare(); });
-    });
   </script>
 </body>
 </html>
