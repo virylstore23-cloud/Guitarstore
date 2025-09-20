@@ -1,18 +1,19 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Alesis Soundstage</title>
 <style>
   :root{
-    --bg:#000; --glass:#0b1118; --blue:#00e5ff; --card:#101821; --card-b:#2b3642;
+    --bg:#000000; --glass:#0b1118; --blue:#00e5ff; --card:#101821; --card-b:#2b3642;
     --text:#e6eef6; --muted:#9bb0c7; --radius:14px;
   }
   *{box-sizing:border-box} html,body{height:100%}
   body{
     margin:0; font:14px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; color:var(--text);
     background:var(--bg);
+    /* floral-blue glass glow on black */
     background-image:
       radial-gradient(1200px 600px at 80% -10%, rgba(0,229,255,.10), transparent 60%),
       radial-gradient(1000px 520px at -5% 115%, rgba(0,229,255,.08), transparent 62%);
@@ -53,7 +54,7 @@
   .x{background:#0e1b22;border:1px solid #2b3642;color:#cfe6f0;border-radius:12px;padding:6px 10px;cursor:pointer}
   .detail{display:grid;grid-template-columns:51% 49%;gap:14px;padding:14px}
   @media (max-width:820px){.detail{grid-template-columns:1fr}}
-  .photo{background:#fff;border-radius:12px;display:flex;align-items:center;justify-content:center;padding:14px;border:1px solid #dfe7ee}
+  .photo{background:#ffffff;border-radius:12px;display:flex;align-items:center;justify-content:center;padding:14px;border:1px solid #dfe7ee}
   .photo img{max-width:100%;max-height:360px;object-fit:contain;display:block}
   .sheet .chip{margin-right:8px;margin-bottom:8px}
   .sheet .chip.price{background:#032e36;border-color:#0e3e47;color:var(--blue);font-weight:900}
@@ -100,7 +101,7 @@
       <div class="wizard-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
         <label>Experience <select id="wExp"><option>Beginner</option><option selected>Intermediate</option><option>Advanced</option></select></label>
         <label>Budget <select id="wBudget">
-          <option>Under AED 2,000</option><option selected>AED 2,000 – 5,000</option><option>AED 5,000 – 9,000</option><option>Over AED 9,000</option>
+          <option>Under AED 2000</option><option selected>AED 2000 - 5000</option><option>AED 5000 - 9000</option><option>Over AED 9000</option>
         </select></label>
         <label>Space <select id="wSpace"><option>Compact</option><option selected>Standard</option><option>Studio</option></select></label>
         <label>Goal <select id="wGoal"><option>Learning</option><option selected>Recording</option><option>Performance</option></select></label>
@@ -119,80 +120,87 @@
   <script src="/env.js"></script>
 
   <!-- App -->
-  <script type="module">
-    const $=(s,e=document)=>e.querySelector(s); const $$=(s,e=document)=>[...e.querySelectorAll(s)];
-    const AED=n=>new Intl.NumberFormat('en-AE',{style:'currency',currency:'AED'}).format(n||0);
-    const PLACEHOLDER='data:image/svg+xml;utf8,'+encodeURIComponent(
-      '<svg xmlns="http://www.w3.org/2000/svg" width="720" height="480"><rect width="100%" height="100%" fill="#f4f6f8"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="system-ui,Segoe UI,Arial" font-size="22" fill="#8a97a6">Image coming soon</text></svg>'
-    );
+  <script>
+  (function(){
+    var $=function(s,e){return (e||document).querySelector(s)};
+    var $$=function(s,e){return Array.from((e||document).querySelectorAll(s))};
+    var AED=function(n){try{return new Intl.NumberFormat('en-AE',{style:'currency',currency:'AED'}).format(n||0)}catch(e){return 'AED '+(n||0)}};
+    var PLACEHOLDER='data:image/svg+xml;utf8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="720" height="480"><rect width="100%" height="100%" fill="#f4f6f8"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="system-ui,Segoe UI,Arial" font-size="22" fill="#8a97a6">Image coming soon</text></svg>');
 
-    const state={rows:[],byId:new Map(),filter:'All',compare:new Set()};
-    const CHIPS=['All','Electronic Drum Kits','Multipads & Drum Machines','Drum Amplification','Accessories','On Demo'];
-    const MAP={'Electronic Drum Kits':'Drum Kits','Drum Amplification':'Drum Amps','Multipads & Drum Machines':'Accessories'};
+    var state={rows:[],byId:new Map(),filter:'All',compare:new Set()};
+    var CHIPS=['All','Electronic Drum Kits','Multipads & Drum Machines','Drum Amplification','Accessories','On Demo'];
+    var MAP={'Electronic Drum Kits':'Drum Kits','Drum Amplification':'Drum Amps','Multipads & Drum Machines':'Accessories'};
 
-    // Chips render immediately (so UI shows even if data errors)
     function renderChips(){
-      const box=$('#chips');
-      box.innerHTML=CHIPS.map(lbl=>\`<button class="chip \${state.filter===lbl?'active':''}" data-chip="\${lbl}">\${lbl}</button>\`).join('');
-      $$('#chips [data-chip]').forEach(b=>b.addEventListener('click',()=>{state.filter=b.dataset.chip; render();}));
+      var box=$('#chips');
+      box.innerHTML=CHIPS.map(function(lbl){
+        var active=(state.filter===lbl)?'active':'';
+        return '<button class="chip '+active+'" data-chip="'+lbl+'">'+lbl+'</button>';
+      }).join('');
+      $$('#chips [data-chip]').forEach(function(b){
+        b.addEventListener('click',function(){state.filter=b.getAttribute('data-chip'); render();});
+      });
     }
     renderChips();
 
     function labelMatches(label,r){
       if(label==='All') return true;
       if(label==='On Demo') return !!r.on_demo;
-      const cat=(r.category||'').toLowerCase();
-      const want=(MAP[label]||label).toLowerCase();
+      var cat=(r.category||'').toLowerCase();
+      var want=(MAP[label]||label).toLowerCase();
       return cat===want;
     }
 
-    function pickImage(r,kind='card'){
-      const direct=(kind==='detail'&&(r.detail_image_url||(Array.isArray(r.images)&&r.images[1])))
-                || r.primary_image_url || r.image_url
-                || (Array.isArray(r.images)?r.images[0]:null);
-      const storage=r?.image_path? \`\${window.ENV?.SUPABASE_URL}/storage/v1/object/public/\${r.image_path}\` : null;
+    function pickImage(r,kind){
+      var direct=(kind==='detail' && (r.detail_image_url || (Array.isArray(r.images)&&r.images[1])))
+                  || r.primary_image_url || r.image_url
+                  || (Array.isArray(r.images)?r.images[0]:null);
+      var storage=r && r.image_path ? (window.ENV && window.ENV.SUPABASE_URL ? (window.ENV.SUPABASE_URL+'/storage/v1/object/public/'+r.image_path) : null) : null;
       return direct || storage || PLACEHOLDER;
     }
 
     function makeTags(r){
-      const tags=[];
-      if(Array.isArray(r.tags)) tags.push(...r.tags.slice(0,4));
+      var tags=[];
+      if(Array.isArray(r.tags)) tags = r.tags.slice(0,4);
       if(r.mesh) tags.push('Mesh');
       if(r.dual_zone||r.dualzone) tags.push('Dual-zone');
       if(r.usb_midi) tags.push('USB/MIDI');
       if(r.bluetooth_audio||r.bt) tags.push('Bluetooth');
-      return [...new Set(tags)].slice(0,4);
+      // de-dup
+      var seen={}; var out=[];
+      tags.forEach(function(t){ if(!seen[t]){seen[t]=1; out.push(t);} });
+      return out.slice(0,4);
     }
 
     function renderCard(r){
-      const demo=r.on_demo? \`<div class="demo">\${r.on_demo_label||'On Demo'}</div>\` : '';
-      return \`
-      <div class="card" data-id="\${r.id}">
-        <div class="imgbox">\${demo}<img src="\${pickImage(r)}" alt="\${r.name||''}" loading="lazy"/></div>
-        <div class="content">
-          <div class="title">\${r.name||''}</div>
-          <div class="desc">\${r.subtitle||r.short_description||''}</div>
-          <div class="price">\${AED(r.price)}</div>
-          <div>\${makeTags(r).map(t=>\`<span class="tag">\${t}</span>\`).join('')}</div>
-          <div class="line">
-            <button class="btn" data-explore="\${r.id}">Explore</button>
-            <label class="cmp"><input type="checkbox" data-compare="\${r.id}"> Add to compare</label>
-          </div>
-        </div>
-      </div>\`;
+      var demo=r.on_demo? '<div class="demo">'+(r.on_demo_label||'On Demo')+'</div>' : '';
+      return ''+
+      '<div class="card" data-id="'+r.id+'">'+
+        '<div class="imgbox">'+demo+'<img src="'+pickImage(r,'card')+'" alt="'+(r.name||'')+'" loading="lazy"/></div>'+
+        '<div class="content">'+
+          '<div class="title">'+(r.name||'')+'</div>'+
+          '<div class="desc">'+(r.subtitle||r.short_description||'')+'</div>'+
+          '<div class="price">'+AED(r.price)+'</div>'+
+          '<div>'+makeTags(r).map(function(t){return '<span class="tag">'+t+'</span>'}).join('')+'</div>'+
+          '<div class="line">'+
+            '<button class="btn" data-explore="'+r.id+'">Explore</button>'+
+            '<label class="cmp"><input type="checkbox" data-compare="'+r.id+'"> Add to compare</label>'+
+          '</div>'+
+        '</div>'+
+      '</div>';
     }
 
     function render(){
-      const list=state.rows.filter(r=>labelMatches(state.filter,r));
-      const grid=$('#grid');
+      var list=state.rows.filter(function(r){return labelMatches(state.filter,r)});
+      var grid=$('#grid');
       if(!list.length){ grid.innerHTML='<div class="card" style="padding:16px">No items match this view.</div>'; return; }
       grid.innerHTML=list.map(renderCard).join('');
-      $$('[data-explore]').forEach(b=>b.addEventListener('click',e=>openDetail(e.currentTarget.dataset.explore)));
-      $$('[data-compare]').forEach(cb=>{
-        cb.checked=state.compare.has(cb.dataset.compare);
-        cb.addEventListener('change',e=>{
-          const id=e.currentTarget.dataset.compare;
-          e.currentTarget.checked?state.compare.add(id):state.compare.delete(id);
+      $$('[data-explore]').forEach(function(b){ b.addEventListener('click',function(e){ openDetail(e.currentTarget.getAttribute('data-explore')); }); });
+      $$('[data-compare]').forEach(function(cb){
+        var id=cb.getAttribute('data-compare');
+        cb.checked=state.compare.has(id);
+        cb.addEventListener('change',function(){
+          if(cb.checked) state.compare.add(id); else state.compare.delete(id);
           $('#cmpCount').textContent=String(state.compare.size);
         });
       });
@@ -200,92 +208,98 @@
     }
 
     function openDetail(id){
-      const r=state.byId.get(String(id)); if(!r) return;
+      var r=state.byId.get(String(id)); if(!r) return;
       $('#dTitle').textContent=r.name||'Product';
-      const price=AED(r.price), upc=r.upc||r.barcode||'';
-      const demo=r.on_demo? \`<span class="chip">\${r.on_demo_label||'On Demo'}</span>\` : '';
-      const features=Array.isArray(r.features)?r.features:[];
-      const contents=Array.isArray(r.contents)?r.contents:[];
-      $('#dBody').innerHTML=\`
-        <div class="photo"><img src="\${pickImage(r,'detail')}" alt="\${r.name||''}"/></div>
-        <div class="sheet">
-          <div>\${demo} <span class="chip price">\${price}</span> \${upc? \`<span class="chip">UPC: \${upc}</span>\` : ''}</div>
-          \${r.description? \`<div class="section"><h4>Description</h4><div class="muted">\${r.description}</div></div>\` : ''}
-          \${features.length? \`<div class="section"><h4>Key Features</h4><ul>\${features.map(f=>\`<li>\${f}</li>\`).join('')}</ul></div>\` : ''}
-          \${contents.length? \`<div class="section"><h4>What's Included</h4><ul>\${contents.map(c=>\`<li>\${c}</li>\`).join('')}</ul></div>\` : ''}
-        </div>\`;
+      var price=AED(r.price), upc=r.upc||r.barcode||'';
+      var demo=r.on_demo? '<span class="chip">'+(r.on_demo_label||'On Demo')+'</span>' : '';
+      var features=Array.isArray(r.features)?r.features:[];
+      var contents=Array.isArray(r.contents)?r.contents:[];
+      $('#dBody').innerHTML =
+        '<div class="photo"><img src="'+pickImage(r,'detail')+'" alt="'+(r.name||'')+'"/></div>'+
+        '<div class="sheet">'+
+          '<div>'+demo+' <span class="chip price">'+price+'</span> '+(upc?'<span class="chip">UPC: '+upc+'</span>':'')+'</div>'+
+          (r.description? '<div class="section"><h4>Description</h4><div class="muted">'+r.description+'</div></div>' : '')+
+          (features.length? '<div class="section"><h4>Key Features</h4><ul>'+features.map(function(f){return '<li>'+f+'</li>'}).join('')+'</ul></div>' : '')+
+          (contents.length? '<div class="section"><h4>What\'s Included</h4><ul>'+contents.map(function(c){return '<li>'+c+'</li>'}).join('')+'</ul></div>' : '')+
+        '</div>';
       $('#detail').showModal();
     }
 
-    document.addEventListener('click',(e)=>{const id=e.target?.dataset?.close; if(id) document.getElementById(id).close();});
+    document.addEventListener('click',function(e){
+      var id=e.target && e.target.getAttribute && e.target.getAttribute('data-close');
+      if(id){ document.getElementById(id).close(); }
+    });
 
-    $('#btnCompare').addEventListener('click',()=>{
-      const rows=[...state.compare].map(id=>state.byId.get(String(id))).filter(Boolean);
-      const cols=rows.map(r=>\`<div class="card" style="padding:12px">
-        <div class="imgbox"><img src="\${pickImage(r)}" alt="\${r.name||''}" style="height:160px"/></div>
-        <div class="content"><div class="title">\${r.name||''}</div><div class="price">\${AED(r.price)}</div><div class="muted">\${r.subtitle||''}</div></div>
-      </div>\`).join('');
-      $('#cBody').innerHTML=rows.length? \`<div class="grid" style="grid-template-columns:repeat(2,1fr)">${cols}</div>\` : '<div class="muted" style="padding:12px">Pick items to compare.</div>';
+    $('#btnCompare').addEventListener('click',function(){
+      var rows=Array.from(state.compare).map(function(id){return state.byId.get(String(id))}).filter(Boolean);
+      var cols=rows.map(function(r){
+        return '<div class="card" style="padding:12px">'+
+          '<div class="imgbox"><img src="'+pickImage(r,'card')+'" alt="'+(r.name||'')+'" style="height:160px"/></div>'+
+          '<div class="content"><div class="title">'+(r.name||'')+'</div><div class="price">'+AED(r.price)+'</div><div class="muted">'+(r.subtitle||'')+'</div></div>'+
+        '</div>';
+      }).join('');
+      $('#cBody').innerHTML=rows.length? '<div class="grid" style="grid-template-columns:repeat(2,1fr)">'+cols+'</div>' : '<div class="muted" style="padding:12px">Pick items to compare.</div>';
       $('#compare').showModal();
     });
-    $('#btnWizard').addEventListener('click',()=>$('#wizard').showModal());
-    $('#wGo').addEventListener('click',()=>{
-      const budget=$('#wBudget').value, noise=$('#wNoise').value, space=$('#wSpace').value, conn=$('#wConn').value;
-      const score=r=>{
-        let s=0;
-        if(budget.includes('Under')) s+=r.price<=2000?3:0;
-        else if(budget.includes('2,000')) s+=(r.price>=2000&&r.price<=5000)?3:0;
-        else if(budget.includes('5,000')) s+=(r.price>5000&&r.price<=9000)?3:0;
-        else if(budget.includes('Over')) s+=r.price>9000?3:0;
-        if(noise.startsWith('High')&&(r.mesh||(r.tags||[]).includes('Mesh'))) s+=2;
-        if(space==='Compact'&&/compact|small/i.test(r.subtitle||r.description||'')) s+=2;
-        if(conn==='Bluetooth'&&(r.bluetooth_audio||r.bt)) s+=2;
-        if(conn==='USB/MIDI'&&r.usb_midi) s+=2;
+
+    $('#btnWizard').addEventListener('click',function(){ $('#wizard').showModal(); });
+
+    $('#wGo').addEventListener('click',function(){
+      var budget=$('#wBudget').value, noise=$('#wNoise').value, space=$('#wSpace').value, conn=$('#wConn').value;
+      function score(r){
+        var s=0;
+        if(budget.indexOf('Under')>-1) s+= (r.price<=2000)?3:0;
+        else if(budget.indexOf('2000 - 5000')>-1) s+= (r.price>=2000 && r.price<=5000)?3:0;
+        else if(budget.indexOf('5000 - 9000')>-1) s+= (r.price>5000 && r.price<=9000)?3:0;
+        else if(budget.indexOf('Over')>-1) s+= (r.price>9000)?3:0;
+        if(noise.indexOf('High')===0 && (r.mesh || (r.tags||[]).indexOf('Mesh')>-1)) s+=2;
+        if(space==='Compact' && /compact|small/i.test((r.subtitle||r.description||''))) s+=2;
+        if(conn==='Bluetooth' && (r.bluetooth_audio||r.bt)) s+=2;
+        if(conn==='USB/MIDI' && r.usb_midi) s+=2;
         return s;
-      };
-      const sorted=state.rows.filter(r=>(r.category||'').toLowerCase()==='drum kits').sort((a,b)=>score(b)-score(a));
-      const top=sorted[0]; const out=$('#wOut');
-      if(!top){out.innerHTML='<div class="muted">No match found.</div>';return;}
-      out.innerHTML=\`<div class="section" style="border-color:#2b3642">
-        <div style="color:#63f5ff;font-weight:800;margin-bottom:6px">Your Match</div>
-        <div><strong>\${top.name}</strong> looks like a great fit at <strong>\${AED(top.price)}</strong>.</div>
-        <div class="muted" style="margin-top:6px">Because it matches your budget and preferences.</div>
-        <div style="margin-top:10px"><button class="btn btn-primary" data-explore="\${top.id}">View This Kit</button></div>
-      </div>\`;
-      out.querySelector('[data-explore]').addEventListener('click',()=>{openDetail(top.id);$('#wizard').close();});
+      }
+      var sorted=state.rows.filter(function(r){return (r.category||'').toLowerCase()==='drum kits'}).sort(function(a,b){return score(b)-score(a)});
+      var top=sorted[0]; var out=$('#wOut');
+      if(!top){ out.innerHTML='<div class="muted">No match found.</div>'; return;}
+      out.innerHTML='<div class="section" style="border-color:#2b3642">'+
+        '<div style="color:#63f5ff;font-weight:800;margin-bottom:6px">Your Match</div>'+
+        '<div><strong>'+top.name+'</strong> looks like a great fit at <strong>'+AED(top.price)+'</strong>.</div>'+
+        '<div class="muted" style="margin-top:6px">Because it matches your budget and preferences.</div>'+
+        '<div style="margin-top:10px"><button class="btn btn-primary" data-explore="'+top.id+'">View This Kit</button></div>'+
+      '</div>';
+      out.querySelector('[data-explore]').addEventListener('click',function(){ openDetail(top.id); $('#wizard').close(); });
     });
 
-    // --- Robust loader with visible error ---
     async function fetchRows(){
-      const grid=$('#grid');
-      if(!window.ENV?.SUPABASE_URL || !window.ENV?.SUPABASE_ANON_KEY){
+      var grid=$('#grid');
+      if(!window.ENV || !window.ENV.SUPABASE_URL || !window.ENV.SUPABASE_ANON_KEY){
         console.error('ENV missing', window.ENV);
         grid.innerHTML='<div class="card" style="padding:16px">env.js is missing SUPABASE_URL / SUPABASE_ANON_KEY.</div>';
         return;
       }
-      const url=\`\${window.ENV.SUPABASE_URL}/rest/v1/drum_kits?select=*&order=price.asc\`;
+      var url=window.ENV.SUPABASE_URL+'/rest/v1/drum_kits?select=*&order=price.asc';
       try{
-        const res=await fetch(url,{headers:{apikey:window.ENV.SUPABASE_ANON_KEY,Authorization:\`Bearer \${window.ENV.SUPABASE_ANON_KEY}\`}});
+        var res=await fetch(url,{headers:{apikey:window.ENV.SUPABASE_ANON_KEY,Authorization:'Bearer '+window.ENV.SUPABASE_ANON_KEY}});
         if(!res.ok){
-          const txt=await res.text();
-          grid.innerHTML=\`<div class="card" style="padding:16px">Could not load products (\${res.status}).<div class="muted" style="margin-top:6px">\${txt.replace(/</g,'&lt;').slice(0,240)}</div></div>\`;
+          var txt=await res.text();
+          grid.innerHTML='<div class="card" style="padding:16px">Could not load products ('+res.status+').<div class="muted" style="margin-top:6px">'+txt.replace(/</g,'&lt;').slice(0,240)+'</div></div>';
           console.error('Supabase REST error', res.status, txt);
           return;
         }
-        let rows=await res.json();
-        rows=rows.filter(r=>r.is_active!==false);
+        var rows=await res.json();
+        rows=rows.filter(function(r){ return r.is_active!==false; });
         state.rows=rows;
-        state.byId=new Map(rows.map(r=>[String(r.id),r]));
+        state.byId=new Map(rows.map(function(r){ return [String(r.id), r]; }));
         console.log('Loaded rows:', rows.length, rows);
         render();
       }catch(err){
-        grid.innerHTML=\`<div class="card" style="padding:16px">Network error loading products.<div class="muted" style="margin-top:6px">\${(err&&err.message)||err}</div></div>\`;
+        grid.innerHTML='<div class="card" style="padding:16px">Network error loading products.<div class="muted" style="margin-top:6px">'+(err && err.message ? err.message : String(err))+'</div></div>';
         console.error('Fetch failed', err);
       }
     }
 
-    // boot
     fetchRows();
+  })();
   </script>
 </body>
 </html>
