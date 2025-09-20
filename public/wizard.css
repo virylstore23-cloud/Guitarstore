@@ -1,0 +1,56 @@
+/* Centered modal card */
+#wizard{ border:0; padding:0; background:transparent; z-index:60 }
+#wizard[open]{ display:grid; place-items:center }
+#wizard::backdrop{ background:rgba(2,12,20,.65) }
+
+/* Build a card using the existing head/body blocks */
+#wizard .modal-head,
+#wizard .modal-body{ width:min(820px,96vw) }
+
+#wizard .modal-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 18px;
+  background:linear-gradient(135deg,#0f2636 0%,#0b1b27 100%);
+  border:1px solid #2b3642;border-bottom:0;border-radius:16px 16px 0 0;
+  color:#e8f6fb
+}
+#wizard .modal-head .x{
+  background:#0f2636;border:1px solid #294051;color:#d5eef5;
+  padding:6px 10px;border-radius:10px;cursor:pointer
+}
+
+#wizard .modal-body{
+  padding:16px 18px;
+  background:#0f1720;border:1px solid #2b3642;border-top:0;border-radius:0 0 16px 16px
+}
+
+/* Two-column form on wide screens */
+#wizard #wizardBody{ display:grid; grid-template-columns:1fr 1fr; gap:12px }
+@media (max-width:900px){ #wizard #wizardBody{ grid-template-columns:1fr }}
+
+/* Pretty selects */
+#wizard select{
+  width:100%; padding:10px 12px; border-radius:10px;
+  background:#0b1a24; color:#e5f8ff; border:1px solid #2b3642;
+  outline:none
+}
+#wizard select:focus{ border-color:#00e5ff; box-shadow:0 0 0 3px rgba(0,229,255,.12) }
+
+/* Buttons (Alesis cyan) */
+.btn-primary{ background:#00e5ff; color:#003544; font-weight:700; border:0;
+  border-radius:12px; padding:10px 16px; cursor:pointer;
+  box-shadow:inset 0 -2px 0 rgba(0,0,0,.25)
+}
+.btn-ghost{ background:transparent; color:#d4e2ea; border:1px solid #32414f;
+  padding:10px 16px; border-radius:12px; cursor:pointer
+}
+#wizard .cta-row{ display:flex; gap:10px; padding-top:12px }
+
+/* Match result card */
+#wizard #wizOut .match{
+  margin-top:12px; border:1px solid #2b3642; border-radius:12px; padding:12px;
+  background:linear-gradient(180deg,#0f1e29 0%,#0c1821 100%)
+}
+#wizard #wizOut .match h4{ color:#56f0ff; margin:0 0 6px 0 }
+#wizard #wizOut .match .desc{ color:#b9c9d5; margin-bottom:10px }
+#wizard #wizOut .match .btn-primary{ padding:8px 14px }
