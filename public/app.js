@@ -1,163 +1,257 @@
-/* global window, document */
-const SB_URL = window.ENV?.SUPABASE_URL;
-const SB_KEY = window.ENV?.SUPABASE_ANON_KEY;
+/* Alesis Soundstage – vanilla JS UI */
+const sb = window.supabase;  // env.js should have created this
+const $ = (q, el=document) => el.querySelector(q);
+const $$ = (q, el=document) => [...el.querySelectorAll(q)];
+const AED = v => `AED ${Number(v||0).toLocaleString('en-AE',{minimumFractionDigits:2,maximumFractionDigits:2})}`;
 
-if (!window.supabase) {
-  const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2');
-  window.supabase = createClient(SB_URL, SB_KEY);
-}
-const supabase = window.supabase;
-
-const AED = (v)=> `AED ${Number(v||0).toLocaleString('en-AE',{minimumFractionDigits:2, maximumFractionDigits:2})}`;
-const PLACEHOLDER = `data:image/svg+xml;utf8,`+encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 450'><rect width='800' height='450' fill='#09121f'/><text x='50%' y='52%' fill='#00c8ff' font-family='Arial Black,Arial' font-size='64' text-anchor='middle'>ALESIS</text></svg>`);
-const fixUrl = u => !u ? null : (/^https?:\/\//i.test(u)?u:`https://${String(u).replace(/^\/+/, '')}`);
-
-const mapToTop = (r)=>{
-  if (r.category==='Drum Amps') return 'Drum Amplification';
-  if (r.category==='Drum Kits') return 'Electronic Drum Kits';
-  const s=(r.slug||'').toLowerCase(), n=(r.name||'').toLowerCase();
-  if (/(samplepad|strike.*multipad|^sr-?1[68]\b)/.test(s+n)) return 'Multipads & Drum Machines';
-  return 'Accessories';
+const LABEL_TO_CATEGORY = {
+  "Electronic Drum Kits":"Drum Kits",
+  "Multipads & Drum Machines":"Accessories",        // your seeding stores these in Accessories
+  "Drum Amplification":"Drum Amps",
+  "Accessories":"Accessories"
 };
 
-const state={rows:[],byId:new Map(),filterLabel:'All',compare:new Set()};
-const CHIP_TO_TEST={
-  'All':()=>true,
-  'Electronic Drum Kits':r=>mapToTop(r)==='Electronic Drum Kits',
-  'Multipads & Drum Machines':r=>mapToTop(r)==='Multipads & Drum Machines',
-  'Drum Amplification':r=>mapToTop(r)==='Drum Amplification',
-  'Accessories':r=>mapToTop(r)==='Accessories',
-  'On Demo':r=>!!r.on_demo,
+const state = {
+  rows: [],
+  byId: new Map(),
+  filterLabel: "All",
+  compare: new Set(),
 };
 
+/* ---------- Data ---------- */
 async function load(){
-  const {data,error}=await supabase.from('drum_kits').select('*').eq('is_active',true).order('price',{ascending:true});
-  if(error){console.error(error);return;}
-  state.byId.clear(); data.forEach(r=>state.byId.set(String(r.id),r));
-  state.rows=data; render();
+  const { data, error } = await sb.from('drum_kits')
+    .select('*')
+    .eq('is_active', true)
+    .order('price', { ascending:true });
+  if(error){ console.error(error); return; }
+  state.rows = data || [];
+  state.byId = new Map(state.rows.map(r=>[String(r.id), r]));
+  render();
 }
 
-const grid=document.getElementById('kitGrid');
-function render(){
-  const test = CHIP_TO_TEST[state.filterLabel] || CHIP_TO_TEST['All'];
-  const rows = state.rows.filter(test);
-  grid.innerHTML = rows.map(cardHTML).join('');
-  grid.querySelectorAll('[data-explore]').forEach(b=>b.addEventListener('click',e=>openDetail(e.currentTarget.dataset.explore)));
-  grid.querySelectorAll('input[data-compare]').forEach(cb=>{
-    cb.checked = state.compare.has(cb.dataset.compare);
-    cb.addEventListener('change',e=>{
-      const id=e.currentTarget.dataset.compare;
-      if(e.currentTarget.checked) state.compare.add(id); else state.compare.delete(id);
-      updateCompareBadge();
-    });
-  });
-  document.querySelectorAll('[data-filter]').forEach(ch=>ch.classList.toggle('active', ch.getAttribute('data-filter')===state.filterLabel));
-  updateCompareBadge();
+/* ---------- Filters ---------- */
+function filtered(){
+  const label = state.filterLabel;
+  if(label === "All") return state.rows;
+  if(label === "On Demo") return state.rows.filter(r=> !!r.on_demo);
+  const cat = LABEL_TO_CATEGORY[label];
+  return state.rows.filter(r=> r.category === cat);
 }
 
-function cardHTML(r){
-  const img1 = fixUrl(r.primary_image_url)||fixUrl(r.detail_image_url)||PLACEHOLDER;
-  const topcat = mapToTop(r);
-  const demo = r.on_demo ? `<span class="badge">${r.on_demo_label || 'On demo'}</span>` : '';
-  const checked = state.compare.has(String(r.id))?'checked':'';
+/* ---------- Card ---------- */
+function card(r){
+  const demoText = r.on_demo_label || (r.on_demo ? "On demo" : "");
+  const img = r.primary_image_url || r.detail_image_url || "";
+  const tags = [];
+  if(/mesh/i.test(r.name||"") || (r.features||[]).join(' ').toLowerCase().includes('mesh')) tags.push('Mesh');
+  if(r.snare_zones >= 2 || /dual/i.test((r.features||[]).join(' '))) tags.push('Dual-zone');
+  if(r.usb_midi) tags.push('USB/MIDI');
+
   return `
-  <article class="card">
-    <div class="imgbox">
-      <img src="${img1}" alt="${r.name||''}" onerror="this.onerror=null;this.src='${fixUrl(r.detail_image_url)||PLACEHOLDER}'">
-      ${demo}
-      <label class="badge compare"><input type="checkbox" data-compare="${r.id}" style="accent-color:#00c8ff;vertical-align:-1px" ${checked}> Compare</label>
-    </div>
-    <div class="content">
-      <div class="slug">${r.slug||''}</div>
-      <div class="title">${r.name||''}</div>
-      ${r.description?`<p class="desc">${r.description}</p>`:''}
-      <div class="price">${AED(r.price)}</div>
-      <div class="pill">${topcat}</div>
-      <div style="margin-top:10px"><button class="btn btn-ghost" data-explore="${r.id}">Explore</button></div>
+  <article class="card" data-id="${r.id}">
+    <a class="figure" href="#" data-open="${r.id}">
+      ${demoText ? `<div class="ribbon">${demoText}</div>` : ``}
+      <img src="${img}" alt="${r.name}" onerror="this.onerror=null;this.src='https://picsum.photos/800/450?grayscale';">
+    </a>
+    <div class="card-inner">
+      <div class="title">${r.name}</div>
+      <div class="muted">${r.description ?? ''}</div>
+      <div class="price">
+        <span class="pill pill-green">${AED(r.price)}</span>
+        ${r.category ? `<span class="pill">${r.category}</span>` : ``}
+      </div>
+      ${r.upc_code ? `<div class="muted" style="font-size:12px">UPC: ${r.upc_code}</div>` : ``}
+      <div class="tags">${tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+      <div class="foot">
+        <a class="btn btn-ghost btn-pill" href="#" data-open="${r.id}">Explore</a>
+        <label class="checkbox">
+          <input type="checkbox" data-compare="${r.id}" ${state.compare.has(String(r.id))?'checked':''}/>
+          <span>Add to compare</span>
+        </label>
+      </div>
     </div>
   </article>`;
 }
 
-/* ===== Detail drawer ===== */
-const detailWrap=document.getElementById('detailWrap');
-const detailImg=document.getElementById('detailImg');
-const detailName=document.getElementById('detailName');
-const detailDesc=document.getElementById('detailDesc');
-const detailPrice=document.getElementById('detailPrice');
-const detailBadges=document.getElementById('detailBadges');
-const addCompareBtn=document.getElementById('addCompare');
+/* ---------- Render ---------- */
+function render(){
+  // highlight active chip
+  $$('#chipBar .chip').forEach(b=>{
+    b.classList.toggle('active', b.getAttribute('data-filter')===state.filterLabel);
+  });
 
-function openDetail(id){
-  const r=state.byId.get(String(id)); if(!r) return;
-  detailName.textContent=r.name||''; detailDesc.textContent=r.description||''; detailPrice.textContent=AED(r.price);
-  detailBadges.innerHTML=`<span class="pill">${mapToTop(r)}</span>${r.on_demo?` <span class="pill">${r.on_demo_label||'On demo'}</span>`:''}`;
-  detailImg.src=fixUrl(r.detail_image_url)||fixUrl(r.primary_image_url)||PLACEHOLDER; detailImg.alt=r.name||'';
-  addCompareBtn.onclick=()=>{state.compare.add(String(id)); updateCompareBadge();};
-  detailWrap.classList.add('open'); detailWrap.setAttribute('aria-hidden','false');
+  // grid
+  const list = filtered();
+  $('#grid').innerHTML = list.map(card).join('');
+
+  // wire open/detail
+  $$('[data-open]').forEach(a=>{
+    a.addEventListener('click', (e)=>{
+      e.preventDefault();
+      openDetail(a.getAttribute('data-open'));
+    }, { once:true });
+  });
+
+  // wire compare checkboxes
+  $$('[data-compare]').forEach(cb=>{
+    cb.addEventListener('change', ()=>{
+      const id = cb.getAttribute('data-compare');
+      cb.checked ? state.compare.add(id) : state.compare.delete(id);
+      updateCompareBadge();
+    });
+  });
+
+  updateCompareBadge();
 }
-function closeDetail(){detailWrap.classList.remove('open'); detailWrap.setAttribute('aria-hidden','true');}
-detailWrap.addEventListener('click',e=>{ if(e.target?.dataset?.close || e.target===detailWrap) closeDetail(); });
-
-/* ===== Compare (now in header) ===== */
-const compareBtn=document.getElementById('compareBtn');
-const compareCount=document.getElementById('compareCount');
-const compareModal=document.getElementById('compareModal');
-const compareGrid=document.getElementById('compareGrid');
 
 function updateCompareBadge(){
-  const n=state.compare.size;
-  if(n>0){compareCount.textContent=n; compareCount.classList.remove('sr-only');}
-  else compareCount.classList.add('sr-only');
+  const n = state.compare.size;
+  const btn = $('#btnCompareOpen');
+  btn.setAttribute('data-count', String(n));
 }
-compareBtn.addEventListener('click',()=>{
-  compareGrid.innerHTML=[...state.compare].map(id=>{
-    const r=state.byId.get(String(id)); if(!r) return '';
-    const img=fixUrl(r.primary_image_url)||PLACEHOLDER;
-    return `<div class="card"><div class="imgbox"><img src="${img}" alt=""></div><div class="content"><div class="title">${r.name}</div><div class="price">${AED(r.price)}</div></div></div>`;
-  }).join('') || '<div class="desc">Nothing selected yet.</div>';
-  compareModal.showModal();
-});
-compareModal.addEventListener('click',e=>{ if(e.target?.dataset?.close) compareModal.close(); });
 
-/* ===== Wizard ===== */
-const wizard=document.getElementById('wizard');
-document.getElementById('btnWizard').addEventListener('click',()=>{ buildWizard(); wizard.showModal(); });
-wizard.addEventListener('click',e=>{ if(e.target?.dataset?.close) wizard.close(); });
-
-function buildWizard(){
-  const body=document.getElementById('wizardBody');
-  body.innerHTML=`
-    <div>
-      <div class="title">Level</div>
-      <div class="chips"><button class="chip" data-a="lvl:beginner">Beginner</button><button class="chip" data-a="lvl:hobbyist">Hobbyist</button><button class="chip" data-a="lvl:performer">Performer</button></div>
-      <div class="title" style="margin-top:10px">Bluetooth audio?</div>
-      <div class="chips"><button class="chip" data-a="bt:yes">Yes</button><button class="chip" data-a="bt:no">No</button></div>
-      <div class="title" style="margin-top:10px">Budget (AED)</div>
-      <div class="chips"><button class="chip" data-a="b:0-1500">0–1,500</button><button class="chip" data-a="b:1500-4000">1,500–4,000</button><button class="chip" data-a="b:4000+">4,000+</button></div>
-      <div style="margin-top:14px"><button id="btnSuggest" class="btn btn-alesis">Suggest kits</button></div>
-    </div>
-    <div><div class="sub">We’ll cross-match price, I/O, and pad layout to shortlist kits.</div></div>
+/* ---------- Detail ---------- */
+function openDetail(id){
+  const r = state.byId.get(String(id));
+  if(!r) return;
+  $('#detailTitle').textContent = r.name;
+  const img = r.detail_image_url || r.primary_image_url || '';
+  $('#detailImg').src = img;
+  $('#detailImg').alt = r.name;
+  $('#detailMeta').innerHTML = `
+    <div class="price"><span class="pill pill-green">${AED(r.price)}</span></div>
+    ${r.description ? `<p class="muted" style="margin:8px 0 12px">${r.description}</p>` : ``}
+    ${(r.features && r.features.length) ? `<div class="tags">${r.features.map(f=>`<span class="tag">${f}</span>`).join('')}</div>` : ``}
   `;
-  const picks=new Set();
-  body.querySelectorAll('[data-a]').forEach(b=>b.addEventListener('click',()=>{const k=b.getAttribute('data-a'); if(b.classList.toggle('active')) picks.add(k); else picks.delete(k);} ));
-  body.querySelector('#btnSuggest').addEventListener('click',()=>{
-    const wantBt=picks.has('bt:yes');
-    const budget=[...picks].find(x=>x.startsWith('b:'))||'b:0-999999'; const [min,maxRaw]=budget.slice(2).split('-'); const max=maxRaw?.endsWith('+')?999999:Number(maxRaw)||999999; const minN=Number(min)||0;
-    const out=document.getElementById('wizOut');
-    const cands=state.rows.filter(r=>mapToTop(r)==='Electronic Drum Kits').filter(r=>(r.price||0)>=minN&&(r.price||0)<=max).filter(r=>wantBt?!!r.bluetooth_audio:true).slice(0,4);
-    out.innerHTML=cands.map(r=>{const img=fixUrl(r.primary_image_url)||PLACEHOLDER;return `<div class="card"><div class="imgbox"><img src="${img}" alt=""></div><div class="content"><div class="title">${r.name}</div><div class="price">${AED(r.price)}</div><button class="btn btn-ghost" data-explore="${r.id}">Explore</button></div></div>`}).join('')||'<div class="desc">No matches for those answers.</div>';
-    out.querySelectorAll('[data-explore]').forEach(b=>b.addEventListener('click',e=>{openDetail(e.currentTarget.dataset.explore); wizard.close();}));
-  });
+  $('#detailWrap').classList.add('open');
 }
+function closeDetail(){ $('#detailWrap').classList.remove('open'); }
+$('#detailWrap')?.addEventListener('click',(e)=>{ if(e.target?.dataset?.close || e.target===$('#detailWrap')) closeDetail(); });
 
-/* ===== Filters ===== */
-document.querySelectorAll('[data-filter]').forEach(btn=>btn.addEventListener('click',()=>{state.filterLabel=btn.getAttribute('data-filter'); render();}));
+/* ---------- Compare ---------- */
+function openCompare(){
+  const rows = [...state.compare].map(id => state.byId.get(String(id))).filter(Boolean);
+  const headers = ['Model','Category','Price','Mesh / Dual-zone','Connectivity','On demo'];
+  const cols = rows.map(r=>([
+    `<div style="font-weight:800">${r.name}</div>`,
+    r.category ?? '',
+    AED(r.price),
+    [/mesh/i.test(r.name||'')?'Mesh':'—', (r.snare_zones>=2||/dual/i.test((r.features||[]).join(' ')))?'Dual-zone':'—'].join(' / '),
+    [r.usb_midi?'USB':'', r.bluetooth_audio?'Bluetooth':''].filter(Boolean).join(', ') || '—',
+    r.on_demo ? (r.on_demo_label || 'On demo') : '—'
+  ]));
 
-/* ===== Boot + realtime ===== */
+  // Build a simple table
+  const table = `
+  <div style="min-width:760px;overflow:auto">
+    <table style="border-collapse:separate;border-spacing:0 8px;width:100%">
+      <thead>
+        <tr>${[''].concat(rows.map(r=>r.name)).map(h=>`<th style="text-align:left;padding:8px 10px;color:#bcd"> ${h} </th>`).join('')}</tr>
+      </thead>
+      <tbody>
+        ${headers.map((h,i)=>{
+          const cells = rows.map((r,idx)=> cols[idx][i]);
+          return `<tr>
+            <td class="muted" style="padding:10px">${h}</td>
+            ${cells.map(c=>`<td style="padding:10px;border:1px solid #243243;background:#0f151c;border-radius:12px">${c}</td>`).join('')}
+          </tr>`;
+        }).join('')}
+      </tbody>
+    </table>
+  </div>`;
+  $('#compareArea').innerHTML = rows.length? table : `<div class="muted">No items selected. Tick “Add to compare” on a few products.</div>`;
+  $('#compareModal').classList.add('open');
+}
+function closeCompare(){ $('#compareModal').classList.remove('open'); }
+$('#btnCompareOpen').addEventListener('click', openCompare);
+$('#btnCompareClose').addEventListener('click', closeCompare);
+$('#compareModal').addEventListener('click', e=>{ if(e.target===e.currentTarget) closeCompare(); });
+
+/* ---------- Wizard ---------- */
+function openWizard(){ $('#wizardModal').classList.add('open'); }
+function closeWizard(){ $('#wizardModal').classList.remove('open'); $('#suggestOut').innerHTML=''; }
+$('#btnWizard').addEventListener('click', openWizard);
+$('#btnWizardClose,#btnWizardClose2')?.addEventListener('click', closeWizard);
+
+$('#btnSuggest').addEventListener('click', ()=>{
+  const exp = $('#wExp').value;
+  const bud = $('#wBudget').value;
+  const space = $('#wSpace').value;
+  const goal = $('#wGoal').value;
+  const noise = $('#wNoise').value;
+  const conn = $('#wConn').value;
+
+  // Score drum kits only
+  const kits = state.rows.filter(r=> r.category==='Drum Kits');
+  const scored = kits.map(r=>{
+    let s=0, why=[];
+    // Budget bands
+    const p = r.price||0;
+    const inBand = (min,max)=> (p>=min && (max===null || p<=max));
+    if(bud==='Under AED 2,000' && inBand(0,1999)) { s+=3; why.push('budget-friendly'); }
+    if(bud==='AED 2,000 – 5,000' && inBand(2000,5000)) { s+=3; why.push('in AED 2,000–5,000 band'); }
+    if(bud==='AED 5,000 – 9,000' && inBand(5001,9000)) { s+=3; why.push('mid-range'); }
+    if(bud==='Over AED 9,000' && inBand(9001,null)) { s+=3; why.push('premium tier'); }
+
+    // Space
+    if(space==='Compact' && /nitro|turbo|debut|surge/i.test(r.slug)) { s+=2; why.push('compact footprint'); }
+    if(space==='Large / Studio' && /strata|crimson/i.test(r.slug)) { s+=2; why.push('studio-ready'); }
+
+    // Experience / goal nudges
+    if(exp==='Beginner' && /nitro|debut|surge/i.test(r.slug)) { s+=2; why.push('great for learning'); }
+    if(goal==='Learning' && /nitro|debut|surge/i.test(r.slug)) { s+=2; }
+    if(goal==='Recording' && /strata|crimson/i.test(r.slug)) { s+=2; why.push('recording-grade sounds'); }
+    if(goal==='Live Performance' && /strata|crimson/i.test(r.slug)) { s+=2; why.push('live performance features'); }
+
+    // Noise -> mesh
+    const mesh = /mesh/i.test(r.name||'') || (r.features||[]).join(' ').match(/mesh/i);
+    if(noise==='High (keep it quiet)' && mesh){ s+=2; why.push('mesh heads for quieter practice'); }
+
+    // Connectivity
+    if(conn==='USB/MIDI' && r.usb_midi){ s+=2; why.push('USB/MIDI'); }
+    if(conn==='Bluetooth' && r.bluetooth_audio){ s+=2; why.push('Bluetooth'); }
+
+    return { r, s, why };
+  }).sort((a,b)=> b.s - a.s);
+
+  const top = scored[0];
+  if(!top){ $('#suggestOut').innerHTML='<div class="muted">No kits found.</div>'; return; }
+  const k = top.r;
+  const because = [...new Set(top.why)].slice(0,5).join(', ');
+  $('#suggestOut').innerHTML = `
+    <div style="border:1px solid #2a3a4a;background:#0d141b;padding:12px;border-radius:14px;margin-top:6px">
+      <div style="color:#6ef1b9;font-weight:900;margin-bottom:6px">Your Match</div>
+      <div><b>${k.name}</b> looks like a great fit at <b>${AED(k.price)}</b>.</div>
+      ${because? `<div class="muted" style="margin-top:6px">Because it ${because}.</div>` : ``}
+      <div style="margin-top:10px">
+        <a href="#" class="btn btn-primary btn-pill" data-open="${k.id}">View This Kit</a>
+      </div>
+    </div>`;
+  // wire the CTA
+  $$('[data-open]').forEach(a=>{
+    a.addEventListener('click', (e)=>{ e.preventDefault(); openDetail(a.getAttribute('data-open')); }, { once:true });
+  });
+});
+
+/* ---------- Filters wiring ---------- */
+$$('[data-filter]').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    $$('#chipBar .chip').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    state.filterLabel = btn.getAttribute('data-filter');
+    render();
+  });
+});
+
+/* ---------- Boot + realtime ---------- */
 await load();
-supabase.channel('public:drum_kits')
-  .on('postgres_changes',{event:'*',schema:'public',table:'drum_kits'},p=>{
-    const id=String((p.new??p.old).id);
-    if(p.eventType==='DELETE') state.byId.delete(id); else state.byId.set(id,p.new);
-    state.rows=[...state.byId.values()].filter(r=>r?.is_active); render();
-  }).subscribe();
+sb.channel('public:drum_kits')
+  .on('postgres_changes',{event:'*',schema:'public',table:'drum_kits'},(p)=>{
+    const id = String((p.new ?? p.old).id);
+    if (p.eventType==='DELETE') state.byId.delete(id);
+    else state.byId.set(id, p.new);
+    state.rows = Array.from(state.byId.values()).filter(r => r?.is_active);
+    render();
+  })
+  .subscribe();
