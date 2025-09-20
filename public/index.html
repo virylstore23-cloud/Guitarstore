@@ -3,199 +3,180 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Alesis Soundstage</title>
-  <link rel="icon" href="/favicon.ico">
+  <title>Alesis Drums — Electronic Drum Range</title>
+
   <style>
     :root{
-      --bg-0:#0a0d10;               /* nearly black */
-      --bg-1:#10151b;
-      --card:#141a21;
-      --line:#2b3642;
-      --muted:#a7b1bd;
-      --txt:#eaf2ff;
-      --brand:#00d2ff;              /* Alesis cyan */
-      --brand-600:#00b4e4;
-      --accent:#19ffa8;
-      --danger:#ff3b3b;
-      --chip:#0f1620;
-      --chip-on:#112433;
-      --shadow: 0 2px 0 0 rgba(255,255,255,0.06) inset,
-                0 1px 0 0 rgba(0,0,0,0.6),
-                0 12px 32px rgba(0,0,0,0.45);
+      --bg0:#06090e; --bg1:#0b141c; --panel:#0f1720;
+      --ink:#e8f6fb; --muted:#a8c0cf; --line:#2b3642;
+      --cyan:#00e5ff; --cyan-ink:#003544; --good:#17c964; --warn:#fde047;
     }
-    html,body{height:100%;}
+    *{box-sizing:border-box} html,body{height:100%}
     body{
-      margin:0; color:var(--txt); background: radial-gradient(1200px 600px at 75% -10%,
-        rgba(21,79,153,0.35),transparent 60%), radial-gradient(900px 360px at -10% -10%,
-        rgba(4,78,112,0.35),transparent 55%), var(--bg-0);
-      font: 15px/1.45 ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial;
+      margin:0; color:var(--ink); font:14px/1.45 system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+      background:
+        radial-gradient(1200px 700px at 20% -10%, #0a1c29 0%, transparent 60%),
+        radial-gradient(900px 600px at 100% 10%, #0d2031 0%, transparent 50%),
+        linear-gradient(180deg,#080c12 0%, #05080c 100%);
+      background-color:var(--bg0);
     }
-    a{color:inherit; text-decoration:none}
-    .wrap{max-width:1200px;margin:0 auto;padding:16px 16px 24px}
-    header{position:sticky;top:0;z-index:50;background:linear-gradient(to bottom,rgba(10,13,16,.85),rgba(10,13,16,.55) 60%,transparent);backdrop-filter:saturate(1.2) blur(6px)}
-    .row{display:flex;gap:12px;align-items:center}
-    .row.spread{justify-content:space-between}
-    .brand{font-weight:800;letter-spacing:.16em}
-    .brand .dot{color:#fff;background:var(--brand);padding:.18em .38em;border-radius:4px;margin-left:.35rem}
-    .btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:linear-gradient(180deg,#0f1821,#0a0f14);
-      color:var(--txt);padding:10px 14px;border-radius:12px;box-shadow:var(--shadow);cursor:pointer;transition:.15s}
-    .btn:hover{transform:translateY(-1px)}
-    .btn-primary{background:linear-gradient(180deg,var(--brand),var(--brand-600)); color:#02161b;border-color:#0af}
-    .btn-ghost{background:linear-gradient(180deg,#121820,#0e141a)}
-    .btn-pill{border-radius:999px;padding:10px 16px}
-    .badge{display:inline-flex;align-items:center;gap:6px;background:#0d1b27;border:1px solid #154057;color:#d7f6ff;border-radius:999px;padding:6px 10px; font-weight:600}
-    .chips{display:flex;flex-wrap:wrap;gap:8px}
-    .chip{background:var(--chip);border:1px solid var(--line);border-radius:999px;padding:8px 12px;color:var(--muted);cursor:pointer}
-    .chip.active{background:var(--chip-on);color:#d7f6ff;border-color:#276e96}
-    .grid{display:grid;grid-template-columns:repeat(1,minmax(0,1fr));gap:14px}
-    @media (min-width:720px){.grid{grid-template-columns:repeat(2,1fr)}}
-    @media (min-width:1024px){.grid{grid-template-columns:repeat(3,1fr)}}
-    .card{background:linear-gradient(180deg,#111820,#0b1015);border:1px solid #1f2a36;border-radius:18px;box-shadow:var(--shadow);overflow:hidden}
-    .card-inner{padding:14px 14px 12px}
-    .figure{position:relative;aspect-ratio:16/9;background:#0f1520;display:block}
-    .figure img{width:100%;height:100%;object-fit:cover;display:block}
-    .ribbon{position:absolute;top:10px;left:10px;background:#fed602;color:#1a1300;padding:7px 12px;border-radius:999px;font-weight:800;border:1px solid rgba(0,0,0,.2)}
-    .title{font-weight:800;margin-top:6px}
-    .muted{color:var(--muted);font-size:13px}
-    .price{display:inline-flex;align-items:center;gap:8px;margin:8px 0 10px}
-    .pill{display:inline-flex;align-items:center;border:1px solid var(--line);background:#0e1520;padding:8px 12px;border-radius:12px}
-    .pill-green{background:linear-gradient(180deg,#0d271f,#072315);border-color:#0a3627;color:#bdfbe3;border-radius:999px;font-weight:800}
-    .tags{display:flex;flex-wrap:wrap;gap:8px}
-    .tag{background:#0a1520;border:1px solid #1a2b3a;border-radius:10px;padding:6px 10px;color:#cfe8ff}
-    .foot{display:flex;align-items:center;gap:10px;justify-content:space-between;margin-top:10px}
-    .checkbox{display:flex;align-items:center;gap:10px;color:#cfe}
-    /* Detail drawer */
-    .drawer{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:60}
-    .drawer.open{display:flex}
-    .panel{width:min(920px,94vw);max-height:90vh;overflow:auto;background:linear-gradient(180deg,#0f151c,#0c1116);border:1px solid #253242;border-radius:18px;box-shadow:0 35px 80px rgba(0,0,0,.6)}
-    .panel-head{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid var(--line)}
-    .panel-body{padding:16px}
-    .detail-figure{background:#fff;border-radius:14px;overflow:hidden}
-    .detail-figure img{width:100%;height:auto;display:block}
-    /* Modals */
-    .modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:70}
-    .modal.open{display:flex}
-    .modal-card{width:min(980px,95vw);max-height:90vh;overflow:auto;background:linear-gradient(180deg,#131a22,#0c1116);border:1px solid #273544;border-radius:18px;padding:16px}
-    .form-grid{display:grid;grid-template-columns:1fr;gap:12px}
-    @media (min-width:760px){.form-grid{grid-template-columns:1fr 1fr}}
-    select{width:100%;background:#0f1620;border:1px solid #2b3a49;border-radius:12px;padding:10px 12px;color:#eaf6ff}
-    .h{font-size:28px;font-weight:900;margin:16px 0 0}
-    .sub{color:#a0b7cc;margin-top:6px}
-    .topbar{display:flex;align-items:center;gap:10px}
-    .top-right{display:flex;gap:10px;align-items:center}
-    .compare-badge{position:relative}
-    .compare-badge[data-count]:after{
-      content: attr(data-count); position:absolute;top:-7px;right:-7px;background:#ff3b3b;color:#fff;border:2px solid #0c1116;
-      width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:12px
+    .wrap{max-width:1200px;margin:0 auto;padding:14px 16px}
+
+    header{position:sticky;top:0;z-index:40;backdrop-filter:saturate(110%) blur(8px)}
+    header .bar{
+      display:flex;align-items:center;justify-content:space-between;
+      border-bottom:1px solid var(--line);
+      background:linear-gradient(180deg,rgba(10,20,28,.85),rgba(8,12,18,.85));
+      border-radius:0 0 14px 14px;padding:10px 14px;
     }
-    /* helpers */
-    .sr{position:absolute;left:-9999px}
+    .brand{display:flex;gap:10px;align-items:center}
+    .tag{background:#06313d;color:#bff7ff;border:1px solid #0e3e47;padding:2px 8px;border-radius:999px;font-size:12px}
+
+    .header-ctas{display:flex;gap:10px;align-items:center}
+    .btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:999px;padding:8px 14px;background:transparent;color:var(--ink);cursor:pointer}
+    .btn:hover{border-color:#385063}
+    .btn-primary{background:var(--cyan);color:var(--cyan-ink);border-color:#1ae8ff;font-weight:700;box-shadow:0 6px 18px rgba(0,229,255,.2)}
+    .btn-ghost{background:transparent;color:var(--ink)}
+
+    .title-xl{font-size:26px;font-weight:800;margin:12px 0 6px}
+    .muted{color:var(--muted)}
+
+    /* Chips */
+    .chips{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+    .chip{background:#09161f;border:1px solid #203241;color:#cfe5f3;border-radius:999px;padding:6px 10px;cursor:pointer}
+    .chip.active{outline:2px solid var(--cyan);color:var(--ink)}
+    .chip.badge{font-weight:800;background:#09343e;border-color:#0d4650;color:#97f3ff}
+
+    /* Card grid */
+    #grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+    .card{background:rgba(16,25,33,.85);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,.35);position:relative}
+    .card .img{aspect-ratio:16/10; background:#111; display:flex;align-items:center;justify-content:center;overflow:hidden}
+    .card img{width:100%;height:100%;object-fit:cover}
+    .card .body{padding:12px}
+    .price-pill{background:#032e36;border:1px solid #0e3e47;color:var(--cyan);font-weight:800;border-radius:999px;padding:6px 10px;display:inline-block}
+
+    /* Demo ribbon on image */
+    .demo-ribbon{position:absolute;top:12px;left:12px;background:var(--warn);color:#111;padding:6px 10px;border-radius:999px;font-weight:700;box-shadow:0 2px 10px rgba(0,0,0,.2)}
+
+    /* Dialogs */
+    dialog{border:none;background:transparent;padding:0}
+    dialog::backdrop{background:rgba(0,0,0,.55)}
+    .modal{background:linear-gradient(180deg,#0f1720,#0c141b);border:1px solid var(--line);border-radius:16px;box-shadow:0 30px 60px rgba(0,0,0,.5)}
+    .modal-head{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border-bottom:1px solid var(--line)}
+    .modal-head .x{border:1px solid var(--line);background:#0b141c;color:var(--ink);border-radius:10px;padding:6px 10px}
+    .modal-body{padding:14px}
+
+    /* Detail modal layout (image left, white block) */
+    .detail{max-width:980px;width:96vw}
+    .detail-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:16px}
+    .detail-img{background:#fff;border-radius:12px;padding:10px;border:1px solid #e5e7eb;display:flex;align-items:center;justify-content:center}
+    .detail-img img{width:100%;height:auto;object-fit:contain}
+
+    /* Wizard form look */
+    .field{display:flex;flex-direction:column;gap:6px}
+    select{width:100%;background:#0e1a23;border:1px solid #2a3a47;color:var(--ink);padding:10px 12px;border-radius:10px}
+    .pill{border:1px solid var(--line);border-radius:999px;padding:5px 9px;display:inline-flex;align-items:center;gap:6px}
+    .pill.good{background:#0c2a19;border-color:#124b2b;color:#9bf7c3}
+
+    /* Scrollbars (subtle) */
+    ::-webkit-scrollbar{height:10px;width:10px}::-webkit-scrollbar-thumb{background:#1b2a36;border-radius:999px}
   </style>
-  <link rel="stylesheet" href="/detail-modal.css?v=2">
-  <link rel="stylesheet" href="/wizard.css?v=1">
 </head>
 <body>
   <header>
-    <div class="wrap row spread">
-      <div class="topbar">
-        <div class="brand">ALESIS<span class="dot">DRUMS</span></div>
+    <div class="bar wrap">
+      <div class="brand">
+        <strong>ALESIS</strong>
+        <span class="tag">DRUMS</span>
       </div>
-      <div class="top-right">
-        <button id="btnCompareOpen" class="btn btn-ghost btn-pill compare-badge" data-count="0">Compare</button>
-        <button id="btnWizard" class="btn btn-primary btn-pill">Find my kit</button>
+      <div class="header-ctas">
+        <button id="btnCompare" class="btn btn-ghost">Compare <span id="cmpCount" class="pill">0</span></button>
+        <button id="btnWizard" class="btn btn-primary">Find my kit</button>
       </div>
     </div>
   </header>
 
   <main class="wrap">
-    <h1 style="margin:4px 0 8px;font-size:38px;letter-spacing:.2px">Electronic Drum Range</h1>
-    <div class="sub">Compare features and choose the perfect Alesis kit for practice, recording, or performance.</div>
+    <h1 class="title-xl">Electronic Drum Range</h1>
+    <div class="muted" style="margin-bottom:10px">Compare features and choose the perfect Alesis kit for practice, recording, or performance.</div>
 
-    <section style="margin:16px 0 10px">
-      <div class="chips" id="chipBar">
-        <button class="chip active" data-filter="All">All</button>
-        <button class="chip" data-filter="Electronic Drum Kits">Electronic Drum Kits</button>
-        <button class="chip" data-filter="Multipads & Drum Machines">Multipads & Drum Machines</button>
-        <button class="chip" data-filter="Drum Amplification">Drum Amplification</button>
-        <button class="chip" data-filter="Accessories">Accessories</button>
-        <button class="chip" data-filter="On Demo">On Demo</button>
-      </div>
-    </section>
+    <!-- Chips -->
+    <div class="chips" style="margin-bottom:12px">
+      <button class="chip active" data-filter="All">All</button>
+      <button class="chip" data-filter="Electronic Drum Kits">Electronic Drum Kits</button>
+      <button class="chip" data-filter="Multipads & Drum Machines">Multipads & Drum Machines</button>
+      <button class="chip" data-filter="Drum Amps">Drum Amplification</button>
+      <button class="chip" data-filter="Accessories">Accessories</button>
+      <button class="chip badge" data-filter="On Demo">On Demo</button>
+    </div>
 
-    <section id="grid" class="grid" aria-live="polite"></section>
+    <!-- Product grid -->
+    <div id="grid"></div>
   </main>
 
-  <!-- Detail drawer -->
-  <div id="detailWrap" class="drawer" role="dialog" aria-modal="true" aria-label="Product detail">
-    <div class="panel">
-      <div class="panel-head">
-        <div class="title" id="detailTitle">Loading…</div>
-        <button class="btn btn-ghost btn-pill" data-close="1">Close</button>
-      </div>
-      <div class="panel-body">
-        <div class="detail-figure"><img id="detailImg" alt=""></div>
-        <div id="detailMeta" style="margin-top:12px"></div>
+  <!-- Detail dialog -->
+  <dialog id="detailWrap">
+    <div class="modal detail">
+      <div class="modal-head"><strong id="detailTitle"></strong><button data-close="1" class="x">Close</button></div>
+      <div class="modal-body">
+        <div class="detail-grid">
+          <div class="detail-img"><img id="detailImg" alt=""/></div>
+          <div class="sheet">
+            <div class="pill price-pill" id="detailPrice"></div>
+            <div class="muted" id="detailDesc" style="margin-top:10px"></div>
+            <div id="detailBadges" style="margin-top:12px;display:flex;flex-wrap:wrap;gap:8px"></div>
+            <div id="detailLists" style="margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:12px"></div>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
+  </dialog>
 
-  <!-- Compare modal -->
-  <div id="compareModal" class="modal" aria-modal="true" role="dialog" aria-label="Compare">
-    <div class="modal-card">
-      <div class="row spread" style="margin-bottom:8px">
-        <div class="h">Compare</div>
-        <button id="btnCompareClose" class="btn btn-ghost btn-pill">Close</button>
-      </div>
-      <div id="compareArea" style="overflow:auto"></div>
+  <!-- Compare dialog -->
+  <dialog id="compareModal">
+    <div class="modal" style="max-width:980px;width:96vw">
+      <div class="modal-head"><strong>Compare</strong><button data-close="1" class="x">Close</button></div>
+      <div class="modal-body"><div id="compareGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:12px"></div></div>
     </div>
-  </div>
+  </dialog>
 
-  <!-- Wizard modal -->
-  <div id="wizardModal" class="modal" aria-modal="true" role="dialog" aria-label="Find my kit">
-    <div class="modal-card">
-      <div class="row spread" style="margin-bottom:8px">
-        <div class="h">Find My Perfect Kit</div>
-        <button id="btnWizardClose" class="btn btn-ghost btn-pill">Close</button>
+  <!-- Wizard dialog -->
+  <dialog id="wizard">
+    <div class="modal" style="max-width:900px;width:96vw">
+      <div class="modal-head"><strong>Find My Perfect Kit</strong><button data-close="1" class="x">Close</button></div>
+      <div class="modal-body">
+        <div id="wizardBody" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="field"><label>Experience</label>
+            <select id="wExp"><option>Beginner</option><option selected>Intermediate</option><option>Advanced</option></select>
+          </div>
+          <div class="field"><label>Budget</label>
+            <select id="wBudget"><option>Under AED 2,000</option><option selected>AED 2,000 – 5,000</option><option>AED 5,000 – 9,000</option><option>Above AED 9,000</option></select>
+          </div>
+          <div class="field"><label>Space</label>
+            <select id="wSpace"><option>Compact</option><option selected>Standard</option><option>Studio</option></select>
+          </div>
+          <div class="field"><label>Goal</label>
+            <select id="wGoal"><option>Learning</option><option selected>Recording</option><option>Performance</option></select>
+          </div>
+          <div class="field"><label>Noise Sensitivity</label>
+            <select id="wNoise"><option>Low</option><option>Medium</option><option selected>High (keep it quiet)</option></select>
+          </div>
+          <div class="field"><label>Connectivity Preference</label>
+            <select id="wConn"><option selected>USB/MIDI</option><option>Bluetooth</option><option>No preference</option></select>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:12px">
+          <button id="btnSuggest" class="btn btn-primary">Get Recommendation</button>
+          <button data-close="1" class="btn btn-ghost">Close</button>
+        </div>
+        <div id="wizOut" style="margin-top:12px"></div>
       </div>
-
-      <div class="form-grid">
-        <label><div class="muted">Experience</div>
-          <select id="wExp"><option>Beginner</option><option selected>Intermediate</option><option>Advanced</option></select>
-        </label>
-        <label><div class="muted">Budget</div>
-          <select id="wBudget">
-            <option>Under AED 2,000</option>
-            <option selected>AED 2,000 – 5,000</option>
-            <option>AED 5,000 – 9,000</option>
-            <option>Over AED 9,000</option>
-          </select>
-        </label>
-        <label><div class="muted">Space</div>
-          <select id="wSpace"><option>Compact</option><option selected>Standard</option><option>Large / Studio</option></select>
-        </label>
-        <label><div class="muted">Goal</div>
-          <select id="wGoal"><option>Learning</option><option>Recording</option><option>Live Performance</option></select>
-        </label>
-        <label><div class="muted">Noise Sensitivity</div>
-          <select id="wNoise"><option>High (keep it quiet)</option><option>Medium</option><option>Low</option></select>
-        </label>
-        <label><div class="muted">Connectivity Preference</div>
-          <select id="wConn"><option>USB/MIDI</option><option>Bluetooth</option><option>No preference</option></select>
-        </label>
-      </div>
-
-      <div class="row" style="gap:10px;margin-top:12px">
-        <button id="btnSuggest" class="btn btn-primary btn-pill">Get Recommendation</button>
-        <button id="btnWizardClose2" class="btn btn-ghost btn-pill">Close</button>
-      </div>
-
-      <div id="suggestOut" style="margin-top:14px"></div>
     </div>
-  </div>
+  </dialog>
 
-  <!-- ENV + App -->
+  <!-- Order of scripts matters: env -> boot-supabase -> app -->
   <script src="/env.js"></script>
   <script type="module" src="/boot-supabase.js?v=1"></script>
-  <script type="module" src="/app.js?v=10"></script>
+  <script type="module" src="/app.js?v=8"></script>
 </body>
 </html>
