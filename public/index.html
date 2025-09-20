@@ -3,28 +3,19 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Alesis Soundstage · Electronic Drums</title>
+  <title>Alesis Soundstage</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: {
-            ink: {
-              950: '#0b0f14',
-              900: '#0f141a',
-              800: '#141b22',
-              700: '#1a232c',
-            },
-            brand: {
-              cyan: '#06c4d7',
-              cyan2: '#0ad3e8',
-              red: '#ff1f45'
-            }
+            ink: { 900: '#0f141a', 800:'#141b22', 700:'#1a232c' },
+            brand: { cyan:'#0ad3e8', red:'#ff1f45' }
           },
           boxShadow: {
-            'emboss': 'inset 0 1px 0 rgba(255,255,255,0.08), 0 8px 30px rgba(0,0,0,0.35)',
-            'emboss-lg': 'inset 0 1px 0 rgba(255,255,255,0.12), 0 16px 45px rgba(0,0,0,0.45)'
+            'emboss': 'inset 0 1px 0 rgba(255,255,255,.08), 0 10px 28px rgba(0,0,0,.35)',
+            'emboss-lg': 'inset 0 1px 0 rgba(255,255,255,.12), 0 18px 48px rgba(0,0,0,.45)'
           }
         }
       }
@@ -32,31 +23,36 @@
   </script>
   <style>
     .chip{ @apply text-xs px-3 py-1.5 rounded-full bg-ink-800/70 ring-1 ring-white/10 hover:ring-white/20 transition; }
-    .chip.active{ @apply ring-2 ring-brand-cyan text-white; }
+    .chip.active{ @apply ring-2 ring-brand-cyan; }
     .pill{ @apply inline-flex items-center gap-2 px-2.5 py-1.5 rounded-full bg-ink-800/70 ring-1 ring-white/10; }
     .btn{ @apply inline-flex items-center justify-center px-4 py-2 rounded-full font-medium; }
     .btn-primary{ @apply bg-brand-red text-white hover:brightness-110; }
-    .ring-focus{ box-shadow: 0 0 0 2px rgba(10,211,232,.35); }
+    .btn-ghost{ @apply bg-white/10 hover:bg-white/15; }
   </style>
 </head>
 <body class="bg-ink-900 text-gray-100 selection:bg-brand-cyan/20">
-  <!-- Top bar (no category links) -->
-  <header class="sticky top-0 z-40 backdrop-blur bg-ink-900/75 border-b border-white/10">
+
+  <!-- Top bar -->
+  <header class="sticky top-0 z-40 backdrop-blur bg-ink-900/80 border-b border-white/10">
     <div class="max-w-7xl mx-auto flex items-center justify-between px-4 h-14">
-      <a class="font-black tracking-wider text-lg text-brand-cyan hover:text-brand-cyan2" href="/">ALESIS</a>
-      <button id="btnFind" class="btn btn-primary">Find my kit</button>
+      <a class="font-black tracking-wider text-lg text-brand-cyan hover:brightness-125" href="/">ALESIS</a>
+
+      <!-- Big CTA -->
+      <button id="btnFind" class="btn btn-primary px-5 py-2 text-base shadow-emboss">
+        Find my kit
+      </button>
     </div>
   </header>
 
-  <!-- Intro (no hero image/banner) -->
+  <!-- Intro (no hero banner) -->
   <section class="max-w-7xl mx-auto px-4 py-6 sm:py-10">
     <h1 class="text-3xl sm:text-4xl font-extrabold">Electronic Drum Range</h1>
     <p class="mt-2 max-w-2xl text-sm sm:text-base text-gray-300">
-      Explore Alesis electronic drums—compare features and choose the perfect kit for practice, recording, or performance.
+      Compare features and choose the perfect Alesis kit for practice, recording, or performance.
     </p>
   </section>
 
-  <!-- Filters -->
+  <!-- Filters row (your neat chips) -->
   <section class="max-w-7xl mx-auto px-4">
     <div class="flex items-center gap-2 flex-wrap">
       <span class="text-sm mr-1 opacity-70">Filter:</span>
@@ -65,11 +61,14 @@
       <button class="chip" data-filter="Multipads & Drum Machines">Multipads & Drum Machines</button>
       <button class="chip" data-filter="Drum Amplification">Drum Amplification</button>
       <button class="chip" data-filter="Accessories">Accessories</button>
+      <button class="chip" data-filter="On Demo">On Demo</button>
+
       <div class="flex-1"></div>
-      <label class="pill cursor-pointer text-xs">
-        <input id="toggleDemo" type="checkbox" class="accent-brand-cyan">
-        <span>On demo</span>
-      </label>
+
+      <!-- Compare chip shows count and opens popup -->
+      <button id="chipCompare" class="chip" data-open-compare="1">
+        Compare <span id="cmpCount" class="ml-1 px-1.5 py-0.5 rounded bg-white/10">0</span>
+      </button>
     </div>
   </section>
 
@@ -84,7 +83,7 @@
     <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[95vw] max-w-5xl max-h-[90vh] overflow-hidden rounded-2xl bg-ink-800 ring-1 ring-white/10 shadow-emboss-lg">
       <div class="flex items-center justify-between px-5 py-3 border-b border-white/10">
         <h3 id="detailTitle" class="text-lg font-semibold">Details</h3>
-        <button class="btn px-3 py-1.5 bg-white/10 hover:bg-white/15 rounded-lg" data-close="1">Close</button>
+        <button class="btn btn-ghost px-3 py-1.5 rounded-lg" data-close="1">Close</button>
       </div>
       <div class="grid md:grid-cols-2 gap-0 md:gap-6 p-4 md:p-6 overflow-y-auto max-h-[calc(90vh-56px)]">
         <!-- White image block -->
@@ -93,7 +92,6 @@
             <img id="detailImg" alt="" class="h-full w-full object-contain"/>
           </div>
         </div>
-        <!-- Text -->
         <div>
           <div class="text-xs uppercase tracking-wide opacity-70" id="detailCategory"></div>
           <h2 class="mt-1 text-2xl font-bold" id="detailName"></h2>
@@ -120,8 +118,83 @@
     </div>
   </div>
 
+  <!-- Compare modal -->
+  <div id="compareWrap" class="fixed inset-0 z-50 hidden">
+    <div class="absolute inset-0 bg-black/60" data-close="1"></div>
+    <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[96vw] max-w-[1200px] max-h-[90vh] overflow-hidden rounded-2xl bg-ink-800 ring-1 ring-white/10 shadow-emboss-lg">
+      <div class="flex items-center justify-between px-5 py-3 border-b border-white/10">
+        <h3 class="text-lg font-semibold">Compare products</h3>
+        <button class="btn btn-ghost px-3 py-1.5 rounded-lg" data-close="1">Close</button>
+      </div>
+      <div id="cmpBody" class="p-4 overflow-auto max-h-[calc(90vh-56px)]"></div>
+    </div>
+  </div>
+
+  <!-- Find-my-kit wizard -->
+  <div id="findWrap" class="fixed inset-0 z-50 hidden">
+    <div class="absolute inset-0 bg-black/60" data-close="1"></div>
+    <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[95vw] max-w-3xl rounded-2xl bg-ink-800 ring-1 ring-white/10 shadow-emboss-lg">
+      <div class="flex items-center justify-between px-5 py-3 border-b border-white/10">
+        <h3 class="text-lg font-semibold">Find my kit</h3>
+        <button class="btn btn-ghost px-3 py-1.5 rounded-lg" data-close="1">Close</button>
+      </div>
+      <div class="p-5 space-y-5">
+        <div id="q1" class="space-y-2">
+          <div class="font-semibold">1) Experience level</div>
+          <div class="flex flex-wrap gap-2">
+            <button class="chip" data-ans="level:beginner">Beginner</button>
+            <button class="chip" data-ans="level:intermediate">Intermediate</button>
+            <button class="chip" data-ans="level:pro">Pro</button>
+          </div>
+        </div>
+
+        <div id="q2" class="space-y-2">
+          <div class="font-semibold">2) Budget (AED)</div>
+          <div class="flex flex-wrap gap-2">
+            <button class="chip" data-ans="budget:<1500">&lt; 1500</button>
+            <button class="chip" data-ans="budget:1500-3000">1500–3000</button>
+            <button class="chip" data-ans="budget:3000-6000">3000–6000</button>
+            <button class="chip" data-ans="budget:>6000">&gt; 6000</button>
+          </div>
+        </div>
+
+        <div id="q3" class="space-y-2">
+          <div class="font-semibold">3) Main use</div>
+          <div class="flex flex-wrap gap-2">
+            <button class="chip" data-ans="use:practice">Practice</button>
+            <button class="chip" data-ans="use:recording">Recording</button>
+            <button class="chip" data-ans="use:live">Live performance</button>
+          </div>
+        </div>
+
+        <div id="q4" class="space-y-2">
+          <div class="font-semibold">4) Space</div>
+          <div class="flex flex-wrap gap-2">
+            <button class="chip" data-ans="space:compact">Compact</button>
+            <button class="chip" data-ans="space:medium">Medium</button>
+            <button class="chip" data-ans="space:large">Large</button>
+          </div>
+        </div>
+
+        <div id="q5" class="space-y-2">
+          <div class="font-semibold">5) Bluetooth audio needed?</div>
+          <div class="flex flex-wrap gap-2">
+            <button class="chip" data-ans="bt:yes">Yes</button>
+            <button class="chip" data-ans="bt:no">No preference</button>
+          </div>
+        </div>
+
+        <div class="pt-2">
+          <button id="btnSuggest" class="btn btn-primary px-5 py-2">Suggest kits</button>
+        </div>
+
+        <div id="suggestOut" class="grid gap-3 sm:grid-cols-2"></div>
+      </div>
+    </div>
+  </div>
+
   <!-- ENV + App -->
   <script src="/env.js"></script>
-  <script type="module" src="/app.js?v=2"></script>
+  <script type="module" src="/app.js?v=3"></script>
 </body>
 </html>
