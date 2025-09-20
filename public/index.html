@@ -2,97 +2,252 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1, viewport-fit=cover"
-  />
-  <title>Alesis Soundstage • Electronic Drum Kits</title>
-  <meta name="theme-color" content="#0b0f14" />
-
-  <!-- Tailwind CDN (fine for now; you can switch to a build later) -->
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>ALESIS • Electronic Drums</title>
+  <meta name="theme-color" content="#0b111e" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: {
-            base:  { 900:'#0b0f14', 800:'#0f151c', 700:'#141b24', 600:'#1a242f' },
-            brand: { cyan:'#17e1ff', red:'#ff2740', mint:'#2df2c8' }
+            ink:   { 900: '#0b111e', 800: '#111827', 700: '#1f2937' },
+            slate: { 300: '#cbd5e1', 400: '#94a3b8', 500:'#64748b'},
+            brand: { cyan: '#12d6ff', teal: '#00b3d6', red: '#ef4444', green:'#10b981' }
           },
-          boxShadow: { soft:'0 8px 40px rgb(0 0 0 / 0.35)' }
+          boxShadow: { card: '0 4px 24px rgba(0,0,0,.25)' }
         }
       }
     }
   </script>
-
   <style>
-    .chip{font-size:.8rem;padding:.22rem .6rem;border-radius:.5rem;border:1px solid #334155;background:#0f151c;color:#cbd5e1}
-    .pill{display:inline-flex;align-items:center;gap:.5rem;padding:.4rem .7rem;border-radius:9999px;border:1px solid #334155;background:#0f151c}
-    .btn-red   {background:#ff2740;border:1px solid #ff2740;color:#fff}
-    .btn-red:hover{filter:brightness(1.08)}
-    .btn-ghost {border:1px solid #334155;background:#0f151c;color:#cbd5e1}
-    .btn-ghost:hover{background:#141b24}
-    .price {color:#2df2c8;font-weight:700}
-    .glass {background:linear-gradient(180deg, #101720, #0b0f14); border:1px solid #1f2937}
-    .img-frame{position:relative;overflow:hidden;border-radius:12px;background:#0b0f14}
-    .img-16x10{aspect-ratio:16/10}
-    .img-cover{width:100%;height:100%;object-fit:cover;display:block}
-    .img-contain{width:100%;height:100%;object-fit:contain;display:block;background:#000}
-    .ring-focus{outline:none;box-shadow:0 0 0 2px #0b0f14, 0 0 0 4px #17e1ff}
+    .ring-focus{ box-shadow: 0 0 0 2px #12d6ff66, inset 0 0 0 1px #12d6ff99 }
+    .chip{ font-size:.75rem;padding:.25rem .55rem;border:1px solid #334155;border-radius:.5rem;background:#0b111e99;color:#cbd5e1 }
+    .card-img{ width:100%; height: 11rem; object-fit:cover; background:#0a0f17 }
+    .badge{ font-size:.7rem; padding:.15rem .5rem; border:1px solid #334155; border-radius:.5rem; background:#0b111e99; color:#cbd5e1 }
+    @media (min-width: 640px){ .card-img{ height: 12rem } }
+    @media (min-width: 1024px){ .card-img{ height: 12.5rem } }
   </style>
 </head>
-<body class="bg-base-900 text-zinc-100 selection:bg-brand-cyan/20">
+<body class="bg-ink-900 text-white selection:bg-brand-cyan/20 selection:text-white">
   <!-- Top bar -->
-  <header class="sticky top-0 z-50 backdrop-blur border-b border-zinc-800/70 bg-base-900/80">
-    <div class="max-w-7xl mx-auto px-4 h-14 flex items-center gap-4">
-      <a href="/" class="text-brand-cyan font-extrabold tracking-wide text-sm sm:text-base">ALESIS</a>
-      <span class="text-zinc-400 text-sm hidden sm:inline">Electronic Drum Kits</span>
+  <header class="sticky top-0 z-40 bg-ink-900/80 backdrop-blur border-b border-ink-800">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center gap-6">
+      <a class="font-black tracking-wide text-brand-cyan">ALESIS</a>
+      <nav class="hidden md:flex items-center gap-6 text-slate-300">
+        <button class="hover:text-white" data-topcat="Electronic Drum Kits">Electronic Drum Kits</button>
+        <button class="hover:text-white" data-topcat="Multipads & Drum Machines">Multipads & Drum Machines</button>
+        <button class="hover:text-white" data-topcat="Drum Amplification">Drum Amplification</button>
+        <button class="hover:text-white" data-topcat="Accessories">Accessories</button>
+      </nav>
       <div class="flex-1"></div>
-      <button id="btnFind" class="btn-red px-4 py-2 rounded-lg text-sm font-semibold">Find my kit</button>
+      <button id="btnFind" class="px-4 py-2 rounded-xl bg-brand-red hover:brightness-110 font-semibold shadow-card">Find my kit</button>
     </div>
   </header>
 
-  <!-- Hero (text-only, no right image) -->
-  <section class="max-w-7xl mx-auto px-4 py-8 sm:py-10">
-    <div class="grid md:grid-cols-2 gap-6 items-center">
-      <div>
-        <h1 class="text-2xl sm:text-3xl font-extrabold">Alesis Soundstage</h1>
-        <p class="mt-2 text-zinc-300 max-w-xl">
-          Explore Alesis electronic drum kits—compare features, find the best value,
-          and pick the perfect kit for practice, recording, or live performance.
-        </p>
-        <div class="mt-4 flex gap-2">
-          <button id="btnBest" class="btn-ghost px-4 py-2 rounded-lg text-sm font-semibold">Best value</button>
-          <button id="btnBrowse" class="btn-ghost px-4 py-2 rounded-lg text-sm font-semibold">Browse kits</button>
+  <!-- Hero (no Best/Browse buttons) -->
+  <section class="border-b border-ink-800">
+    <div class="max-w-7xl mx-auto px-4 py-8 sm:py-12">
+      <div class="grid md:grid-cols-2 gap-6 sm:gap-10">
+        <div class="space-y-4">
+          <h1 class="text-3xl sm:text-4xl font-black tracking-tight">Electronic Drum Range</h1>
+          <p class="text-slate-300 max-w-[60ch]">
+            Explore Alesis electronic drums—compare features and choose the perfect kit for
+            practice, recording, or performance.
+          </p>
+        </div>
+        <div class="rounded-2xl border border-ink-800 bg-gradient-to-br from-ink-800 to-ink-900 p-6 flex items-center justify-center">
+          <span class="text-brand-cyan font-black text-3xl tracking-widest">ALESIS</span>
         </div>
       </div>
-      <div class="hidden md:block"></div>
     </div>
   </section>
 
   <!-- Filters -->
-  <section class="border-y border-zinc-800/70 bg-base-800">
-    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center gap-2">
-      <span class="text-zinc-400 mr-1 text-sm">Filter</span>
-      <button class="chip" data-filter="all">All</button>
-      <button class="chip" data-filter="Drum Kits">Drum Kits</button>
-      <button class="chip" data-filter="Drum Amps">Drum Amps</button>
+  <section class="max-w-7xl mx-auto px-4 pt-6">
+    <div class="flex items-center gap-2">
+      <span class="text-slate-400 text-sm mr-2">Filter:</span>
+      <button class="chip ring-focus" data-filter="All">All</button>
+      <button class="chip" data-filter="Electronic Drum Kits">Electronic Drum Kits</button>
+      <button class="chip" data-filter="Multipads & Drum Machines">Multipads & Drum Machines</button>
+      <button class="chip" data-filter="Drum Amplification">Drum Amplification</button>
       <button class="chip" data-filter="Accessories">Accessories</button>
       <div class="flex-1"></div>
-      <label class="pill cursor-pointer text-xs">
-        <input id="toggleDemo" type="checkbox" class="accent-brand-cyan" />
-        <span>On Demo</span>
+      <label class="text-xs inline-flex items-center gap-2">
+        <input id="toggleDemo" type="checkbox" class="accent-brand-cyan">
+        <span class="text-slate-300">On demo</span>
       </label>
     </div>
   </section>
 
-  <!-- Catalog -->
-  <main id="catalog" class="max-w-7xl mx-auto px-4 py-6">
+  <!-- Grid -->
+  <main id="catalog" class="max-w-7xl mx-auto px-4 pb-16 pt-4">
     <div id="kitGrid" class="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"></div>
   </main>
 
-  <!-- ENV + App -->
+  <!-- Detail Modal -->
+  <div id="detailModal" class="fixed inset-0 hidden items-center justify-center z-50">
+    <div class="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
+    <div class="relative w-[min(980px,94vw)] max-h-[92vh] overflow-auto bg-ink-900 border border-ink-800 rounded-2xl shadow-card">
+      <div class="flex items-center justify-between p-3 border-b border-ink-800">
+        <h2 id="detailTitle" class="text-lg font-bold">Details</h2>
+        <button id="detailClose" class="px-3 py-1 rounded-lg border border-slate-600 hover:bg-ink-800">Close</button>
+      </div>
+      <div class="p-4 grid md:grid-cols-2 gap-4">
+        <div class="rounded-xl border border-ink-800 bg-black/40">
+          <img id="detailImage" class="w-full h-[18rem] sm:h-[22rem] object-contain" alt="">
+        </div>
+        <div>
+          <div class="flex flex-wrap items-center gap-2 mb-2">
+            <span id="detailPrice" class="badge bg-brand-green/20 border-brand-green/40 text-brand-green"></span>
+            <span id="detailUPC"   class="badge"></span>
+            <span id="detailDemo"  class="badge"></span>
+            <span id="detailCat"   class="badge"></span>
+          </div>
+          <p id="detailDesc" class="text-slate-300"></p>
+          <div class="grid md:grid-cols-2 gap-3 mt-3">
+            <div class="border border-ink-800 rounded-xl p-3">
+              <h3 class="font-semibold text-brand-cyan">Key Features</h3>
+              <ul id="detailFeatures" class="list-disc ml-5 mt-1 space-y-1 text-slate-200 text-sm"></ul>
+            </div>
+            <div class="border border-ink-800 rounded-xl p-3">
+              <h3 class="font-semibold text-brand-cyan">What's Included</h3>
+              <ul id="detailContents" class="list-disc ml-5 mt-1 space-y-1 text-slate-200 text-sm"></ul>
+            </div>
+          </div>
+          <video id="detailVideo" controls playsinline class="hidden w-full mt-3 rounded-xl border border-ink-800"></video>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ENV + app -->
   <script src="/env.js"></script>
-  <script type="module" src="/app.js?v=1"></script>
+  <script type="module">
+    const { SUPABASE_URL, SUPABASE_ANON_KEY } = window.ENV || {};
+    if (!SUPABASE_URL || !SUPABASE_ANON_KEY) throw new Error('env.js missing');
+    const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2');
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const state = { rows: [], byId: new Map(), filter: 'All', demoOnly: false };
+
+    const mapToTop = (k) => {
+      const cat = (k.category||'').toLowerCase();
+      const n = (k.name||'').toLowerCase();
+      if (cat.includes('amp')) return 'Drum Amplification';
+      if (cat.includes('multipad') || /sr-?1?8|sr-16|samplepad|multipad/i.test(n)) return 'Multipads & Drum Machines';
+      if (cat.includes('access')) return 'Accessories';
+      return 'Electronic Drum Kits';
+    };
+
+    const money = (v)=> (v==null ? '—' : 'AED ' + Number(v).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}));
+    const PLACE = 'data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360"><rect width="640" height="360" fill="#0b111e"/><text x="50%" y="50%" fill="#94a3b8" text-anchor="middle" font-family="Arial" font-size="16">Image coming soon</text></svg>');
+
+    async function load() {
+      const { data, error } = await supabase.from('drum_kits').select('*').eq('is_active', true).order('price',{ascending:true});
+      if (error) { console.error(error); return; }
+      state.rows = (data||[]).map(r => ({ ...r, topcat: mapToTop(r) }));
+      state.byId = new Map(state.rows.map(r=>[String(r.id), r]));
+      render();
+    }
+
+    const grid = document.getElementById('kitGrid');
+    function card(r){
+      const el = document.createElement('article');
+      el.className = 'border border-ink-800 rounded-2xl overflow-hidden bg-ink-800/60 hover:bg-ink-800 transition shadow-card';
+      el.innerHTML = `
+        <img class="card-img" src="${r.primary_image_url || r.detail_image_url || PLACE}" alt="${r.name}"
+             onerror="this.onerror=null;this.src='${PLACE}'">
+        <div class="p-3">
+          <div class="text-[11px] text-slate-400">${r.slug||''}</div>
+          <h3 class="font-semibold leading-tight">${r.name||'Unnamed'}</h3>
+          <p class="text-sm text-slate-300 line-clamp-2">${r.description||''}</p>
+          <div class="mt-1 text-brand-green font-semibold">${money(r.price)}</div>
+          <div class="mt-2 flex items-center gap-2">
+            <span class="badge">${r.topcat}</span>
+            ${r.on_demo ? `<span class="badge">On demo</span>` : ``}
+          </div>
+          <div class="mt-3">
+            <button data-open="${r.id}" class="px-3 py-1 rounded-lg border border-slate-600 hover:bg-ink-900 text-sm">Explore</button>
+          </div>
+        </div>`;
+      el.querySelector('[data-open]').addEventListener('click', ()=>openDetail(r.id));
+      return el;
+    }
+
+    function render(){
+      const items = state.rows
+        .filter(r => state.filter==='All' || r.topcat===state.filter)
+        .filter(r => !state.demoOnly || !!r.on_demo);
+
+      grid.innerHTML = '';
+      if (!items.length) {
+        grid.innerHTML = `<div class="col-span-full text-center text-slate-400 py-10">No items found.</div>`;
+        return;
+      }
+      items.forEach(r => grid.appendChild(card(r)));
+    }
+
+    const M = document.getElementById('detailModal');
+    const close = ()=> { M.classList.add('hidden'); M.classList.remove('flex'); };
+    document.getElementById('detailClose').onclick = close;
+    M.addEventListener('click', e => { if (e.target===M) close(); });
+
+    function openDetail(id){
+      const r = state.byId.get(String(id)); if (!r) return;
+      document.getElementById('detailTitle').textContent = r.name;
+      const img = document.getElementById('detailImage');
+      img.src = r.detail_image_url || r.primary_image_url || PLACE; img.alt = r.name;
+      document.getElementById('detailPrice').textContent = money(r.price);
+      document.getElementById('detailUPC').textContent   = r.upc_code ? `UPC ${r.upc_code}` : '—';
+      document.getElementById('detailDemo').textContent  = r.on_demo ? (r.on_demo_label || 'On demo') : '';
+      document.getElementById('detailCat').textContent   = r.topcat;
+      document.getElementById('detailDesc').textContent  = r.description || '';
+      const F = document.getElementById('detailFeatures'); F.innerHTML='';
+      (r.features||[]).forEach(x=>{ const li=document.createElement('li'); li.textContent=x; F.appendChild(li); });
+      const C = document.getElementById('detailContents'); C.innerHTML='';
+      (r.contents||[]).forEach(x=>{ const li=document.createElement('li'); li.textContent=x; C.appendChild(li); });
+      const V = document.getElementById('detailVideo');
+      if (r.video_url){ V.src = r.video_url; V.classList.remove('hidden'); } else { V.classList.add('hidden'); V.removeAttribute('src'); }
+      M.classList.remove('hidden'); M.classList.add('flex');
+    }
+
+    // Top nav + chips + demo
+    document.querySelectorAll('[data-topcat]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        state.filter = btn.getAttribute('data-topcat'); render();
+        document.getElementById('catalog').scrollIntoView({behavior:'smooth', block:'start'});
+      });
+    });
+    document.getElementById('toggleDemo').addEventListener('change', (e)=>{ state.demoOnly = !!e.target.checked; render(); });
+    document.querySelectorAll('[data-filter]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        document.querySelectorAll('[data-filter]').forEach(b=>b.classList.remove('ring-focus'));
+        btn.classList.add('ring-focus');
+        state.filter = btn.getAttribute('data-filter'); render();
+      });
+    });
+
+    // Find my kit: open the mid-priced drum kit
+    document.getElementById('btnFind').onclick = ()=>{
+      const kits = state.rows.filter(r=>mapToTop(r)==='Electronic Drum Kits' && r.price!=null)
+                             .sort((a,b)=>a.price-b.price);
+      if (!kits.length) return;
+      openDetail(kits[Math.floor(kits.length/2)].id);
+      document.getElementById('catalog').scrollIntoView({behavior:'smooth'});
+    };
+
+    await load();
+
+    supabase.channel('public:drum_kits')
+      .on('postgres_changes',{event:'*',schema:'public',table:'drum_kits'},(p)=>{
+        const id = String((p.new ?? p.old).id);
+        if (p.eventType==='DELETE') state.byId.delete(id);
+        else state.byId.set(id, {...p.new, topcat: mapToTop(p.new) });
+        state.rows = Array.from(state.byId.values());
+        render();
+      })
+      .subscribe();
+  </script>
 </body>
 </html>
