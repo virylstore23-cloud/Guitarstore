@@ -1,5 +1,10 @@
+/* === BOOTSTRAP (ENV + Supabase) === */
+const { SUPABASE_URL, SUPABASE_ANON_KEY } = window.ENV || {};
+if (!SUPABASE_URL || !SUPABASE_ANON_KEY) { throw new Error('env.js missing or incomplete'); }
+const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2');
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+/* === end bootstrap === */
 // === SUPABASE BOOTSTRAP START ===
-const env = await fetch('/api/env').then(r => r.json());
 const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2');
 const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_ANON_KEY);
 
