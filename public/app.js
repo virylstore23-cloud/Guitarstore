@@ -8,17 +8,6 @@ const sb=window.supabase;
 /* Select best image from row (prefer detail for modal, primary for card) */
 function pickImage(r,kind='card'){ const direct=(kind==='detail'&&(r.detail_image_url||(Array.isArray(r.images)&&r.images[1])))||r.primary_image_url||r.image_url||(Array.isArray(r.images)?r.images[0]:null); const storage=r?.image_path?+r.image_path:null; return direct||storage||PLACEHOLDER; }
 
-/* Normalize arrays (features/contents may be JSON or newline bullets) */
-function toList(v){
-  if(!v) return [];
-  if(Array.isArray(v)) return v;
-  if(typeof v==='string'){
-    try{const j=JSON.parse(v); if(Array.isArray(j)) return j;}catch{}
-    return v.split(/\r?\n/).map(s=>s.replace(/^[•-]\s*/,'').trim()).filter(Boolean);
-  }
-  return [];
-}
-
 /* Query + realtime */
 async function load(){
   let rows=[];
