@@ -1,8 +1,4 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-const { SUPABASE_URL, SUPABASE_ANON_KEY } = window.ENV || {};
-if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-  console.error('ENV missing SUPABASE_URL or SUPABASE_ANON_KEY');
-}
-window.supabase = (SUPABASE_URL && SUPABASE_ANON_KEY)
-  ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
-  : null;
+const url = window?.ENV?.SUPABASE_URL, key = window?.ENV?.SUPABASE_ANON_KEY;
+if (!url || !key) console.error('Missing SUPABASE_URL / SUPABASE_ANON_KEY in /env.js');
+window.supabase = createClient(url, key);

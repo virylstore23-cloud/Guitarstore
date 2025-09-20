@@ -1,182 +1,144 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Alesis Drums — Electronic Drum Range</title>
-
-  <style>
-    :root{
-      --bg0:#06090e; --bg1:#0b141c; --panel:#0f1720;
-      --ink:#e8f6fb; --muted:#a8c0cf; --line:#2b3642;
-      --cyan:#00e5ff; --cyan-ink:#003544; --good:#17c964; --warn:#fde047;
-    }
-    *{box-sizing:border-box} html,body{height:100%}
-    body{
-      margin:0; color:var(--ink); font:14px/1.45 system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
-      background:
-        radial-gradient(1200px 700px at 20% -10%, #0a1c29 0%, transparent 60%),
-        radial-gradient(900px 600px at 100% 10%, #0d2031 0%, transparent 50%),
-        linear-gradient(180deg,#080c12 0%, #05080c 100%);
-      background-color:var(--bg0);
-    }
-    .wrap{max-width:1200px;margin:0 auto;padding:14px 16px}
-
-    header{position:sticky;top:0;z-index:40;backdrop-filter:saturate(110%) blur(8px)}
-    header .bar{
-      display:flex;align-items:center;justify-content:space-between;
-      border-bottom:1px solid var(--line);
-      background:linear-gradient(180deg,rgba(10,20,28,.85),rgba(8,12,18,.85));
-      border-radius:0 0 14px 14px;padding:10px 14px;
-    }
-    .brand{display:flex;gap:10px;align-items:center}
-    .tag{background:#06313d;color:#bff7ff;border:1px solid #0e3e47;padding:2px 8px;border-radius:999px;font-size:12px}
-
-    .header-ctas{display:flex;gap:10px;align-items:center}
-    .btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:999px;padding:8px 14px;background:transparent;color:var(--ink);cursor:pointer}
-    .btn:hover{border-color:#385063}
-    .btn-primary{background:var(--cyan);color:var(--cyan-ink);border-color:#1ae8ff;font-weight:700;box-shadow:0 6px 18px rgba(0,229,255,.2)}
-    .btn-ghost{background:transparent;color:var(--ink)}
-
-    .title-xl{font-size:26px;font-weight:800;margin:12px 0 6px}
-    .muted{color:var(--muted)}
-
-    /* Chips */
-    .chips{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-    .chip{background:#09161f;border:1px solid #203241;color:#cfe5f3;border-radius:999px;padding:6px 10px;cursor:pointer}
-    .chip.active{outline:2px solid var(--cyan);color:var(--ink)}
-    .chip.badge{font-weight:800;background:#09343e;border-color:#0d4650;color:#97f3ff}
-
-    /* Card grid */
-    #grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
-    .card{background:rgba(16,25,33,.85);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,.35);position:relative}
-    .card .img{aspect-ratio:16/10; background:#111; display:flex;align-items:center;justify-content:center;overflow:hidden}
-    .card img{width:100%;height:100%;object-fit:cover}
-    .card .body{padding:12px}
-    .price-pill{background:#032e36;border:1px solid #0e3e47;color:var(--cyan);font-weight:800;border-radius:999px;padding:6px 10px;display:inline-block}
-
-    /* Demo ribbon on image */
-    .demo-ribbon{position:absolute;top:12px;left:12px;background:var(--warn);color:#111;padding:6px 10px;border-radius:999px;font-weight:700;box-shadow:0 2px 10px rgba(0,0,0,.2)}
-
-    /* Dialogs */
-    dialog{border:none;background:transparent;padding:0}
-    dialog::backdrop{background:rgba(0,0,0,.55)}
-    .modal{background:linear-gradient(180deg,#0f1720,#0c141b);border:1px solid var(--line);border-radius:16px;box-shadow:0 30px 60px rgba(0,0,0,.5)}
-    .modal-head{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border-bottom:1px solid var(--line)}
-    .modal-head .x{border:1px solid var(--line);background:#0b141c;color:var(--ink);border-radius:10px;padding:6px 10px}
-    .modal-body{padding:14px}
-
-    /* Detail modal layout (image left, white block) */
-    .detail{max-width:980px;width:96vw}
-    .detail-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:16px}
-    .detail-img{background:#fff;border-radius:12px;padding:10px;border:1px solid #e5e7eb;display:flex;align-items:center;justify-content:center}
-    .detail-img img{width:100%;height:auto;object-fit:contain}
-
-    /* Wizard form look */
-    .field{display:flex;flex-direction:column;gap:6px}
-    select{width:100%;background:#0e1a23;border:1px solid #2a3a47;color:var(--ink);padding:10px 12px;border-radius:10px}
-    .pill{border:1px solid var(--line);border-radius:999px;padding:5px 9px;display:inline-flex;align-items:center;gap:6px}
-    .pill.good{background:#0c2a19;border-color:#124b2b;color:#9bf7c3}
-
-    /* Scrollbars (subtle) */
-    ::-webkit-scrollbar{height:10px;width:10px}::-webkit-scrollbar-thumb{background:#1b2a36;border-radius:999px}
-  </style>
-  <link rel="stylesheet" href="/fixes.css?v=1">
-  <link rel="stylesheet" href="/override.css?v=1">
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Alesis Soundstage</title>
+<style>
+:root{
+  --bg1:#0b1016; --bg2:#101a23;
+  --panel:#111922; --line:#2b3642; --shadow:0 15px 40px rgba(0,0,0,.35);
+  --text:#e6eef8; --muted:#9fb1c3;
+  --alesis:#00e5ff; --chip:#0d2e38;
+  --card:#121a23; --cardIn:#0f1820;
+  --priceBg:#032e36; --priceEdge:#0e3e47; --priceText:#00e5ff;
+  --warn:#fde047;
+}
+*{box-sizing:border-box} html,body{height:100%}
+body{
+  margin:0;color:var(--text);
+  background:radial-gradient(1200px 800px at 70% -20%,#182638 0%,transparent 60%),
+            radial-gradient(1200px 800px at -10% 120%,#14202e 0%,transparent 65%),
+            linear-gradient(180deg,var(--bg1),var(--bg2));
+  font:14px/1.35 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+}
+.wrap{max-width:1100px;margin:26px auto;padding:0 16px}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.brand{display:flex;gap:10px;align-items:center}
+.brand .logo{font-weight:800}
+.pill{font-weight:800;font-size:11px;padding:4px 8px;border-radius:999px;background:#0a2030;color:#9bdff0;border:1px solid #1d3342}
+.header-ctas{display:flex;gap:10px}
+.btn{border:1px solid #2b3642;border-radius:999px;padding:8px 14px;background:transparent;color:var(--text);cursor:pointer}
+.btn-primary{background:var(--alesis);color:#00131a;border-color:#00a8be;font-weight:800}
+.btn-ghost{background:transparent}
+.btn[disabled]{opacity:.55;cursor:not-allowed}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 16px}
+.chip{background:#0b1c25;border:1px solid #22303b;color:#cde9f2;border-radius:999px;padding:6px 10px;cursor:pointer}
+.chip.active{background:#0e2f3a;color:#8df2ff;border-color:#184b59}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--shadow)}
+.imgbox{background:#fff;border-bottom:1px solid var(--line);padding:10px 10px 0 10px;position:relative}
+.imgbox .demo{position:absolute;left:16px;top:12px;background:var(--warn);color:#111;padding:6px 10px;border-radius:999px;font-weight:800}
+.imgbox img{width:100%;height:220px;object-fit:contain;border-radius:10px 10px 0 0;display:block;background:#fff}
+.content{padding:10px 12px}
+.title{font-weight:800;margin:6px 0 2px}
+.upc{color:var(--muted);font-size:12px;margin:2px 0 8px}
+.price{display:inline-block;background:var(--priceBg);color:var(--priceText);border:1px solid var(--priceEdge);border-radius:999px;padding:6px 10px;font-weight:800}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+.tag{border-radius:10px;border:1px solid #283644;background:#0e1a23;padding:3px 8px;color:#cfe1f2}
+.compare{display:flex;align-items:center;gap:6px;margin-top:10px;color:#cfe1f2}
+.muted{color:var(--muted)}
+/* dialogs */
+dialog{border:none;background:transparent}
+.sheet{background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:10px}
+.sheet .head{display:flex;justify-content:space-between;align-items:center;padding:6px 10px 10px}
+.sheet .x{border:1px solid var(--line);background:#111a22;color:#cfe1f2;border-radius:10px;padding:6px 10px}
+.detail{display:grid;grid-template-columns:1.25fr 1fr;gap:14px;padding:10px}
+.detail .left{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px}
+.detail .left .big{width:100%;height:360px;object-fit:contain;border-radius:10px;background:#fff}
+.detail .right .sec{border:1px solid var(--line);border-radius:12px;padding:10px;margin-top:10px}
+.detail h4{margin:0 0 6px 0}
+.hr{height:1px;background:var(--line);margin:10px 0}
+@media (max-width:900px){.grid{grid-template-columns:1fr 1fr}.detail{grid-template-columns:1fr}}
+@media (max-width:600px){.grid{grid-template-columns:1fr}}
+</style>
 </head>
 <body>
-  <header>
-    <div class="bar wrap">
+  <div class="wrap">
+    <div class="top">
       <div class="brand">
-        <strong>ALESIS</strong>
-        <span class="tag">DRUMS</span>
+        <div class="logo">ALESIS</div><div class="pill">DRUMS</div>
       </div>
       <div class="header-ctas">
-        <button id="btnCompare" class="btn btn-ghost">Compare <span id="cmpCount" class="pill">0</span></button>
-        <button id="btnWizard" class="btn btn-primary">Find my kit</button>
+        <button id="btnCompare" class="btn">Compare <span id="cmpCount" style="opacity:.7">(0)</span></button>
+        <button id="btnFind" class="btn btn-primary">Find my kit</button>
       </div>
     </div>
-  </header>
 
-  <main class="wrap">
-    <h1 class="title-xl">Electronic Drum Range</h1>
-    <div class="muted" style="margin-bottom:10px">Compare features and choose the perfect Alesis kit for practice, recording, or performance.</div>
+    <h2 style="margin:0 0 2px">Electronic Drum Range</h2>
+    <div class="muted">Compare features and choose the perfect Alesis kit for practice, recording, or performance.</div>
 
-    <!-- Chips -->
-    <div class="chips" style="margin-bottom:12px">
+    <div class="chips" id="chips">
       <button class="chip active" data-filter="All">All</button>
       <button class="chip" data-filter="Electronic Drum Kits">Electronic Drum Kits</button>
       <button class="chip" data-filter="Multipads & Drum Machines">Multipads & Drum Machines</button>
-      <button class="chip" data-filter="Drum Amps">Drum Amplification</button>
+      <button class="chip" data-filter="Drum Amplification">Drum Amplification</button>
       <button class="chip" data-filter="Accessories">Accessories</button>
-      <button class="chip badge" data-filter="On Demo">On Demo</button>
+      <button class="chip" data-filter="On Demo">On Demo</button>
     </div>
 
-    <!-- Product grid -->
-    <div id="grid"></div>
-  </main>
+    <div id="grid" class="grid"></div>
+    <div id="empty" class="muted" style="display:none;border:1px dashed var(--line);border-radius:12px;padding:16px">No items match this view.</div>
+  </div>
 
-  <!-- Detail dialog -->
-  <dialog id="detailWrap">
-    <div class="modal detail">
-      <div class="modal-head"><strong id="detailTitle"></strong><button data-close="1" class="x">Close</button></div>
-      <div class="modal-body">
-        <div class="detail-grid">
-          <div class="detail-img"><img id="detailImg" alt=""/></div>
-          <div class="sheet">
-            <div class="pill price-pill" id="detailPrice"></div>
-            <div class="muted" id="detailDesc" style="margin-top:10px"></div>
-            <div id="detailBadges" style="margin-top:12px;display:flex;flex-wrap:wrap;gap:8px"></div>
-            <div id="detailLists" style="margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:12px"></div>
-          </div>
+  <!-- Detail -->
+  <dialog id="detailDlg">
+    <div class="sheet" style="min-width:min(980px,92vw)">
+      <div class="head"><strong id="dTitle"></strong><button class="x" data-close="1">Close</button></div>
+      <div class="detail">
+        <div class="left"><img id="dImg" class="big" alt=""/></div>
+        <div class="right">
+          <div class="tags" id="dTopTags"></div>
+          <div class="sec"><div class="price" id="dPrice"></div>  <span id="dUpc" class="tag" style="margin-left:8px"></span> <span id="dDemo" class="tag" style="margin-left:8px"></span></div>
+          <div class="sec" id="dDescSec" style="display:none"><h4>Description</h4><div id="dDesc" class="muted"></div></div>
+          <div class="sec" id="dFeatSec" style="display:none"><h4>Key Features</h4><ul id="dFeat" style="margin:0;padding-left:18px"></ul></div>
+          <div class="sec" id="dInclSec" style="display:none"><h4>What's Included</h4><ul id="dIncl" style="margin:0;padding-left:18px"></ul></div>
         </div>
       </div>
     </div>
   </dialog>
 
-  <!-- Compare dialog -->
-  <dialog id="compareModal">
-    <div class="modal" style="max-width:980px;width:96vw">
-      <div class="modal-head"><strong>Compare</strong><button data-close="1" class="x">Close</button></div>
-      <div class="modal-body"><div id="compareGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:12px"></div></div>
+  <!-- Compare -->
+  <dialog id="compareDlg">
+    <div class="sheet" style="min-width:min(980px,92vw)">
+      <div class="head"><strong>Compare</strong><button class="x" data-close="1">Close</button></div>
+      <div id="compareGrid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;padding:10px"></div>
     </div>
   </dialog>
 
-  <!-- Wizard dialog -->
-  <dialog id="wizard">
-    <div class="modal" style="max-width:900px;width:96vw">
-      <div class="modal-head"><strong>Find My Perfect Kit</strong><button data-close="1" class="x">Close</button></div>
-      <div class="modal-body">
-        <div id="wizardBody" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-          <div class="field"><label>Experience</label>
-            <select id="wExp"><option>Beginner</option><option selected>Intermediate</option><option>Advanced</option></select>
-          </div>
-          <div class="field"><label>Budget</label>
-            <select id="wBudget"><option>Under AED 2,000</option><option selected>AED 2,000 – 5,000</option><option>AED 5,000 – 9,000</option><option>Above AED 9,000</option></select>
-          </div>
-          <div class="field"><label>Space</label>
-            <select id="wSpace"><option>Compact</option><option selected>Standard</option><option>Studio</option></select>
-          </div>
-          <div class="field"><label>Goal</label>
-            <select id="wGoal"><option>Learning</option><option selected>Recording</option><option>Performance</option></select>
-          </div>
-          <div class="field"><label>Noise Sensitivity</label>
-            <select id="wNoise"><option>Low</option><option>Medium</option><option selected>High (keep it quiet)</option></select>
-          </div>
-          <div class="field"><label>Connectivity Preference</label>
-            <select id="wConn"><option selected>USB/MIDI</option><option>Bluetooth</option><option>No preference</option></select>
-          </div>
+  <!-- Wizard -->
+  <dialog id="wizDlg">
+    <div class="sheet" style="min-width:min(980px,92vw)">
+      <div class="head"><strong>Find My Perfect Kit</strong><button class="x" data-close="1">Close</button></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:10px">
+        <label>Experience <select id="wExp"><option>Beginner</option><option selected>Intermediate</option><option>Advanced</option></select></label>
+        <label>Budget <select id="wBudget">
+          <option value="0-1500">AED 0 – 1,500</option><option value="1500-3000">AED 1,500 – 3,000</option>
+          <option value="3000-5000" selected>AED 2,000 – 5,000</option><option value="5000-9000">AED 5,000 – 9,000</option><option value="9000-20000">AED 9,000+</option>
+        </select></label>
+        <label>Space <select id="wSpace"><option>Compact</option><option selected>Standard</option><option>Studio</option></select></label>
+        <label>Goal <select id="wGoal"><option>Learning</option><option selected>Recording</option><option>Performing</option></select></label>
+        <label>Noise Sensitivity <select id="wNoise"><option selected>High (keep it quiet)</option><option>Normal</option></select></label>
+        <label>Connectivity Preference <select id="wConn"><option selected>USB/MIDI</option><option>Bluetooth</option><option>No preference</option></select></label>
+        <div style="grid-column:1/-1;display:flex;gap:8px;margin-top:6px">
+          <button id="wGo" class="btn btn-primary">Get Recommendation</button>
+          <button data-close="1" class="btn">Close</button>
         </div>
-        <div style="display:flex;gap:10px;margin-top:12px">
-          <button id="btnSuggest" class="btn btn-primary">Get Recommendation</button>
-          <button data-close="1" class="btn btn-ghost">Close</button>
-        </div>
-        <div id="wizOut" style="margin-top:12px"></div>
+        <div id="wOut" style="grid-column:1/-1"></div>
       </div>
     </div>
   </dialog>
 
-  <!-- Order of scripts matters: env -> boot-supabase -> app -->
+  <!-- ENV + Supabase + App -->
   <script src="/env.js"></script>
   <script type="module" src="/boot-supabase.js?v=1"></script>
   <script type="module" src="/app.js?v=9"></script>
