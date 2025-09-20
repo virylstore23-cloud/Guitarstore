@@ -5,53 +5,105 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ALESIS • Electronic Drum Range</title>
   <style>
-    /* ——— Alesis theme + components (no CDN Tailwind) ——— */
-    :root{--bg:#0b1220;--bg-2:#0f172a;--card:#121a2a;--card-2:#0f1929;--ink:#e6f0ff;--muted:#a7b3c7;--line:#1d2b44;--alesis:#00c8ff;--green:#15dd9c}
-    *{box-sizing:border-box}html,body{height:100%}body{margin:0;background:radial-gradient(1200px 600px at 70% 0%,#0b2f4a10,transparent 65%),var(--bg);color:var(--ink);font:15px/1.45 ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
-    .bar{position:sticky;top:0;z-index:40;backdrop-filter:saturate(130%) blur(8px);background:linear-gradient(180deg,rgba(9,13,22,.95),rgba(9,13,22,.75));border-bottom:1px solid #0c1728}
-    .nav{max-width:1120px;margin:auto;display:flex;gap:16px;align-items:center;padding:12px 16px}
+    /* ===== Theme: black + floral blue ===== */
+    :root{
+      --floral:#0d3b66;            /* deep floral blue */
+      --bg:#000;                   /* pure black base */
+      --bg-2:#060a12;
+      --card:#0a0f1a;
+      --card-2:#091221;
+      --ink:#e9f2ff;
+      --muted:#a7b3c7;
+      --line:#1b2942;
+      --alesis:#00c8ff;            /* Alesis cyan for CTAs */
+      --green:#15dd9c;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      color:var(--ink);
+      font:15px/1.45 ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+      background:
+        radial-gradient(900px 500px at 85% -10%, color-mix(in oklab, var(--floral) 55%, transparent), transparent 60%),
+        radial-gradient(700px 380px at 10% 0%, color-mix(in oklab, var(--floral) 35%, transparent), transparent 65%),
+        var(--bg);
+    }
+
+    /* ===== Top bar ===== */
+    .bar{position:sticky;top:0;z-index:40;backdrop-filter:saturate(130%) blur(8px);
+      background:linear-gradient(180deg,rgba(0,0,0,.9),rgba(0,0,0,.7));
+      border-bottom:1px solid #0c1728}
+    .nav{max-width:1120px;margin:auto;display:flex;gap:12px;align-items:center;padding:12px 16px}
     .brand{font-weight:800;letter-spacing:.12em;color:var(--alesis)}
-    .btn{display:inline-flex;align-items:center;justify-content:center;font-weight:700;border-radius:12px;padding:.65rem 1rem;border:1px solid transparent;transition:.2s transform,.2s box-shadow,.2s background,.2s border-color}
+
+    .btn{display:inline-flex;align-items:center;justify-content:center;font-weight:800;border-radius:12px;
+      padding:.65rem 1rem;border:1px solid transparent;transition:.2s transform,.2s box-shadow,.2s background,.2s border-color}
     .btn:active{transform:translateY(1px)}
-    .btn-alesis{color:#fff;background:linear-gradient(180deg,#10defc,var(--alesis));box-shadow:0 6px 24px rgba(0,200,255,.25),inset 0 0 0 1px rgba(255,255,255,.15)}
+    .btn-alesis{color:#fff;background:linear-gradient(180deg,#10defc,var(--alesis));
+      box-shadow:0 6px 24px rgba(0,200,255,.25),inset 0 0 0 1px rgba(255,255,255,.15)}
     .btn-alesis:hover{box-shadow:0 8px 28px rgba(0,200,255,.35),inset 0 0 0 1px rgba(255,255,255,.2)}
-    .btn-ghost{background:#0f1a2a;border-color:#193052;color:#cde3ff}
+    .btn-ghost{background:#0b1322;border-color:#203a60;color:#d9ecff}
+
+    .countdot{margin-left:.5rem;min-width:22px;height:22px;border-radius:999px;background:#fff;color:#000;
+      display:inline-flex;align-items:center;justify-content:center;font-weight:900;font-size:12px;padding:0 6px}
+    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+
+    /* ===== Layout ===== */
     .wrap{max-width:1120px;margin:0 auto;padding:24px 16px}
     .h1{font-weight:900;font-size:40px;margin:6px 0 8px}.sub{color:#a7b3c7}
-    .chips{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:18px}.chips .lbl{color:#a7b3c7;margin-right:6px}
-    .chip{border-radius:999px;padding:.45rem .8rem;background:#111b2a;border:1px solid #1d2b44;color:#cfe5ff;cursor:pointer;font-weight:600}
-    .chip.active{background:#162944;border-color:#27446b;box-shadow:inset 0 0 0 1px #3b5f93}
+
+    /* ===== Chips ===== */
+    .chips{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:18px}
+    .chips .lbl{color:#a7b3c7;margin-right:6px}
+    .chip{border-radius:999px;padding:.45rem .8rem;background:#0b1322;border:1px solid #1b2942;color:#cfe5ff;cursor:pointer;font-weight:700}
+    .chip.active{background:#10233d;border-color:#2a4772;box-shadow:inset 0 0 0 1px #3b5f93}
+
+    /* ===== Grid & cards ===== */
     #kitGrid{display:grid;grid-template-columns:repeat(1,minmax(0,1fr));gap:14px;margin-top:16px}
     @media (min-width:640px){#kitGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
     @media (min-width:980px){#kitGrid{grid-template-columns:repeat(3,minmax(0,1fr))}}
-    .card{background:linear-gradient(180deg,#121a2a,#0f1929);border:1px solid #1d2b44;border-radius:16px;box-shadow:0 10px 25px rgba(0,0,0,.35);overflow:hidden;display:flex;flex-direction:column}
-    .imgbox{position:relative;aspect-ratio:16/9;background:#0f1929}.imgbox img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-    .badge{position:absolute;top:10px;left:10px;background:rgba(0,200,255,.12);color:#bff1ff;border:1px solid #1b6c8d;border-radius:999px;padding:.25rem .6rem;font-size:12px;font-weight:700}
-    .badge.compare{left:auto;right:10px;background:#0e1c2e;border-color:#244976;color:#cfe7ff}
-    .content{padding:12px 14px 14px}.slug{font-size:12px;color:#8aa2c4}.title{font-weight:800;font-size:17px;margin:2px 0}.desc{color:#adc1da;margin:0 0 8px}.price{color:#15dd9c;font-weight:900;margin:6px 0 10px}
-    .pill{padding:.35rem .65rem;border-radius:999px;border:1px solid #1d2b44;color:#cfe5ff;background:#0d1826}
-    #detailWrap{position:fixed;inset:0;display:none;align-items:flex-end;z-index:60;background:rgba(3,9,17,.5)}#detailWrap.open{display:flex}
-    #detail{background:linear-gradient(180deg,#0f1728,#0c1423);border-top-left-radius:16px;border-top-right-radius:16px;border-top:1px solid #1d2b44;width:100%}
+
+    .card{background:linear-gradient(180deg,var(--card),var(--card-2));border:1px solid var(--line);
+      border-radius:16px;box-shadow:0 12px 28px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.03);overflow:hidden;display:flex;flex-direction:column}
+    .imgbox{position:relative;aspect-ratio:16/9;background:#0d1422}.imgbox img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+    .badge{position:absolute;top:10px;left:10px;background:rgba(13,59,102,.22);color:#bfe9ff;border:1px solid #1b5377;
+      border-radius:999px;padding:.25rem .6rem;font-size:12px;font-weight:800;text-transform:none}
+    .badge.compare{left:auto;right:10px;background:#0b1a2f;border-color:#244976;color:#cfe7ff}
+    .content{padding:12px 14px 14px}
+    .slug{font-size:12px;color:#8aa2c4}.title{font-weight:900;font-size:17px;margin:2px 0}.desc{color:#adc1da;margin:0 0 8px}
+    .price{color:var(--green);font-weight:900;margin:6px 0 10px}
+    .pill{padding:.35rem .65rem;border-radius:999px;border:1px solid var(--line);color:#cfe5ff;background:#0b1322}
+
+    /* ===== Detail drawer ===== */
+    #detailWrap{position:fixed;inset:0;display:none;align-items:flex-end;z-index:60;background:rgba(0,0,0,.55)}
+    #detailWrap.open{display:flex}
+    #detail{background:linear-gradient(180deg,#090f18,#070c16);border-top-left-radius:16px;border-top-right-radius:16px;border-top:1px solid var(--line);width:100%}
     .detail-body{max-width:1120px;margin:auto;display:grid;grid-template-columns:1fr;gap:20px;padding:18px}
     @media (min-width:900px){.detail-body{grid-template-columns:1.15fr 1fr}}
     .detail-visual{background:#fff;border-radius:14px;overflow:hidden;border:1px solid #e6eefb}.detail-visual img{width:100%;height:auto;display:block}
     .detail-head{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:4px 0 8px}.detail-name{font-weight:900;font-size:22px}
-    .x{cursor:pointer;border:1px solid #2a3f60;border-radius:10px;padding:.4rem .6rem;background:#0f1a2a}
-    dialog{border:0;padding:0;border-radius:14px;max-width:880px;width:92%;background:linear-gradient(180deg,#0e1728,#0b1322);color:#e6f0ff}
-    dialog::backdrop{background:rgba(2,6,14,.6)}.modal-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid #1d2b44}.modal-body{padding:16px}
-    #compareDock{position:fixed;right:16px;bottom:16px;z-index:50}
-    #compareCount{position:absolute;top:-8px;right:-8px;background:#fff;color:#000;border-radius:999px;padding:.1rem .4rem;font-weight:900;font-size:12px}
+    .x{cursor:pointer;border:1px solid #2a3f60;border-radius:10px;padding:.4rem .6rem;background:#0b1322;color:#d9ecff}
+
+    /* ===== Modal ===== */
+    dialog{border:0;padding:0;border-radius:14px;max-width:880px;width:92%;background:linear-gradient(180deg,#0b1322,#08101c);color:#e6f0ff}
+    dialog::backdrop{background:rgba(0,0,0,.6)}
+    .modal-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--line)}
+    .modal-body{padding:16px}
   </style>
 </head>
 <body>
+  <!-- Top bar with both CTAs -->
   <div class="bar">
     <div class="nav">
       <div class="brand">ALESIS</div>
       <div style="flex:1"></div>
+      <button id="compareBtn" class="btn btn-ghost">Compare <span id="compareCount" class="countdot sr-only">0</span></button>
       <button id="btnWizard" class="btn btn-alesis">Find my kit</button>
     </div>
   </div>
 
+  <!-- Header -->
   <header class="wrap">
     <div class="h1">Electronic Drum Range</div>
     <div class="sub">Compare features and choose the perfect Alesis kit for practice, recording, or performance.</div>
@@ -66,8 +118,10 @@
     </div>
   </header>
 
+  <!-- Grid -->
   <main class="wrap"><div id="kitGrid"></div></main>
 
+  <!-- Detail drawer -->
   <div id="detailWrap" aria-hidden="true">
     <div id="detail">
       <div class="detail-body">
@@ -86,13 +140,13 @@
     </div>
   </div>
 
-  <div id="compareDock"><button id="compareBtn" class="btn btn-ghost" style="position:relative">Compare <span id="compareCount" class="sr-only">0</span></button></div>
-
+  <!-- Compare modal -->
   <dialog id="compareModal" aria-label="Compare products">
     <div class="modal-head"><strong>Compare</strong><button data-close="1" class="x">Close</button></div>
     <div class="modal-body"><div id="compareGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:12px"></div></div>
   </dialog>
 
+  <!-- Wizard -->
   <dialog id="wizard" aria-label="Find my kit">
     <div class="modal-head"><strong>Find my kit</strong><button data-close="1" class="x">Close</button></div>
     <div class="modal-body">
@@ -101,7 +155,8 @@
     </div>
   </dialog>
 
+  <!-- ENV + App -->
   <script src="/env.js"></script>
-  <script type="module" src="/app.js?v=5"></script>
+  <script type="module" src="/app.js?v=6"></script>
 </body>
 </html>

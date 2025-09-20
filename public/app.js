@@ -9,7 +9,7 @@ if (!window.supabase) {
 const supabase = window.supabase;
 
 const AED = (v)=> `AED ${Number(v||0).toLocaleString('en-AE',{minimumFractionDigits:2, maximumFractionDigits:2})}`;
-const PLACEHOLDER = `data:image/svg+xml;utf8,`+encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 450'><rect width='800' height='450' fill='#0f172a'/><text x='50%' y='52%' fill='#00c8ff' font-family='Arial Black,Arial' font-size='64' text-anchor='middle'>ALESIS</text></svg>`);
+const PLACEHOLDER = `data:image/svg+xml;utf8,`+encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 450'><rect width='800' height='450' fill='#09121f'/><text x='50%' y='52%' fill='#00c8ff' font-family='Arial Black,Arial' font-size='64' text-anchor='middle'>ALESIS</text></svg>`);
 const fixUrl = u => !u ? null : (/^https?:\/\//i.test(u)?u:`https://${String(u).replace(/^\/+/, '')}`);
 
 const mapToTop = (r)=>{
@@ -78,7 +78,7 @@ function cardHTML(r){
   </article>`;
 }
 
-/* Detail drawer */
+/* ===== Detail drawer ===== */
 const detailWrap=document.getElementById('detailWrap');
 const detailImg=document.getElementById('detailImg');
 const detailName=document.getElementById('detailName');
@@ -98,13 +98,17 @@ function openDetail(id){
 function closeDetail(){detailWrap.classList.remove('open'); detailWrap.setAttribute('aria-hidden','true');}
 detailWrap.addEventListener('click',e=>{ if(e.target?.dataset?.close || e.target===detailWrap) closeDetail(); });
 
-/* Compare */
+/* ===== Compare (now in header) ===== */
 const compareBtn=document.getElementById('compareBtn');
 const compareCount=document.getElementById('compareCount');
 const compareModal=document.getElementById('compareModal');
 const compareGrid=document.getElementById('compareGrid');
 
-function updateCompareBadge(){ const n=state.compare.size; if(n>0){compareCount.textContent=n; compareCount.classList.remove('sr-only');} else compareCount.classList.add('sr-only'); }
+function updateCompareBadge(){
+  const n=state.compare.size;
+  if(n>0){compareCount.textContent=n; compareCount.classList.remove('sr-only');}
+  else compareCount.classList.add('sr-only');
+}
 compareBtn.addEventListener('click',()=>{
   compareGrid.innerHTML=[...state.compare].map(id=>{
     const r=state.byId.get(String(id)); if(!r) return '';
@@ -115,7 +119,7 @@ compareBtn.addEventListener('click',()=>{
 });
 compareModal.addEventListener('click',e=>{ if(e.target?.dataset?.close) compareModal.close(); });
 
-/* Wizard */
+/* ===== Wizard ===== */
 const wizard=document.getElementById('wizard');
 document.getElementById('btnWizard').addEventListener('click',()=>{ buildWizard(); wizard.showModal(); });
 wizard.addEventListener('click',e=>{ if(e.target?.dataset?.close) wizard.close(); });
@@ -146,10 +150,10 @@ function buildWizard(){
   });
 }
 
-/* Filters */
+/* ===== Filters ===== */
 document.querySelectorAll('[data-filter]').forEach(btn=>btn.addEventListener('click',()=>{state.filterLabel=btn.getAttribute('data-filter'); render();}));
 
-/* Boot + realtime */
+/* ===== Boot + realtime ===== */
 await load();
 supabase.channel('public:drum_kits')
   .on('postgres_changes',{event:'*',schema:'public',table:'drum_kits'},p=>{
