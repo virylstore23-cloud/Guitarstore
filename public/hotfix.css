@@ -1,29 +1,12 @@
-/* === Detail sheet readability hotfix === */
-#detailWrap .section { 
-  background: rgba(8,20,28,.82) !important;   /* darker glass so white text pops */
-}
-#detailWrap .section h4{
+/* === Force white text inside the product detail sheet === */
+#detailWrap .section,
+#detailWrap .section * {
   color:#fff !important;
-}
-#detailWrap .section .muted,
-#detailWrap .section p,
-#detailWrap .section ul,
-#detailWrap .section li{
-  color:#fff !important;
-  opacity:1 !important;                       /* kill any fade */
-}
-#detailWrap .section li::marker{
-  color:#49e5ff !important;                   /* visible bullet color */
-}
-
-/* ===== Stronger visibility overrides for detail sheet ===== */
-#detailWrap .sheet { 
-  background: rgba(8,18,26,.92) !important;
-}
-
-#detailWrap .section{
-  background: rgba(16,34,48,.86) !important;
-  border-color: rgba(120,170,190,.28) !important;
+  -webkit-text-fill-color:#fff !important;
+  text-shadow:none !important;
+  opacity:1 !important;
+  filter:none !important;
+  mix-blend-mode:normal !important;
 }
 
 /* Headings */
@@ -32,19 +15,10 @@
   opacity:1 !important;
 }
 
-/* Body copy + lists */
-#detailWrap .section .muted,
-#detailWrap .section p,
-#detailWrap .section ul,
-#detailWrap .section li,
-#detailWrap .section div,
-#detailWrap .section span{
-  color:#ffffff !important;
-  opacity:1 !important;
-}
-
-/* Bullets visible */
-#detailWrap .section ul{ list-style:disc; padding-left:18px; }
+/* Lists / bullets */
+#detailWrap .section ul{ list-style:disc; padding-left:18px; margin:0; }
 #detailWrap .section li{ padding:3px 0; }
-#detailWrap .section li::marker{ color:#2fe3ff !important; }
+#detailWrap .section li::marker{ color:#2fe3ff !important; }  /* teal bullets */
 
+/* Optional: description text sometimes uses ".muted" */
+#detailWrap .section .muted{ color:#fff !important; opacity:1 !important; }
