@@ -15,3 +15,36 @@
 #detailWrap .section li::marker{
   color:#49e5ff !important;                   /* visible bullet color */
 }
+
+/* ===== Stronger visibility overrides for detail sheet ===== */
+#detailWrap .sheet { 
+  background: rgba(8,18,26,.92) !important;
+}
+
+#detailWrap .section{
+  background: rgba(16,34,48,.86) !important;
+  border-color: rgba(120,170,190,.28) !important;
+}
+
+/* Headings */
+#detailWrap .section h4{
+  color:#fff !important;
+  opacity:1 !important;
+}
+
+/* Body copy + lists */
+#detailWrap .section .muted,
+#detailWrap .section p,
+#detailWrap .section ul,
+#detailWrap .section li,
+#detailWrap .section div,
+#detailWrap .section span{
+  color:#ffffff !important;
+  opacity:1 !important;
+}
+
+/* Bullets visible */
+#detailWrap .section ul{ list-style:disc; padding-left:18px; }
+#detailWrap .section li{ padding:3px 0; }
+#detailWrap .section li::marker{ color:#2fe3ff !important; }
+
