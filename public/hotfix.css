@@ -1,0 +1,17 @@
+/* === Detail sheet readability hotfix === */
+#detailWrap .section { 
+  background: rgba(8,20,28,.82) !important;   /* darker glass so white text pops */
+}
+#detailWrap .section h4{
+  color:#fff !important;
+}
+#detailWrap .section .muted,
+#detailWrap .section p,
+#detailWrap .section ul,
+#detailWrap .section li{
+  color:#fff !important;
+  opacity:1 !important;                       /* kill any fade */
+}
+#detailWrap .section li::marker{
+  color:#49e5ff !important;                   /* visible bullet color */
+}
