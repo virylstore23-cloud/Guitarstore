@@ -9,7 +9,6 @@
     --bg:#0b0f13; --panel:#0f141a; --glass:rgba(15,21,27,.72);
     --glass-brd:rgba(55,137,153,.35); --text:#e9f7ff; --muted:#a7bdc5;
     --pill:#00c7d8; --pill-text:#002326; --line:rgba(86,150,160,.35);
-    /* dirham icon setup (will be replaced at runtime if /dirham.svg|.png exists) */
     --dh-url: url('data:image/svg+xml;utf8,\
 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="-1 -1 26 26">\
 <g fill="none" stroke="black" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">\
@@ -39,37 +38,36 @@
     padding:8px 12px; border-radius:12px; font-weight:650; cursor:pointer}
   .btn:active{transform:translateY(1px)}
 
-  /* money: dirham icon + amount; icon is BLACK via CSS mask */
+  /* money (dirham icon is black via mask) */
   .money{display:inline-flex; align-items:center; gap:6px; vertical-align:middle}
-  .money .dh{width:15px; height:15px; display:inline-block; color:#000;       /* black */
-    background-color: currentColor;
-    -webkit-mask-image: var(--dh-url); mask-image: var(--dh-url);
-    -webkit-mask-repeat:no-repeat; mask-repeat:no-repeat;
-    -webkit-mask-size:contain; mask-size:contain;
+  .money .dh{width:15px; height:15px; display:inline-block; color:#000;
+    background-color: currentColor; -webkit-mask-image: var(--dh-url); mask-image: var(--dh-url);
+    -webkit-mask-repeat:no-repeat; mask-repeat:no-repeat; -webkit-mask-size:contain; mask-size:contain;
     -webkit-mask-position:center; mask-position:center;}
-  /* fallback when only PNG exists (no mask coloring) */
   .dh-png .money .dh{background:none; background-image:var(--dh-url);
     background-repeat:no-repeat; background-size:contain; background-position:center;}
-
   .money .amt{font-weight:800}
 
-  /* chips row */
   #chips{display:flex; gap:10px; flex-wrap:wrap; margin:16px 0 10px}
   .chip{border:1px solid var(--glass-brd); background:var(--panel); color:#cdeef2;
     padding:8px 12px; border-radius:999px; cursor:pointer; user-select:none; white-space:nowrap}
   .chip.active{background:#0b2c34; border-color:#1db8c4}
 
-  /* grid */
   #grid{display:grid; gap:14px; grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}
   .card{background:var(--glass); border:1px solid var(--glass-brd); border-radius:16px; overflow:hidden; cursor:pointer}
   .imgbox{position:relative; height:200px; background:#0b0e12}
   .imgbox img{width:100%; height:100%; object-fit:cover; display:block}
   .demo{position:absolute; top:10px; left:10px; background:#ffd400; color:#231a00; font-weight:800;
     border-radius:999px; padding:4px 10px; font-size:12px; box-shadow:0 8px 18px rgba(0,0,0,.35)}
-  .content{padding:12px 12px 14px}
+  .content{padding:12px 12px 14px; display:flex; flex-direction:column; min-height:180px}
   .title{font-weight:800; margin:6px 0 8px}
   .pill{display:inline-block; background:var(--pill); color:var(--pill-text);
     border-radius:999px; padding:6px 12px; font-weight:800}
+
+  /* bottom-right compare CTA */
+  .compare-cta{margin-top:auto; display:flex; justify-content:flex-end}
+  .compare-cta label{display:flex; align-items:center; gap:8px; color:var(--muted); cursor:pointer; user-select:none}
+  .compare-cta input{accent-color:#00c7d8}
 
   /* detail */
   dialog{border:1px solid var(--glass-brd); border-radius:18px; padding:0; background:rgba(10,14,18,.94);
@@ -208,7 +206,6 @@
     return `<span class="money"><i class="dh" aria-hidden="true"></i><span class="amt">${num}</span></span>`;
   };
 
-  // Prefer /dirham.svg, then /dirham.png; default is inline SVG defined in CSS var
   (function setDirhamIcon(){
     function test(url){return new Promise(res=>{const i=new Image(); i.onload=()=>res(url); i.onerror=()=>res(null); i.src=url;});}
     (async()=>{
@@ -318,16 +315,16 @@
           <div style="display:flex; gap:6px; flex-wrap:wrap; margin:6px 0">
             ${pills.map(p=>`<span class="chip" style="background:#082b33;border-color:#11424a">${p}</span>`).join('')}
           </div>
-          <label class="muted" style="display:flex; align-items:center; gap:8px; margin-top:4px">
-            <input type="checkbox" data-compare ${state.compare.has(String(r.id))?'checked':''}> Add to compare
-          </label>
+          <div class="compare-cta">
+            <label><input type="checkbox" data-compare ${state.compare.has(String(r.id))?'checked':''}> Add to compare</label>
+          </div>
         </div>
       </div>`;
     }).join('');
     $$('#grid .card').forEach(card=>{
       const id=card.dataset.id;
       card.addEventListener('click',e=>{
-        if(e.target.closest('input,[data-compare]')) return; // don't open when ticking compare
+        if(e.target.closest('.compare-cta')) return; // don’t open when interacting with compare area
         openDetail(id);
       });
       card.querySelector('[data-compare]').onchange=e=>{
@@ -339,7 +336,6 @@
 
   function asList(node,arr){node.innerHTML=''; if(!Array.isArray(arr)||!arr.length){node.innerHTML='<li>—</li>'; return;} node.innerHTML=arr.map(x=>`<li>${String(x)}</li>`).join('');}
 
-  /* robust dialog close helper: works even if you click on nested spans */
   function wireDialogClose(dlg){
     const handler=(e)=>{ if(e.type==='click'){ if(!e.target.closest) return; if(!e.target.closest('[data-close]')) return; }
       dlg.close();
