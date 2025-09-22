@@ -1,0 +1,14 @@
+/* Dirham icon (always black) */
+.aed-icon{
+  width:16px; height:16px; display:inline-block;
+  -webkit-mask:url("/aed.svg") no-repeat center/contain;
+  mask:url("/aed.svg") no-repeat center/contain;
+  background:#000; flex:0 0 16px; vertical-align:-2px;
+}
+.pill.price{ display:inline-flex; align-items:center; gap:8px; width:auto; max-width:fit-content }
+.pill.price .aed-icon{ margin-right:6px }
+
+/* keep "Add to compare" bottom-right on every card */
+.card{ position:relative }
+.card .content{ position:relative; padding-bottom:44px }
+.card .compare-row{ position:absolute; right:12px; bottom:12px; display:flex; align-items:center; gap:8px; justify-content:flex-end }
