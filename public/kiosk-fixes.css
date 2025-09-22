@@ -1,0 +1,31 @@
+/* keep theme intact; only small overrides/additions */
+.pill.price{
+  padding:6px 10px; border-radius:18px;
+  display:inline-flex; align-items:center; gap:8px;
+  font-size:14px; line-height:1;
+}
+.pill.price .num{ font-weight:900; letter-spacing:.2px }
+
+.aed-icon{
+  width:16px; height:16px; display:inline-block; flex:0 0 16px; vertical-align:-2px;
+  -webkit-mask: url("/aed.svg") no-repeat center / contain;
+  mask: url("/aed.svg") no-repeat center / contain;
+  background:#000; /* always black regardless of SVG fill */
+  margin-right:6px;
+}
+
+/* pin "Add to compare" bottom-right of every card */
+.card{ position:relative; padding-bottom:56px !important; }
+.cmpCtl{
+  position:absolute; right:12px; bottom:10px;
+  display:flex; gap:8px; align-items:center; z-index:2;
+  font-size:14px;
+}
+
+/* detail modal: close button top-right and tiny demo chip */
+#detail .btn.close{ position:absolute; top:12px; right:12px; }
+.pill-demo{ font-size:12px; padding:4px 8px; border-radius:16px; }
+
+/* hide any Explore buttons/links without touching code */
+button, a { }
+button.kiosk-hide-explore, a.kiosk-hide-explore { display:none !important; }
