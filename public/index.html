@@ -336,6 +336,7 @@
       $('#cmpCount').textContent = state.compare.size;
       const grid = $('#grid');
       const shown = state.rows.filter(fitsFilter);
+      if (state.filterLabel===All) shown.sort((a,b)=>(+b.price||0)-(+a.price||0));
       if (!shown.length){ grid.innerHTML = '<div class="muted">No items match this view.</div>'; return; }
 
       grid.innerHTML = shown.map(r=>{
