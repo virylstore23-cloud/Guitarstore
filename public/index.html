@@ -4,25 +4,18 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Alesis Soundstage</title>
-
 <style>
   :root{
     --bg:#0b0f13;
     --panel:#0f141a;
     --glass:rgba(15,21,27,.72);
     --glass-brd:rgba(55,137,153,.35);
-    --chip:#0d2e35;
-    --chip-brd:#12434d;
-    --pill:#00c7d8;
-    --pill-text:#002326;
     --text:#e9f7ff;
     --muted:#a7bdc5;
+    --pill:#00c7d8;
+    --pill-text:#002326;
     --line:rgba(86,150,160,.35);
-    --danger:#ff3b30;
-    --ok:#19e3ff;
-    --gold:#ffd400;
   }
-
   html,body{height:100%}
   body{
     margin:0; color:var(--text); background:var(--bg);
@@ -32,54 +25,50 @@
       radial-gradient(800px 520px at 20% 12%, rgba(0,209,234,.08) 0,transparent 62%),
       radial-gradient(800px 520px at 88% 8%, rgba(0,209,234,.07) 0,transparent 60%);
   }
-
-  /* sticky header */
-  .wrap{max-width:1160px; margin:0 auto; padding:72px 16px 24px}
-  .header{
-    position:sticky; top:0; z-index:20;
-    background:linear-gradient(to bottom, rgba(11,15,19,.92), rgba(11,15,19,.88));
-    backdrop-filter: blur(6px);
-    border-bottom:1px solid var(--glass-brd);
+  .wrap{max-width:1160px; margin:72px auto 28px; padding:0 16px}
+  /* sticky header bar */
+  .sticky{
+    position:fixed; top:8px; left:50%; transform:translateX(-50%);
+    width:min(1160px, calc(100vw - 32px));
+    z-index:50; backdrop-filter: blur(6px);
   }
-  .bar{display:flex; align-items:center; gap:10px; padding:14px 16px; margin:0 auto; max-width:1160px}
+  .bar{display:flex; align-items:center; gap:10px; padding:8px 12px;
+    border:1px solid var(--glass-brd); background:var(--glass); border-radius:14px}
   .crumbs{font-weight:800; letter-spacing:.3px}
   .crumbs .tag{display:inline-block; padding:3px 8px; border-radius:999px; margin-left:6px;
     background:#06323a; color:#76f7ff; font-size:12px; border:1px solid var(--glass-brd)}
   .grow{flex:1}
-  .btn{appearance:none; border:1px solid var(--glass-brd); background:var(--glass); color:var(--text);
-    padding:10px 14px; border-radius:12px; font-weight:650; cursor:pointer}
-  .btn:hover{border-color:#3adcf0}
-  .btn-primary{background:#ff2b2b; border-color:#ff2b2b}
-  .btn-ghost{background:transparent}
+  .btn{appearance:none; border:1px solid var(--glass-brd); background:transparent; color:var(--text);
+    padding:8px 12px; border-radius:12px; font-weight:650; cursor:pointer}
+  .btn:active{transform:translateY(1px)}
 
   /* chips row */
   #chips{display:flex; gap:10px; flex-wrap:wrap; margin:16px 0 10px}
   .chip{border:1px solid var(--glass-brd); background:var(--panel); color:#cdeef2;
-    padding:8px 12px; border-radius:999px; cursor:pointer; user-select:none}
+    padding:8px 12px; border-radius:999px; cursor:pointer; user-select:none; white-space:nowrap}
   .chip.active{background:#0b2c34; border-color:#1db8c4}
 
   /* grid */
   #grid{display:grid; gap:14px; grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}
   .card{background:var(--glass); border:1px solid var(--glass-brd); border-radius:16px; overflow:hidden}
-  .imgbox{position:relative; height:200px; background:#0b0e12}
-  .imgbox img{width:100%; height:100%; object-fit:cover; display:block; background:#fff}
-  .demo{position:absolute; top:10px; left:10px; background:var(--gold); color:#231a00; font-weight:800;
-    border-radius:999px; padding:4px 8px; font-size:11px; box-shadow:0 10px 24px rgba(0,0,0,.35)}
+  .imgbox{position:relative; height:200px; background:#0b0e12; cursor:pointer}
+  .imgbox img{width:100%; height:100%; object-fit:cover; display:block}
+  .demo{position:absolute; top:10px; left:10px; background:#ffd400; color:#231a00; font-weight:800;
+    border-radius:999px; padding:4px 10px; font-size:12px; box-shadow:0 8px 18px rgba(0,0,0,.35)}
   .content{padding:12px 12px 14px}
   .title{font-weight:800; margin:6px 0 8px}
   .pill{display:inline-block; background:var(--pill); color:var(--pill-text);
-    border-radius:999px; padding:6px 10px; font-weight:800}
-  .muted{color:var(--muted)}
+    border-radius:999px; padding:6px 12px; font-weight:800}
 
   /* detail modal */
-  dialog{border:1px solid var(--glass-brd); border-radius:18px; padding:0; background:rgba(10,14,18,.96);
-    color:var(--text); width:min(1000px,96vw)}
+  dialog{border:1px solid var(--glass-brd); border-radius:18px; padding:0; background:rgba(10,14,18,.94);
+    color:var(--text); width:min(1100px,96vw)}
   dialog::backdrop{background:rgba(0,0,0,.6)}
   .sheet{display:grid; grid-template-columns:1.1fr 1fr; gap:16px; padding:14px}
   .left{background:var(--panel); border:1px solid var(--glass-brd); border-radius:16px; padding:12px}
   .left .imgwrap{background:#fff; border-radius:12px; overflow:hidden; height:min(58vh,520px)}
-  .left .imgwrap img{width:100%; height:100%; object-fit:contain; display:block; background:#fff}
-  .right .chiprow{display:flex; gap:8px; align-items:center; margin-bottom:10px}
+  .left .imgwrap img{width:100%; height:100%; object-fit:contain; display:block}
+  .right .chiprow{display:flex; gap:8px; align-items:center; margin-bottom:10px; flex-wrap:wrap}
   .chip.price{background:#0b3f45; border:1px solid #125056}
   .chip.upc{background:#052d33; border:1px solid #0f4950}
   .section{border:1px solid var(--glass-brd); border-radius:12px; padding:12px; margin-top:12px;
@@ -87,70 +76,53 @@
   .section h4{margin:0 0 8px; font-size:16px; font-weight:800; color:#fff}
   .section ul{list-style:disc; padding-left:18px; margin:0}
   .section li::marker{color:#26e3ff}
-  .specs{width:100%; border-collapse:collapse}
+  .specs{width:100%; border-collapse:collapse; margin-top:4px}
   .specs td{border-bottom:1px dotted var(--line); padding:8px 6px}
   .specs td:first-child{color:#bfefff}
   .specs td:last-child{text-align:right}
 
-  /* compare modal */
+  /* compare */
   #cmp{width:min(1100px,96vw)}
-  #cmp .cols{
-    display:grid; gap:14px;
-    grid-template-columns:repeat(auto-fit,minmax(340px,1fr));
-  }
+  #cmp .cols{display:grid; gap:14px; grid-auto-flow:column; grid-auto-columns:minmax(300px,1fr);
+    overflow-x:auto; overflow-y:hidden; -webkit-overflow-scrolling:touch; padding:12px}
   #cmp .col{background:var(--glass); border:1px solid var(--glass-brd); border-radius:14px; overflow:hidden}
   #cmp .col .pad{padding:12px}
-  #cmp .col .hero{display:none} /* remove large hero image in compare */
-  #cmp .specs{width:100%; border-collapse:collapse}
-  #cmp .specs td{border-bottom:1px dotted var(--line); padding:8px 6px}
   #cmp .specs td:first-child{color:#bfefff}
-  #ladder{border-top:1px solid var(--glass-brd); margin-top:10px; padding:12px}
-  #ladder .row{display:flex; flex-wrap:wrap; gap:8px; align-items:center}
-  #ladder .bigdiff{font-weight:900; font-size:16px; padding:6px 10px; border-radius:10px;
-    background:#143a42; border:1px solid #1a4f59}
+  #ladder{border-top:1px solid var(--glass-brd); margin:6px 12px 14px; padding-top:12px}
+  #ladder .row{display:flex; gap:8px; align-items:center; flex-wrap:wrap}
+  #ladder .pill{font-size:12px; padding:4px 10px; border-radius:18px; display:inline-block}
 
-  /* mobile tweaks */
-  @media (max-width:720px){
-    .sheet{grid-template-columns:1fr}
-    .left .imgwrap{height:44vh}
-    #cmp .cols{
-      grid-auto-flow:column;
-      grid-auto-columns:minmax(320px,85vw);
-      overflow-x:auto; overflow-y:hidden; -webkit-overflow-scrolling:touch;
-      padding-bottom:6px;
-    }
-  }
-
-  /* floating compare button */
+  /* compare FAB */
   #compareFab{
-    position:fixed; right:14px; bottom:14px; z-index:25;
-    display:none; gap:8px; align-items:center;
-    background:#ff2b2b; border:1px solid #ff2b2b; color:#fff; padding:12px 14px; border-radius:999px; font-weight:800;
-    box-shadow:0 10px 30px rgba(0,0,0,.35);
+    position:fixed; right:14px; bottom:14px; z-index:60; display:none; align-items:center; gap:8px;
+    padding:10px 14px; border-radius:999px; border:1px solid var(--glass-brd); background:var(--glass);
+    cursor:pointer; user-select:none
   }
-  #fabCount{background:#fff; color:#ff2b2b; border-radius:999px; padding:2px 8px; font-weight:900}
+  #compareFab .count{background:#00c7d8; color:#002326; font-weight:800; border-radius:999px; padding:2px 8px}
+
+  /* mobile */
+  @media (max-width:820px){ .sheet{grid-template-columns:1fr} .left .imgwrap{height:44vh} }
 </style>
 </head>
 <body>
-  <!-- sticky header -->
-  <div class="header">
+  <div class="sticky">
     <div class="bar">
       <div class="crumbs">ALESIS <span class="tag">DRUMS</span></div>
       <div class="grow"></div>
       <button id="btnCompare" class="btn">Compare <span id="cmpCount">0</span></button>
-      <button id="btnWizard" class="btn btn-primary">Find my kit</button>
+      <button id="btnWizard" class="btn" style="background:#ff2b2b;border-color:#ff2b2b">Find my kit</button>
     </div>
   </div>
 
   <div class="wrap">
     <h2 style="margin:0 0 6px">Electronic Drum Range</h2>
-    <div class="muted">Compare specs and choose the perfect Alesis kit, pad, or amp.</div>
+    <div class="muted">Compare features and choose the perfect Alesis kit for practice, recording, or performance.</div>
 
     <div id="chips"></div>
     <div id="grid"></div>
   </div>
 
-  <!-- Detail modal -->
+  <!-- Detail -->
   <dialog id="detail">
     <div class="sheet">
       <div class="left">
@@ -160,54 +132,44 @@
         <div class="chiprow">
           <span id="dprice" class="chip price">AED —</span>
           <span id="dupc" class="chip upc" style="display:none"></span>
-          <span id="ddemo" class="chip" style="display:none;background:var(--gold);color:#231a00;font-weight:800"></span>
+          <span id="ddemo" class="chip" style="display:none;background:#ffd400;color:#231a00;font-weight:800;font-size:12px">On demo</span>
         </div>
         <div id="dname" style="font-weight:900; font-size:18px; margin:2px 0 8px"></div>
 
-        <div class="section">
-          <h4>Description</h4>
-          <div id="ddesc" class="muted">—</div>
-        </div>
-        <div class="section">
-          <h4>Key Features</h4>
-          <ul id="dfeat"></ul>
-        </div>
-        <div class="section">
-          <h4>What's Included</h4>
-          <ul id="dinc"></ul>
-        </div>
-        <div class="section" id="dni" style="display:none">
-          <h4>What's NOT Included</h4>
-          <ul id="dnot"></ul>
-        </div>
+        <div class="section"><h4>Description</h4><div id="ddesc" class="muted">—</div></div>
+        <div class="section"><h4>Key Features</h4><ul id="dfeat"></ul></div>
+        <div class="section"><h4>What's Included</h4><ul id="dinc"></ul></div>
+        <div class="section" id="dni" style="display:none"><h4>What's NOT Included</h4><ul id="dnot"></ul></div>
+
         <div class="section">
           <h4>Quick Specs</h4>
           <table class="specs" id="dspec"></table>
         </div>
+
         <div style="margin-top:10px">
-          <button class="btn btn-ghost" data-close>Close</button>
+          <button class="btn" data-close>Close</button>
         </div>
       </div>
     </div>
   </dialog>
 
-  <!-- Compare modal -->
+  <!-- Compare -->
   <dialog id="cmp">
-    <div class="bar" style="padding:10px 12px 0">
+    <div class="bar" style="padding:10px 12px 0; border-bottom-left-radius:0;border-bottom-right-radius:0">
       <div style="font-weight:900">Compare</div>
       <div class="grow"></div>
-      <button class="btn btn-ghost" data-close>Close</button>
+      <button class="btn" data-close>Close</button>
     </div>
     <div class="cols" id="cmpCols"></div>
     <div id="ladder"></div>
   </dialog>
 
-  <!-- Find My Kit -->
+  <!-- Wizard (light) -->
   <dialog id="wizard">
     <div class="bar" style="padding:10px 12px 0">
       <div style="font-weight:900">Find My Perfect Kit</div>
       <div class="grow"></div>
-      <button class="btn btn-ghost" data-close>Close</button>
+      <button class="btn" data-close>Close</button>
     </div>
     <div style="padding:12px">
       <div style="display:grid; gap:10px; grid-template-columns:repeat(auto-fit,minmax(220px,1fr))">
@@ -223,345 +185,314 @@
             <option value="5000-15000">AED 5,000 – 15,000</option>
           </select>
         </label>
-        <label>Goal
-          <select id="wGoal" class="btn" style="display:block;width:100%;margin-top:6px">
-            <option>Learning</option><option>Recording</option><option>Live</option>
-          </select>
-        </label>
         <label>Connectivity
           <select id="wConn" class="btn" style="display:block;width:100%;margin-top:6px">
             <option>USB/MIDI</option><option>Bluetooth</option><option>No preference</option>
           </select>
         </label>
       </div>
-      <div style="margin-top:12px">
-        <button id="wGo" class="btn btn-primary">Get Recommendation</button>
-      </div>
+      <div style="margin-top:12px"><button id="wGo" class="btn" style="background:#ff2b2b;border-color:#ff2b2b">Get Recommendation</button></div>
       <div id="wizOut" style="margin-top:14px"></div>
     </div>
   </dialog>
 
-  <!-- Floating Compare -->
-  <button id="compareFab" class="btn">
-    Compare <span id="fabCount">0</span>
-  </button>
+  <!-- Compare FAB -->
+  <div id="compareFab" title="Compare">
+    <span>Compare</span><span class="count" id="fabCount">0</span>
+  </div>
 
   <!-- ENV -->
   <script src="/env.js"></script>
 
   <script>
-    /* ===== helpers ===== */
-    const $ = (s,el=document)=>el.querySelector(s);
-    const $$ = (s,el=document)=>Array.from(el.querySelectorAll(s));
-    const AED = v => (v==null||v==='') ? 'AED —' :
-      new Intl.NumberFormat('en-AE',{style:'currency',currency:'AED',maximumFractionDigits:2}).format(+v||0);
+  const $ = (s,el=document)=>el.querySelector(s);
+  const $$ = (s,el=document)=>Array.from(el.querySelectorAll(s));
+  const AED = v => (v==null||v==='') ? 'AED —' :
+    new Intl.NumberFormat('en-AE',{style:'currency',currency:'AED',maximumFractionDigits:2}).format(+v);
 
-    function getUPC(r){ return r.upc_code || r.upc || r.ean || r.barcode || null; }
+  const state = { rows:[], byId:new Map(), compare:new Set(), filter:'All' };
 
-    function pickImage(r,kind='card'){
-      const direct = (kind==='detail' && (r.detail_image_url)) || r.primary_image_url || r.image_url;
-      return direct || 'data:image/svg+xml;utf8,'+encodeURIComponent(
-        `<svg xmlns="http://www.w3.org/2000/svg" width="640" height="400">
-          <rect width="100%" height="100%" fill="#ffffff"/>
-          <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle"
-            font-family="system-ui,Segoe UI,Arial" font-size="20" fill="#333">Image coming soon</text>
-        </svg>`
-      );
+  const boolYN = v => v===true ? 'Yes' : v===false ? 'No' : '—';
+  const fmtInches = v => (v==null||v==='')?'—': (typeof v==='number'? v+'"': String(v));
+  const powerStr = (rms,peak,altRms,altPeak)=>{
+    const R = rms ?? altRms, P = peak ?? altPeak;
+    if (R && P) return `${R} W RMS / ${P} W peak`;
+    if (P) return `${P} W peak`;
+    if (R) return `${R} W RMS`;
+    return '—';
+  };
+
+  function getUPC(r){ return r.upc_code||r.upc||r.ean||r.barcode||null; }
+  function pickImage(r,kind='card'){ return (kind==='detail'&&r.detail_image_url) || r.primary_image_url || r.image_url ||
+    'data:image/svg+xml;utf8,'+encodeURIComponent('<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"640\" height=\"400\"><rect width=\"100%\" height=\"100%\" fill=\"#f4f6f8\"/><text x=\"50%\" y=\"50%\" dominant-baseline=\"middle\" text-anchor=\"middle\" font-family=\"system-ui,Segoe UI,Arial\" font-size=\"22\">Image coming soon</text></svg>'); }
+
+  function deriveCategory(r){
+    if (r.category) return r.category;
+    const s=`${r.slug||''} ${r.name||''}`;
+    if (/\bamp\b|amplif|monitor/i.test(s)) return 'Drum Amplification';
+    if (/samplepad|strike multipad|sr-?1?8|drum machine/i.test(s)) return 'Multipads & Drum Machines';
+    if (/headphone|clamp|expansion|pack|accessor/i.test(s)) return 'Accessories';
+    return 'Drum Kits';
+  }
+
+  /* value resolver for specs.quick items */
+  function qVal(item, row){
+    if (!item) return null;
+    if (Object.prototype.hasOwnProperty.call(item,'value') && item.value!=null) return item.value;
+    const k = item.key; if(!k) return null;
+    const alts = [k, k.replace(/-/g,'_'), k.replace(/s$/,'_count')];
+    for (const key of alts){
+      if (row && row[key]!=null) return row[key];
+      if (row?.specs?.data && row.specs.data[key]!=null) return row.specs.data[key];
+      if (row?.specs && row.specs[key]!=null) return row.specs[key];
     }
+    return null;
+  }
 
-    function deriveCategory(r){
-      if (r.category) return r.category;
-      const s=(r.slug||'')+' '+(r.name||'');
-      if (/\bamp\b|amplif|monitor/i.test(s)) return 'Drum Amplification';
-      if (/samplepad|strike multipad|sr-?1?8|drum machine/i.test(s)) return 'Multipads & Drum Machines';
-      if (/headphone|clamp|expansion|pack|accessor/i.test(s)) return 'Accessories';
-      return 'Drum Kits';
+  /* Build a normalized quick list for any product (uses specs.quick or category defaults) */
+  function quickList(r){
+    if (Array.isArray(r?.specs?.quick) && r.specs.quick.length) return r.specs.quick;
+
+    const cat = deriveCategory(r);
+    if (cat==='Drum Amplification'){
+      return [
+        {label:'Category', value:cat},
+        {label:'Woofer',   value: fmtInches(r?.specs?.data?.woofer_in ?? r.amp_woofer_in)},
+        {label:'Power',    value: powerStr(r?.specs?.data?.watt_rms, r?.specs?.data?.watt_peak, r.amp_watt_rms, r.watt_peak)},
+        {label:'Max SPL',  value: r?.specs?.data?.max_spl_db ?? r.amp_max_spl_db ?? '—'},
+        {label:'Freq. Response', value: (r?.specs?.data?.freq_low_hz && r?.specs?.data?.freq_high_hz) ? `${r.specs.data.freq_low_hz} Hz – ${r.specs.data.freq_high_hz} Hz` :
+                                     (r?.amp_freq_low_hz && r?.amp_freq_high_hz) ? `${r.amp_freq_low_hz} Hz – ${r.amp_freq_high_hz} Hz` : '—'},
+        {label:'Bluetooth', value: r?.specs?.data?.bluetooth_version ? String(r.specs.data.bluetooth_version) : boolYN(r.bluetooth_audio)},
+        {label:'Inputs',    value: r?.specs?.data?.inputs ?? r.amp_inputs ?? '—'},
+        {label:'Outputs',   value: r?.specs?.data?.outputs ?? r.amp_outputs ?? '—'},
+        {label:'Dimensions',value: r?.specs?.data?.dimensions_mm ?? r.amp_dimensions_mm ?? '—'},
+        {label:'Weight',    value: r?.specs?.data?.weight_kg ? `${r.specs.data.weight_kg} kg` : (r?.amp_weight_kg ? `${r.amp_weight_kg} kg` : '—')}
+      ];
     }
-
-    const state = { rows:[], byId:new Map(), compare:new Set(), filterLabel:'All' };
-
-    /* ===== fetch data ===== */
-    async function load(){
-      const base = window.ENV?.SUPABASE_URL;
-      const key  = window.ENV?.SUPABASE_ANON_KEY;
-      if(!base || !key){ alert('Missing Supabase ENV. Ensure /env.js exists.'); return; }
-      const url = `${base}/rest/v1/drum_kits?select=`+
-        [
-          'id,name,description,price,upc,upc_code,is_active,slug,category',
-          'primary_image_url,detail_image_url,on_demo,on_demo_label',
-          'features,contents,specs',
-          'kits_factory,kits_user,sounds,mesh,usb_midi,bluetooth_audio',
-          'toms_count,crash_count,ride_zones,kick_tower'
-        ].join(',');
-      const headers={apikey:key, Authorization:`Bearer ${key}`};
-      const res = await fetch(url,{headers});
-      const rows = await res.json();
-      rows.forEach(r=>{ r._cat = deriveCategory(r); });
-      state.rows = rows;
-      state.byId = new Map(rows.map(r=>[String(r.id),r]));
-      wireChips();
-      render();
-      updateFab();
+    if (cat==='Multipads & Drum Machines'){
+      return [
+        {label:'Category', value:cat},
+        {label:'USB/MIDI', value: boolYN(r.usb_midi)},
+        {label:'Bluetooth',value: boolYN(r.bluetooth_audio)}
+      ];
     }
-
-    /* ===== Quick Specs resolver (Supabase-driven) ===== */
-    const PRIORITY = [
-      'Category','Price','Woofer','Power','Max SPL','Freq. Response','Mesh',
-      'Factory kits','User kits','Sounds','USB/MIDI','Bluetooth','Inputs','Outputs',
-      'Toms','Crash cymbals','Ride zones','Kick tower','Dimensions','Weight'
+    if (cat==='Accessories'){
+      return [{label:'Category', value:cat}];
+    }
+    // Drum Kits
+    return [
+      {label:'Category', value:cat},
+      {label:'Mesh', key:'mesh'},
+      {label:'USB/MIDI', key:'usb_midi'},
+      {label:'Bluetooth', key:'bluetooth_audio'},
+      {label:'Factory kits', key:'kits_factory'},
+      {label:'User kits', key:'kits_user'},
+      {label:'Sounds', key:'sounds'},
+      {label:'Toms', key:'toms_count'},
+      {label:'Crash cymbals', key:'crash_count'},
+      {label:'Ride zones', key:'ride_zones'},
+      {label:'Kick tower', key:'kick_tower'}
     ];
+  }
 
-    function quickFor(r){
-      // Prefer DB quick specs
-      const quick = r?.specs?.quick;
-      if (Array.isArray(quick) && quick.length) return quick;
+  function specRow(label, val){
+    let v = val;
+    if (typeof v==='boolean') v = v ? 'Yes' : 'No';
+    if (v===null || v===undefined || v==='') v = '—';
+    return `<tr><td>${label}</td><td>${v}</td></tr>`;
+  }
 
-      // Fallbacks by category
-      const q = [];
-      q.push({label:'Category', value: deriveCategory(r)});
-      if (r._cat==='Drum Kits'){
-        if (r.mesh!=null) q.push({label:'Mesh', value: r.mesh?'Yes':'No'});
-        if (r.kits_factory!=null) q.push({label:'Factory kits', value:String(r.kits_factory)});
-        if (r.kits_user!=null) q.push({label:'User kits', value:String(r.kits_user)});
-        if (r.sounds!=null) q.push({label:'Sounds', value:String(r.sounds)});
-        if (r.usb_midi!=null) q.push({label:'USB/MIDI', value:r.usb_midi?'Yes':'No'});
-        if (r.bluetooth_audio!=null) q.push({label:'Bluetooth', value:r.bluetooth_audio?'Yes':'No'});
-        if (r.toms_count!=null) q.push({label:'Toms', value:String(r.toms_count)});
-        if (r.crash_count!=null) q.push({label:'Crash cymbals', value:String(r.crash_count)});
-        if (r.ride_zones!=null) q.push({label:'Ride zones', value:String(r.ride_zones)});
-        if (r.kick_tower!=null) q.push({label:'Kick tower', value:r.kick_tower?'Yes':'No'});
-      }else if (r._cat==='Drum Amplification'){
-        // try pull structured amp specs from r.specs.data if present
-        const d = r?.specs?.data || {};
-        if (d.woofer_in) q.push({label:'Woofer', value:`${d.woofer_in}"`});
-        if (d.watt_rms || d.watt_peak) q.push({label:'Power', value:[d.watt_rms?`${d.watt_rms} W RMS`:null,d.watt_peak?`${d.watt_peak} W peak`:null].filter(Boolean).join(' / ')});
-        if (d.max_spl_db) q.push({label:'Max SPL', value:`${d.max_spl_db} dB`});
-        if (d.freq_low_hz || d.freq_high_hz) q.push({label:'Freq. Response', value:`${d.freq_low_hz||'?'} Hz – ${d.freq_high_hz||'?'} Hz`});
-        if (d.bluetooth_version || r.bluetooth_audio!=null) q.push({label:'Bluetooth', value:d.bluetooth_version || (r.bluetooth_audio?'Yes':'No')});
-        if (d.inputs) q.push({label:'Inputs', value:d.inputs});
-        if (d.outputs) q.push({label:'Outputs', value:d.outputs});
-        if (d.dimensions_mm) q.push({label:'Dimensions', value:`${d.dimensions_mm} mm`});
-        if (d.weight_kg) q.push({label:'Weight', value:`${d.weight_kg} kg`});
-      }else{
-        // Accessories / Pads / Drum Machines
-        if (r.usb_midi!=null) q.push({label:'USB/MIDI', value:r.usb_midi?'Yes':'No'});
-        if (r.bluetooth_audio!=null) q.push({label:'Bluetooth', value:r.bluetooth_audio?'Yes':'No'});
-      }
-      return q;
+  async function load(){
+    const url = `${window.ENV.SUPABASE_URL}/rest/v1/drum_kits?select=`+
+      [
+        'id,name,description,price,upc,upc_code,is_active,slug,category',
+        'primary_image_url,detail_image_url,on_demo,on_demo_label',
+        'features,contents,specs,kits_factory,kits_user,sounds,mesh,usb_midi,bluetooth_audio',
+        'toms_count,crash_count,ride_zones,kick_tower',
+        'watt_peak,amp_woofer_in,amp_watt_rms,amp_max_spl_db,amp_freq_low_hz,amp_freq_high_hz,amp_bt_version,amp_inputs,amp_outputs,amp_dimensions_mm,amp_weight_kg'
+      ].join(',');
+    const headers={apikey:window.ENV.SUPABASE_ANON_KEY, Authorization:`Bearer ${window.ENV.SUPABASE_ANON_KEY}`};
+    const res = await fetch(url,{headers});
+    if(!res.ok){
+      document.getElementById('grid').innerHTML =
+        `<div class="section" style="margin-top:16px">
+           <div style="font-weight:900;color:#ff9a9a">Can’t load data (HTTP ${res.status}).</div>
+           <div class="muted">Check anon key in /public/env.js and RLS: allow SELECT on public.drum_kits.</div>
+         </div>`;
+      return;
     }
+    const rows = await res.json();
+    rows.forEach(r=>r._cat = deriveCategory(r));
+    state.rows = rows;
+    state.byId = new Map(rows.map(r=>[String(r.id),r]));
+    wireChips();
+    render();
+    updateFab();
+  }
 
-    function quickValue(quick, label){
-      const f = quick.find(q=>q.label===label);
-      return f ? f.value : '—';
-    }
+  function wireChips(){
+    const labels = ['All','Electronic Drum Kits','Multipads & Drum Machines','Drum Amplification','Accessories','On Demo'];
+    const box = $('#chips');
+    box.innerHTML = labels.map(l=>`<div class="chip${state.filter===l?' active':''}" data-filter="${l}">${l}</div>`).join('');
+    box.onclick = e=>{
+      const b = e.target.closest('.chip'); if(!b) return;
+      $$('#chips .chip').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+      state.filter = b.dataset.filter;
+      render();
+    };
+  }
+  function fitsFilter(r){
+    const c = state.filter;
+    if (c==='All') return true;
+    if (c==='On Demo') return !!r.on_demo;
+    if (c==='Electronic Drum Kits') return deriveCategory(r)==='Drum Kits';
+    return deriveCategory(r)===c;
+  }
 
-    /* ===== UI ===== */
-    function wireChips(){
-      const labels = ['All','Electronic Drum Kits','Multipads & Drum Machines','Drum Amplification','Accessories','On Demo'];
-      const chips = labels.map(l=>`<div class="chip${state.filterLabel===l?' active':''}" data-filter="${l}">${l}</div>`).join('');
-      const box = $('#chips'); box.innerHTML = chips;
-      box.addEventListener('click',e=>{
-        const b = e.target.closest('.chip'); if(!b) return;
-        $$('#chips .chip').forEach(x=>x.classList.remove('active'));
-        b.classList.add('active');
-        state.filterLabel = b.dataset.filter;
-        render();
-      });
-    }
+  function render(){
+    $('#cmpCount').textContent = state.compare.size;
+    const grid = $('#grid');
+    const shown = state.rows.filter(fitsFilter);
+    if (!shown.length){ grid.innerHTML = '<div class="muted" style="margin-top:8px">No items match this view.</div>'; return; }
+    grid.innerHTML = shown.map(r=>{
+      const demo = r.on_demo ? `<div class="demo">${r.on_demo_label || 'On demo'}</div>` : '';
+      const upc = getUPC(r);
+      const pills = [];
+      if (r.mesh) pills.push('Mesh');
+      if (r.usb_midi) pills.push('USB/MIDI');
+      if (r.bluetooth_audio) pills.push('Bluetooth');
+      return `
+        <div class="card" data-id="${r.id}">
+          <div class="imgbox" data-open>${demo}<img src="${pickImage(r,'card')}" alt=""></div>
+          <div class="content">
+            <div class="pill">${AED(r.price)}</div>
+            <div class="title">${r.name||''}</div>
+            ${upc?`<div class="muted" style="margin-bottom:8px">UPC: ${upc}</div>`:''}
+            <div style="display:flex; gap:6px; flex-wrap:wrap; margin:6px 0">
+              ${pills.map(p=>`<span class="chip" style="background:#082b33;border-color:#11424a">${p}</span>`).join('')}
+            </div>
+            <div style="display:flex; gap:8px; align-items:center; margin-top:4px">
+              <button class="btn" data-open>Explore</button>
+              <label class="muted" style="display:flex; align-items:center; gap:8px">
+                <input type="checkbox" data-compare ${state.compare.has(String(r.id))?'checked':''}> Add to compare
+              </label>
+            </div>
+          </div>
+        </div>`;
+    }).join('');
 
-    function fitsFilter(r){
-      const c = state.filterLabel;
-      if (c==='All') return true;
-      if (c==='On Demo') return !!r.on_demo;
-      if (c==='Electronic Drum Kits') return deriveCategory(r)==='Drum Kits';
-      return deriveCategory(r)===c;
-    }
+    // wire cards (tap-friendly)
+    $$('#grid .card').forEach(card=>{
+      const id = card.dataset.id;
+      card.querySelector('[data-open]').onclick=()=>openDetail(id);
+      card.querySelector('.imgbox').onclick=()=>openDetail(id);
+      card.querySelector('[data-compare]').onchange=(e)=>{
+        const sid = String(id);
+        if (e.currentTarget.checked) state.compare.add(sid); else state.compare.delete(sid);
+        $('#cmpCount').textContent = state.compare.size;
+        updateFab();
+      };
+    });
+  }
 
-    function render(){
-      $('#cmpCount').textContent = state.compare.size;
-      const grid = $('#grid');
-      const shown = state.rows.filter(fitsFilter);
-      if (!shown.length){ grid.innerHTML = '<div class="muted">No items match this view.</div>'; return; }
-      grid.innerHTML = shown.map(r=>{
-        const demo = r.on_demo ? `<div class="demo">${r.on_demo_label || 'On Demo'}</div>` : '';
-        const upc = getUPC(r);
-        const pills = [];
-        if (r.mesh) pills.push('Mesh');
-        if (r.usb_midi) pills.push('USB/MIDI');
-        if (r.bluetooth_audio) pills.push('Bluetooth');
+  function asList(node, arr){
+    node.innerHTML = '';
+    if (!Array.isArray(arr) || !arr.length){ node.innerHTML = '<li>—</li>'; return; }
+    node.innerHTML = arr.map(x=>`<li>${String(x)}</li>`).join('');
+  }
+
+  function openDetail(id){
+    const r = state.byId.get(String(id)); if(!r) return;
+    $('#dimg').src = pickImage(r,'detail');
+    $('#dname').textContent = r.name || '';
+    $('#dprice').textContent = AED(r.price);
+    const upc = getUPC(r); const upcEl = $('#dupc');
+    if (upc){ upcEl.style.display='inline-block'; upcEl.textContent = `UPC: ${upc}`; } else upcEl.style.display='none';
+    const dlab = $('#ddemo');
+    if (r.on_demo){ dlab.style.display='inline-block'; dlab.textContent = r.on_demo_label || 'On demo'; }
+    else dlab.style.display='none';
+
+    $('#ddesc').textContent = r.description || '—';
+    asList($('#dfeat'), r.features);
+    asList($('#dinc'), r.contents);
+
+    const notInc = (r.specs && (r.specs.not_included || r.specs.notIncluded)) || null;
+    if (Array.isArray(notInc) && notInc.length){ $('#dni').style.display='block'; asList($('#dnot'), notInc); }
+    else { $('#dni').style.display='none'; }
+
+    const S = $('#dspec');
+    const q = quickList(r);
+    S.innerHTML = q.map(it => specRow(it.label || it.key || '', qVal(it, r))).join('');
+
+    const dlg = $('#detail');
+    dlg.showModal();
+    const closer = e=>{ if (e.type==='click' && !e.target.closest) return; if (e.type==='click' && !e.target.hasAttribute('data-close')) return; dlg.close(); };
+    dlg.addEventListener('click', closer, {once:true});
+    dlg.addEventListener('cancel', ()=>dlg.close(), {once:true});
+    dlg.addEventListener('keydown', (e)=>{ if(e.key==='Escape') dlg.close(); }, {once:true});
+  }
+
+  function openCompare(){
+    const ids = Array.from(state.compare);
+    const rows = ids.map(id=>state.byId.get(String(id))).filter(Boolean);
+    const cols = $('#cmpCols');
+    if (!rows.length){ cols.innerHTML = '<div class="muted" style="padding:10px">No items selected.</div>'; }
+    else{
+      cols.innerHTML = rows.map(r=>{
+        const q = quickList(r);
         return `
-          <div class="card" data-id="${r.id}">
-            <div class="imgbox">${demo}<img src="${pickImage(r,'card')}" alt=""></div>
-            <div class="content">
+          <div class="col" data-id="${r.id}">
+            <div class="pad">
               <div class="pill">${AED(r.price)}</div>
-              <div class="title">${r.name||''}</div>
-              ${upc?`<div class="muted" style="margin-bottom:8px">UPC: ${upc}</div>`:''}
-              <div style="display:flex; gap:6px; flex-wrap:wrap; margin:6px 0">
-                ${pills.map(p=>`<span class="chip" style="background:#082b33;border-color:#11424a">${p}</span>`).join('')}
-              </div>
-              <div style="display:flex; gap:8px; align-items:center; margin-top:4px">
-                <button class="btn btn-ghost" data-explore>Explore</button>
-                <label class="muted" style="display:flex; align-items:center; gap:8px">
-                  <input type="checkbox" data-compare ${state.compare.has(String(r.id))?'checked':''}> Add to compare
-                </label>
+              <div class="title" style="margin-top:6px">${r.name||''}</div>
+              <table class="specs">
+                ${q.map(it=>specRow(it.label || it.key || '', qVal(it,r))).join('')}
+              </table>
+              <div style="display:flex; gap:8px; margin-top:10px">
+                <button class="btn" data-open>Explore</button>
+                <button class="btn" data-remove>Remove</button>
               </div>
             </div>
           </div>`;
       }).join('');
 
-      // wire cards: tap anywhere except checkbox and Explore
-      $$('#grid .card').forEach(card=>{
-        const open = ()=>openDetail(card.dataset.id);
-        card.querySelector('[data-explore]').onclick=open;
-        card.onclick = (e)=>{
-          if (e.target.closest('input,[data-explore]')) return;
-          open();
-        };
-        card.querySelector('[data-compare]').onchange=(e)=>{
-          const id = String(card.dataset.id);
-          if (e.currentTarget.checked) state.compare.add(id); else state.compare.delete(id);
+      // wire buttons
+      $$('#cmpCols .col').forEach(col=>{
+        col.querySelector('[data-open]').onclick=()=>{ $('#cmp').close(); openDetail(col.dataset.id); };
+        col.querySelector('[data-remove]').onclick=()=>{
+          state.compare.delete(String(col.dataset.id));
           $('#cmpCount').textContent = state.compare.size;
-          updateFab();
+          updateFab(); openCompare();
         };
       });
     }
 
-    function asList(node, arr){
-      node.innerHTML = '';
-      if (!Array.isArray(arr) || !arr.length){ node.innerHTML = '<li>—</li>'; return; }
-      node.innerHTML = arr.map(x=>`<li>${String(x)}</li>`).join('');
-    }
+    // Ladder
+    const ladder = $('#ladder');
+    if (rows.length>=2){
+      const sorted = rows.slice().sort((a,b)=>(+a.price)-(+b.price));
+      const base = sorted[0], better = sorted[sorted.length-1];
+      const diff = (+better.price||0) - (+base.price||0);
+      const pct  = (base.price? Math.round((diff/base.price)*100) : 0);
+      const reasons = [];
+      // kits/sounds upgrades
+      if ((better.kits_factory||0) > (base.kits_factory||0)) reasons.push('more factory kits');
+      if ((better.sounds||0)       > (base.sounds||0))       reasons.push('more sounds');
+      if (!!better.mesh && !base.mesh)                       reasons.push('mesh heads');
+      if (!!better.bluetooth_audio && !base.bluetooth_audio) reasons.push('Bluetooth audio');
+      if (!!better.usb_midi && !base.usb_midi)               reasons.push('USB/MIDI');
+      // amps: more power, bigger woofer, louder
+      const bPeak = better?.specs?.data?.watt_peak ?? better.watt_peak;
+      const aPeak = base?.specs?.data?.watt_peak ?? base.watt_peak;
+      if ((bPeak||0) > (aPeak||0)) reasons.push('higher peak power');
+      const bWoofer = better?.specs?.data?.woofer_in ?? better.amp_woofer_in;
+      const aWoofer = base?.specs?.data?.woofer_in ?? base.amp_woofer_in;
+      if ((+bWoofer||0) > (+aWoofer||0)) reasons.push('larger woofer');
+      const why = reasons.length ? reasons.join(', ') : 'overall higher spec';
 
-    function specRow(label, val){
-      const v = (val===true)?'Yes' : (val===false||val==null||val==='')?'—' : val;
-      return `<tr><td>${label}</td><td>${v}</td></tr>`;
-    }
-
-    function openDetail(id){
-      const r = state.byId.get(String(id)); if(!r) return;
-      $('#dimg').src = pickImage(r,'detail');
-      $('#dname').textContent = r.name || '';
-      $('#dprice').textContent = AED(r.price);
-      const upc = getUPC(r);
-      const upcEl = $('#dupc');
-      if (upc){ upcEl.style.display='inline-block'; upcEl.textContent = `UPC: ${upc}`; } else upcEl.style.display='none';
-      const dlab = $('#ddemo');
-      if (r.on_demo){ dlab.style.display='inline-block'; dlab.textContent = r.on_demo_label || 'On Demo'; }
-      else dlab.style.display='none';
-
-      $('#ddesc').textContent = r.description || '—';
-      asList($('#dfeat'), r.features);
-      asList($('#dinc'), r.contents);
-
-      const notInc = (r.specs && (r.specs.not_included || r.specs.notIncluded)) || null;
-      if (Array.isArray(notInc) && notInc.length){
-        $('#dni').style.display='block';
-        asList($('#dnot'), notInc);
-      }else{
-        $('#dni').style.display='none';
-      }
-
-      // Quick Specs table uses Supabase specs.quick (or fallback)
-      const Q = quickFor(r);
-      const S = $('#dspec'); S.innerHTML = Q.map(q=>specRow(q.label,q.value)).join('');
-
-      const dlg = $('#detail');
-      dlg.showModal();
-
-      // robust close
-      const closer = (e)=>{ if (e.target && e.target.hasAttribute('data-close')) { dlg.close(); dlg.removeEventListener('click',closer); } };
-      dlg.addEventListener('click', closer);
-      dlg.addEventListener('keydown', (e)=>{ if(e.key==='Escape'){ dlg.close(); } }, {once:true});
-    }
-
-    /* ===== Compare ===== */
-    function labelUnion(rows){
-      const all = new Set();
-      rows.forEach(r=>quickFor(r).forEach(q=>all.add(q.label)));
-      // keep consistent order by PRIORITY first, then alphabetical
-      const rest = Array.from(all).filter(l=>!PRIORITY.includes(l)).sort((a,b)=>a.localeCompare(b));
-      return [...PRIORITY.filter(l=>all.has(l)), ...rest].slice(0,16);
-    }
-
-    function openCompare(){
-      const ids = Array.from(state.compare);
-      const rows = ids.map(id=>state.byId.get(String(id))).filter(Boolean);
-      const cols = $('#cmpCols');
-      if (!rows.length){ cols.innerHTML = '<div class="muted" style="padding:10px">No items selected.</div>'; }
-      else{
-        const labels = labelUnion(rows);
-        cols.innerHTML = rows.map(r=>{
-          const Q = quickFor(r);
-          const cell = (lab)=>quickValue(Q, lab);
-          return `
-            <div class="col" data-id="${r.id}">
-              <div class="pad">
-                <div class="pill">${AED(r.price)}</div>
-                <div class="title" style="margin-top:6px">${r.name||''}</div>
-                <table class="specs">
-                  ${labels.map(lab=>specRow(lab, cell(lab))).join('')}
-                </table>
-                <div style="display:flex; gap:8px; margin-top:10px">
-                  <button class="btn btn-ghost" data-open>Explore</button>
-                  <button class="btn btn-ghost" data-remove>Remove</button>
-                </div>
-              </div>
-            </div>`;
-        }).join('');
-
-        // wire buttons
-        $$('#cmpCols .col').forEach(col=>{
-          col.querySelector('[data-open]').onclick=()=>{ $('#cmp').close(); openDetail(col.dataset.id); };
-          col.querySelector('[data-remove]').onclick=()=>{
-            state.compare.delete(String(col.dataset.id));
-            $('#cmpCount').textContent = state.compare.size;
-            updateFab();
-            openCompare();
-          };
-        });
-
-        // Ladder (why upgrade)
-        buildLadder(rows);
-      }
-
-      const dlg = $('#cmp');
-      dlg.showModal();
-      const closer = (e)=>{ if (e.target && e.target.hasAttribute('data-close')) { dlg.close(); dlg.removeEventListener('click',closer); } };
-      dlg.addEventListener('click', closer);
-      dlg.addEventListener('keydown', (e)=>{ if(e.key==='Escape'){ dlg.close(); } }, {once:true});
-    }
-
-    function buildLadder(rows){
-      const ladder = $('#ladder');
-      if (rows.length<2){ ladder.innerHTML = ''; return; }
-      const sorted = rows.slice().sort((a,b)=>(+a.price||0)-(+b.price||0));
-      const base = sorted[0], best = sorted[sorted.length-1];
-      const diff = (+best.price||0)-(+base.price||0);
-      const pct = (base.price? Math.round((diff/base.price)*100) : 0);
-
-      // heuristics for “why”
-      const Qb = quickFor(base), Qx = quickFor(best);
-      const mapQ = (Q)=>Object.fromEntries(Q.map(q=>[q.label,String(q.value)]));
-      const qb = mapQ(Qb), qx = mapQ(Qx);
-      const hints = [];
-      // Mesh
-      if ((qb['Mesh']||'No')==='No' && (qx['Mesh']||'No')==='Yes') hints.push('mesh heads');
-      // Factory kits
-      const fkB = parseInt(qb['Factory kits']||'0',10)||0, fkX = parseInt(qx['Factory kits']||'0',10)||0;
-      if (fkX>fkB) hints.push(`${fkX-fkB} more factory kits`);
-      // Sounds
-      const sB = parseInt(qb['Sounds']||'0',10)||0, sX = parseInt(qx['Sounds']||'0',10)||0;
-      if (sX>sB) hints.push(`${sX-sB} more sounds`);
-      // Power (amps)
-      const pB = (qb['Power']||'').match(/(\d+)\s*W/i), pX = (qx['Power']||'').match(/(\d+)\s*W/i);
-      if (pB && pX && (+pX[1]>(+pB[1]))) hints.push('higher amplifier power');
-      // Bluetooth / USB
-      if ((qb['Bluetooth']||'No')==='No' && (qx['Bluetooth']||'No')==='Yes') hints.push('Bluetooth audio');
-      if ((qb['USB/MIDI']||'No')==='No' && (qx['USB/MIDI']||'No')==='Yes') hints.push('USB/MIDI connectivity');
-
-      const reason = hints.length ? hints.join(', ') : 'overall higher specification';
       ladder.innerHTML = `
-        <div class="section" style="margin:12px">
+        <div class="section">
           <div style="font-weight:900; color:#7ff5ff; margin-bottom:6px">Recommendation Ladder</div>
           <div class="row" style="margin-bottom:6px">
             <span class="chip" style="background:#062f36;border:1px solid #0f4950">Baseline</span>
@@ -569,66 +500,65 @@
           </div>
           <div class="row" style="margin-bottom:6px">
             <span class="chip" style="background:#062f36;border:1px solid #0f4950">Jump to</span>
-            <b>${best.name}</b> — ${AED(best.price)}
-            <span class="bigdiff">+${AED(diff)} (${pct}%)</span>
+            <b>${better.name}</b> — ${AED(better.price)}
+            <span class="chip" style="background:#143a42;border:1px solid #1a4f59">+${AED(diff)} (${pct}%)</span>
           </div>
-          <div class="muted">Why: ${reason}.</div>
+          <div class="muted">Why: ${why}.</div>
         </div>`;
-    }
+    } else ladder.innerHTML = '';
 
-    /* ===== Wizard (simple) ===== */
-    function openWizard(){
-      const dlg = $('#wizard');
-      const out = $('#wizOut');
-      out.textContent = '';
-      dlg.showModal();
-      const closer = (e)=>{ if (e.target && e.target.hasAttribute('data-close')) { dlg.close(); dlg.removeEventListener('click',closer); } };
-      dlg.addEventListener('click', closer);
-      dlg.addEventListener('keydown', (e)=>{ if(e.key==='Escape'){ dlg.close(); } }, {once:true});
-      $('#wGo').onclick=()=>{
-        const [lo,hi] = $('#wBud').value.split('-').map(Number);
-        const conn = $('#wConn').value;
-        const choices = state.rows.filter(r=>{
-          const p = +r.price || 0;
-          if (p<lo || p>hi) return false;
-          if (conn==='USB/MIDI' && !r.usb_midi) return false;
-          if (conn==='Bluetooth' && !r.bluetooth_audio) return false;
-          return deriveCategory(r)==='Drum Kits';
-        }).sort((a,b)=>(+a.price)-(+b.price));
-        if (!choices.length){ out.innerHTML = '<div class="muted">No kit matches your preferences.</div>'; return; }
-        const top = choices[Math.min(1, choices.length-1)];
-        const msg = `Because it matches your budget, ${conn==='No preference'?'your needs':'your connectivity preference'}, and offers ${top.mesh?'mesh heads':'a solid starter spec'}.`;
-        out.innerHTML = `
-          <div class="section">
-            <div style="font-weight:900; color:#9ff8ff">Your Match</div>
-            <div style="margin:6px 0"><b>${top.name}</b> looks like a great fit at ${AED(top.price)}.</div>
-            <div class="muted">${msg}</div>
-            <div style="margin-top:10px"><button class="btn btn-primary" id="wizOpen">View This Kit</button></div>
-          </div>`;
-        $('#wizOpen').onclick=()=>{ dlg.close(); openDetail(top.id); };
-      };
-    }
+    const dlg = $('#cmp');
+    dlg.showModal();
+    const closer = e=>{ if (e.type==='click' && !e.target.closest) return; if (e.type==='click' && !e.target.hasAttribute('data-close')) return; dlg.close(); };
+    dlg.addEventListener('click', closer, {once:true});
+    dlg.addEventListener('cancel', ()=>dlg.close(), {once:true});
+    dlg.addEventListener('keydown', (e)=>{ if(e.key==='Escape') dlg.close(); }, {once:true});
+  }
 
-    /* ===== sticky bar + FAB ===== */
-    function updateFab(){
-      const show = state.compare.size>0;
-      const el = document.getElementById('compareFab');
-      el.style.display = show ? 'flex' : 'none';
-      document.getElementById('fabCount').textContent = state.compare.size;
-      document.getElementById('cmpCount').textContent = state.compare.size;
-    }
-    document.getElementById('compareFab').addEventListener('click', ()=>openCompare());
+  function openWizard(){
+    const dlg = $('#wizard');
+    const out = $('#wizOut');
+    out.textContent = '';
+    dlg.showModal();
+    dlg.addEventListener('click', e=>{ if (e.target && e.target.hasAttribute('data-close')) dlg.close(); }, {once:true});
+    $('#wGo').onclick=()=>{
+      const [lo,hi] = $('#wBud').value.split('-').map(Number);
+      const conn = $('#wConn').value;
+      const choices = state.rows.filter(r=>{
+        const p = +r.price || 0;
+        if (p<lo || p>hi) return false;
+        if (conn==='USB/MIDI' && !r.usb_midi) return false;
+        if (conn==='Bluetooth' && !r.bluetooth_audio) return false;
+        return deriveCategory(r)==='Drum Kits';
+      }).sort((a,b)=>(+a.price)-(+b.price));
+      if (!choices.length){ out.innerHTML = '<div class="muted">No kit matches your preferences.</div>'; return; }
+      const top = choices[Math.min(1, choices.length-1)];
+      const msg = `Because it matches your budget, ${conn==='No preference'?'your needs':'your connectivity preference'}, and offers ${top.mesh?'mesh heads':'a solid starter spec'}.`;
+      out.innerHTML = `
+        <div class="section">
+          <div style="font-weight:900; color:#9ff8ff">Your Match</div>
+          <div style="margin:6px 0"><b>${top.name}</b> looks like a great fit at ${AED(top.price)}.</div>
+          <div class="muted">${msg}</div>
+          <div style="margin-top:10px"><button class="btn" id="wizOpen" style="background:#ff2b2b;border-color:#ff2b2b">View This Kit</button></div>
+        </div>`;
+      $('#wizOpen').onclick=()=>{ dlg.close(); openDetail(top.id); };
+    };
+  }
 
-    function wireHeader(){
-      $('#btnCompare').onclick=()=>openCompare();
-      $('#btnWizard').onclick=()=>openWizard();
-    }
+  function updateFab(){
+    const show = state.compare.size>0;
+    const el = document.getElementById('compareFab');
+    el.style.display = show ? 'flex' : 'none';
+    document.getElementById('fabCount').textContent = state.compare.size;
+    document.getElementById('cmpCount').textContent = state.compare.size;
+  }
 
-    /* ===== boot ===== */
-    window.addEventListener('DOMContentLoaded', async ()=>{
-      wireHeader();
-      await load();
-    });
+  // header buttons + FAB
+  document.getElementById('btnCompare').onclick=()=>openCompare();
+  document.getElementById('btnWizard').onclick=()=>openWizard();
+  document.getElementById('compareFab').onclick=()=>openCompare();
+
+  window.addEventListener('DOMContentLoaded', load);
   </script>
 </body>
 </html>
