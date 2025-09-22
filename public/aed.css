@@ -12,3 +12,26 @@
 .card{ position:relative }
 .card .content{ position:relative; padding-bottom:44px }
 .card .compare-row{ position:absolute; right:12px; bottom:12px; display:flex; align-items:center; gap:8px; justify-content:flex-end }
+/* --- Fix: price pill should not be full width on cards --- */
+.card .content .pill.price{
+  display:inline-flex !important;
+  align-items:center;
+  gap:8px;
+  width:auto !important;
+  max-width:fit-content;
+}
+
+/* --- Fix: lock "Add to compare" to bottom-right on every card --- */
+.card{ position:relative; }
+.card .content{ position:relative; padding-bottom:48px; } /* reserve space */
+.card .content > div:last-child{
+  position:absolute;
+  right:12px;
+  bottom:12px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  justify-content:flex-end;
+}
+/* Hide the Explore button in the grid cards only (keeps it in compare/detail) */
+.card .content > div:last-child [data-explore]{ display:none !important; }
