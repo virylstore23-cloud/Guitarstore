@@ -1,0 +1,23 @@
+/* --- Detail modal fixes (non-destructive) --- */
+#detail .sheet{ position:relative; }
+
+/* Close button: like your “good” screenshot */
+#detail .close{
+  position:absolute;
+  top:12px; left:12px; z-index:9999;
+  padding:6px 10px; border-radius:12px;
+  border:1px solid var(--glass-brd);
+  background:var(--glass);
+  font-weight:700; line-height:1;
+}
+
+/* Make room so chips don’t collide with Close pill */
+#detail .hdr{ padding-left:64px; }
+@media (max-width:640px){ #detail .hdr{ padding-left:56px; } }
+
+/* Demo chip: always small */
+#detail .pill-demo{
+  font-size:13px; line-height:1;
+  padding:6px 12px; border-radius:20px;
+  max-width:280px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
