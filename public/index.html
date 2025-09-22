@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Alesis Soundstage</title>
 
-<!-- Theme: keep the black + fluoro glass look -->
 <style>
   :root{
     --bg:#0b0f13;
@@ -19,7 +18,11 @@
     --text:#e9f7ff;
     --muted:#a7bdc5;
     --line:rgba(86,150,160,.35);
+    --danger:#ff3b30;
+    --ok:#19e3ff;
+    --gold:#ffd400;
   }
+
   html,body{height:100%}
   body{
     margin:0; color:var(--text); background:var(--bg);
@@ -29,11 +32,16 @@
       radial-gradient(800px 520px at 20% 12%, rgba(0,209,234,.08) 0,transparent 62%),
       radial-gradient(800px 520px at 88% 8%, rgba(0,209,234,.07) 0,transparent 60%);
   }
-  .wrap{max-width:1160px; margin:0 auto; padding:14px 16px 28px}
-  .bar{position:sticky; top:0; z-index:30; backdrop-filter:saturate(120%) blur(6px);
-       display:flex; align-items:center; gap:10px; padding:12px 10px;
-       background:linear-gradient(180deg, rgba(11,15,19,.92), rgba(11,15,19,.65));
-       border-bottom:1px solid var(--glass-brd); margin:-14px -16px 12px; }
+
+  /* sticky header */
+  .wrap{max-width:1160px; margin:0 auto; padding:72px 16px 24px}
+  .header{
+    position:sticky; top:0; z-index:20;
+    background:linear-gradient(to bottom, rgba(11,15,19,.92), rgba(11,15,19,.88));
+    backdrop-filter: blur(6px);
+    border-bottom:1px solid var(--glass-brd);
+  }
+  .bar{display:flex; align-items:center; gap:10px; padding:14px 16px; margin:0 auto; max-width:1160px}
   .crumbs{font-weight:800; letter-spacing:.3px}
   .crumbs .tag{display:inline-block; padding:3px 8px; border-radius:999px; margin-left:6px;
     background:#06323a; color:#76f7ff; font-size:12px; border:1px solid var(--glass-brd)}
@@ -44,93 +52,103 @@
   .btn-primary{background:#ff2b2b; border-color:#ff2b2b}
   .btn-ghost{background:transparent}
 
-  #chips{display:flex; gap:10px; flex-wrap:wrap; margin:12px 0 10px}
+  /* chips row */
+  #chips{display:flex; gap:10px; flex-wrap:wrap; margin:16px 0 10px}
   .chip{border:1px solid var(--glass-brd); background:var(--panel); color:#cdeef2;
-    padding:8px 12px; border-radius:999px; cursor:pointer; user-select:none; white-space:nowrap}
+    padding:8px 12px; border-radius:999px; cursor:pointer; user-select:none}
   .chip.active{background:#0b2c34; border-color:#1db8c4}
-  .chip.demo{font-size:12px; padding:4px 10px; border-radius:999px}
 
+  /* grid */
   #grid{display:grid; gap:14px; grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}
   .card{background:var(--glass); border:1px solid var(--glass-brd); border-radius:16px; overflow:hidden}
-  .imgbox{position:relative; height:200px; background:#0b0e12; cursor:pointer}
-  .imgbox img{width:100%; height:100%; object-fit:cover; display:block}
-  .demo{position:absolute; top:10px; left:10px; background:#ffd400; color:#231a00; font-weight:800;
-    border-radius:999px; padding:6px 10px; box-shadow:0 10px 24px rgba(0,0,0,.35)}
+  .imgbox{position:relative; height:200px; background:#0b0e12}
+  .imgbox img{width:100%; height:100%; object-fit:cover; display:block; background:#fff}
+  .demo{position:absolute; top:10px; left:10px; background:var(--gold); color:#231a00; font-weight:800;
+    border-radius:999px; padding:4px 8px; font-size:11px; box-shadow:0 10px 24px rgba(0,0,0,.35)}
   .content{padding:12px 12px 14px}
-  .title{font-weight:800; margin:6px 0 8px; cursor:pointer}
+  .title{font-weight:800; margin:6px 0 8px}
   .pill{display:inline-block; background:var(--pill); color:var(--pill-text);
-    border-radius:999px; padding:6px 12px; font-weight:800}
+    border-radius:999px; padding:6px 10px; font-weight:800}
+  .muted{color:var(--muted)}
 
-  /* Detail modal */
+  /* detail modal */
   dialog{border:1px solid var(--glass-brd); border-radius:18px; padding:0; background:rgba(10,14,18,.96);
-    color:var(--text); width:min(1060px,96vw)}
+    color:var(--text); width:min(1000px,96vw)}
   dialog::backdrop{background:rgba(0,0,0,.6)}
   .sheet{display:grid; grid-template-columns:1.1fr 1fr; gap:16px; padding:14px}
   .left{background:var(--panel); border:1px solid var(--glass-brd); border-radius:16px; padding:12px}
   .left .imgwrap{background:#fff; border-radius:12px; overflow:hidden; height:min(58vh,520px)}
-  .left .imgwrap img{width:100%; height:100%; object-fit:contain; display:block}
-  .right .chiprow{display:flex; gap:8px; align-items:center; margin-bottom:10px; flex-wrap:wrap}
+  .left .imgwrap img{width:100%; height:100%; object-fit:contain; display:block; background:#fff}
+  .right .chiprow{display:flex; gap:8px; align-items:center; margin-bottom:10px}
   .chip.price{background:#0b3f45; border:1px solid #125056}
   .chip.upc{background:#052d33; border:1px solid #0f4950}
   .section{border:1px solid var(--glass-brd); border-radius:12px; padding:12px; margin-top:12px;
     background:rgba(7,12,16,.66)}
   .section h4{margin:0 0 8px; font-size:16px; font-weight:800; color:#fff}
-  .section p,.section li,.section div{color:#fff}
   .section ul{list-style:disc; padding-left:18px; margin:0}
   .section li::marker{color:#26e3ff}
+  .specs{width:100%; border-collapse:collapse}
+  .specs td{border-bottom:1px dotted var(--line); padding:8px 6px}
+  .specs td:first-child{color:#bfefff}
+  .specs td:last-child{text-align:right}
 
-  /* Compare dialog */
+  /* compare modal */
   #cmp{width:min(1100px,96vw)}
-  #cmp .cols{display:grid; gap:14px; grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
-             padding:12px}
+  #cmp .cols{
+    display:grid; gap:14px;
+    grid-template-columns:repeat(auto-fit,minmax(340px,1fr));
+  }
   #cmp .col{background:var(--glass); border:1px solid var(--glass-brd); border-radius:14px; overflow:hidden}
   #cmp .col .pad{padding:12px}
-  #cmp .specs{width:100%; border-collapse:collapse; margin-top:8px}
+  #cmp .col .hero{display:none} /* remove large hero image in compare */
+  #cmp .specs{width:100%; border-collapse:collapse}
   #cmp .specs td{border-bottom:1px dotted var(--line); padding:8px 6px}
   #cmp .specs td:first-child{color:#bfefff}
-  #ladder{border-top:1px solid var(--glass-brd); margin:6px 12px 12px; padding-top:12px}
+  #ladder{border-top:1px solid var(--glass-brd); margin-top:10px; padding:12px}
   #ladder .row{display:flex; flex-wrap:wrap; gap:8px; align-items:center}
-  #ladder .pill{display:inline-block; font-size:12px; padding:4px 10px; border-radius:18px}
+  #ladder .bigdiff{font-weight:900; font-size:16px; padding:6px 10px; border-radius:10px;
+    background:#143a42; border:1px solid #1a4f59}
 
-  /* Mobile tweaks */
-  @media (max-width:900px){
+  /* mobile tweaks */
+  @media (max-width:720px){
     .sheet{grid-template-columns:1fr}
     .left .imgwrap{height:44vh}
-    #cmp .cols{grid-auto-flow:column; grid-template-columns:repeat(auto-fit, 88vw);
-               overflow-x:auto; overflow-y:hidden; scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch}
-    #cmp .col{scroll-snap-align:start}
+    #cmp .cols{
+      grid-auto-flow:column;
+      grid-auto-columns:minmax(320px,85vw);
+      overflow-x:auto; overflow-y:hidden; -webkit-overflow-scrolling:touch;
+      padding-bottom:6px;
+    }
   }
 
-  /* Floating Compare FAB */
+  /* floating compare button */
   #compareFab{
-    position:fixed; right:14px; bottom:14px; z-index:40; display:none;
-    padding:12px 16px; border-radius:999px; background:#0c2b31; border:1px solid #17535c; color:#cdeef2;
-    box-shadow:0 10px 24px rgba(0,0,0,.35); cursor:pointer; font-weight:800;
+    position:fixed; right:14px; bottom:14px; z-index:25;
+    display:none; gap:8px; align-items:center;
+    background:#ff2b2b; border:1px solid #ff2b2b; color:#fff; padding:12px 14px; border-radius:999px; font-weight:800;
+    box-shadow:0 10px 30px rgba(0,0,0,.35);
   }
-  #compareFab .count{
-    display:inline-block; margin-left:8px; padding:4px 10px; border-radius:999px;
-    background:var(--pill); color:var(--pill-text); font-weight:900;
-  }
+  #fabCount{background:#fff; color:#ff2b2b; border-radius:999px; padding:2px 8px; font-weight:900}
 </style>
 </head>
 <body>
-  <div class="wrap">
+  <!-- sticky header -->
+  <div class="header">
     <div class="bar">
       <div class="crumbs">ALESIS <span class="tag">DRUMS</span></div>
       <div class="grow"></div>
       <button id="btnCompare" class="btn">Compare <span id="cmpCount">0</span></button>
       <button id="btnWizard" class="btn btn-primary">Find my kit</button>
     </div>
+  </div>
 
-    <h2 style="margin:6px 0 6px">Electronic Drum Range</h2>
-    <div class="muted">Compare features and choose the perfect Alesis kit for practice, recording, or performance.</div>
+  <div class="wrap">
+    <h2 style="margin:0 0 6px">Electronic Drum Range</h2>
+    <div class="muted">Compare specs and choose the perfect Alesis kit, pad, or amp.</div>
 
     <div id="chips"></div>
     <div id="grid"></div>
   </div>
-
-  <!-- Floating Compare button -->
-  <button id="compareFab">Compare <span class="count" id="fabCount">0</span></button>
 
   <!-- Detail modal -->
   <dialog id="detail">
@@ -142,7 +160,7 @@
         <div class="chiprow">
           <span id="dprice" class="chip price">AED —</span>
           <span id="dupc" class="chip upc" style="display:none"></span>
-          <span id="ddemo" class="chip demo" style="display:none;background:#ffd400;color:#231a00;font-weight:800"></span>
+          <span id="ddemo" class="chip" style="display:none;background:var(--gold);color:#231a00;font-weight:800"></span>
         </div>
         <div id="dname" style="font-weight:900; font-size:18px; margin:2px 0 8px"></div>
 
@@ -173,9 +191,9 @@
     </div>
   </dialog>
 
-  <!-- Compare -->
+  <!-- Compare modal -->
   <dialog id="cmp">
-    <div class="bar" style="padding:10px 12px 0; margin:0; position:sticky; top:0; background:rgba(11,15,19,.96)">
+    <div class="bar" style="padding:10px 12px 0">
       <div style="font-weight:900">Compare</div>
       <div class="grow"></div>
       <button class="btn btn-ghost" data-close>Close</button>
@@ -186,7 +204,7 @@
 
   <!-- Find My Kit -->
   <dialog id="wizard">
-    <div class="bar" style="padding:10px 12px 0; margin:0; position:sticky; top:0; background:rgba(11,15,19,.96)">
+    <div class="bar" style="padding:10px 12px 0">
       <div style="font-weight:900">Find My Perfect Kit</div>
       <div class="grow"></div>
       <button class="btn btn-ghost" data-close>Close</button>
@@ -223,39 +241,40 @@
     </div>
   </dialog>
 
-  <!-- ENV (expects window.ENV from /env.js with SUPABASE_URL + SUPABASE_ANON_KEY) -->
+  <!-- Floating Compare -->
+  <button id="compareFab" class="btn">
+    Compare <span id="fabCount">0</span>
+  </button>
+
+  <!-- ENV -->
   <script src="/env.js"></script>
 
   <script>
     /* ===== helpers ===== */
-    const $  = (s,el=document)=>el.querySelector(s);
+    const $ = (s,el=document)=>el.querySelector(s);
     const $$ = (s,el=document)=>Array.from(el.querySelectorAll(s));
     const AED = v => (v==null||v==='') ? 'AED —' :
-      new Intl.NumberFormat('en-AE',{style:'currency',currency:'AED',maximumFractionDigits:2}).format(+v);
-
-    const PLACEHOLDER = 'data:image/svg+xml;utf8,'+encodeURIComponent(
-      '<svg xmlns="http://www.w3.org/2000/svg" width="640" height="400"><rect width="100%" height="100%" fill="#f4f6f8"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="system-ui,Segoe UI,Arial" font-size="22">Image coming soon</text></svg>'
-    );
+      new Intl.NumberFormat('en-AE',{style:'currency',currency:'AED',maximumFractionDigits:2}).format(+v||0);
 
     function getUPC(r){ return r.upc_code || r.upc || r.ean || r.barcode || null; }
+
     function pickImage(r,kind='card'){
-      const direct = (kind==='detail' && r.detail_image_url) || r.primary_image_url || r.image_url;
-      return direct || PLACEHOLDER;
+      const direct = (kind==='detail' && (r.detail_image_url)) || r.primary_image_url || r.image_url;
+      return direct || 'data:image/svg+xml;utf8,'+encodeURIComponent(
+        `<svg xmlns="http://www.w3.org/2000/svg" width="640" height="400">
+          <rect width="100%" height="100%" fill="#ffffff"/>
+          <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle"
+            font-family="system-ui,Segoe UI,Arial" font-size="20" fill="#333">Image coming soon</text>
+        </svg>`
+      );
     }
-    function canonicalCategory(raw){
-      if (!raw) return 'Drum Kits';
-      const c = (raw.category || raw._cat || '').toLowerCase();
-      if (c.includes('ampl')) return 'Drum Amplification';
-      if (c.includes('multi') || c.includes('samplepad') || c.includes('drum machine')) return 'Multipads & Drum Machines';
-      if (c.includes('access')) return 'Accessories';
-      return 'Drum Kits';
-    }
+
     function deriveCategory(r){
-      if (r.category) return canonicalCategory(r);
-      const s = `${r.slug||''} ${r.name||''}`.toLowerCase();
-      if (s.match(/\bamp\b|amplif|monitor/)) return 'Drum Amplification';
-      if (s.match(/samplepad|strike multipad|sr-?1?6|sr-?1?8|drum machine/)) return 'Multipads & Drum Machines';
-      if (s.match(/headphone|clamp|expansion|pack|accessor/)) return 'Accessories';
+      if (r.category) return r.category;
+      const s=(r.slug||'')+' '+(r.name||'');
+      if (/\bamp\b|amplif|monitor/i.test(s)) return 'Drum Amplification';
+      if (/samplepad|strike multipad|sr-?1?8|drum machine/i.test(s)) return 'Multipads & Drum Machines';
+      if (/headphone|clamp|expansion|pack|accessor/i.test(s)) return 'Accessories';
       return 'Drum Kits';
     }
 
@@ -263,38 +282,93 @@
 
     /* ===== fetch data ===== */
     async function load(){
-      const url = `${window.ENV.SUPABASE_URL}/rest/v1/drum_kits?select=`+
+      const base = window.ENV?.SUPABASE_URL;
+      const key  = window.ENV?.SUPABASE_ANON_KEY;
+      if(!base || !key){ alert('Missing Supabase ENV. Ensure /env.js exists.'); return; }
+      const url = `${base}/rest/v1/drum_kits?select=`+
         [
           'id,name,description,price,upc,upc_code,is_active,slug,category',
           'primary_image_url,detail_image_url,on_demo,on_demo_label',
           'features,contents,specs',
-          'module_engine,kits_factory,kits_user,sounds,module_touchscreen_in',
-          'snare_in,snare_zones,toms_count,toms_sizes_in,kick_tower,hihat_in,crash_count,ride_zones',
-          'bluetooth_audio,usb_midi,mesh,pieces,watt_peak'
+          'kits_factory,kits_user,sounds,mesh,usb_midi,bluetooth_audio',
+          'toms_count,crash_count,ride_zones,kick_tower'
         ].join(',');
-      const headers={apikey:window.ENV.SUPABASE_ANON_KEY, Authorization:`Bearer ${window.ENV.SUPABASE_ANON_KEY}`};
+      const headers={apikey:key, Authorization:`Bearer ${key}`};
       const res = await fetch(url,{headers});
       const rows = await res.json();
-      rows.forEach(r=>r._cat = deriveCategory(r));
+      rows.forEach(r=>{ r._cat = deriveCategory(r); });
       state.rows = rows;
       state.byId = new Map(rows.map(r=>[String(r.id),r]));
       wireChips();
       render();
-      updateFab(); // set initial FAB visibility
+      updateFab();
     }
 
-    /* ===== chips / filters ===== */
+    /* ===== Quick Specs resolver (Supabase-driven) ===== */
+    const PRIORITY = [
+      'Category','Price','Woofer','Power','Max SPL','Freq. Response','Mesh',
+      'Factory kits','User kits','Sounds','USB/MIDI','Bluetooth','Inputs','Outputs',
+      'Toms','Crash cymbals','Ride zones','Kick tower','Dimensions','Weight'
+    ];
+
+    function quickFor(r){
+      // Prefer DB quick specs
+      const quick = r?.specs?.quick;
+      if (Array.isArray(quick) && quick.length) return quick;
+
+      // Fallbacks by category
+      const q = [];
+      q.push({label:'Category', value: deriveCategory(r)});
+      if (r._cat==='Drum Kits'){
+        if (r.mesh!=null) q.push({label:'Mesh', value: r.mesh?'Yes':'No'});
+        if (r.kits_factory!=null) q.push({label:'Factory kits', value:String(r.kits_factory)});
+        if (r.kits_user!=null) q.push({label:'User kits', value:String(r.kits_user)});
+        if (r.sounds!=null) q.push({label:'Sounds', value:String(r.sounds)});
+        if (r.usb_midi!=null) q.push({label:'USB/MIDI', value:r.usb_midi?'Yes':'No'});
+        if (r.bluetooth_audio!=null) q.push({label:'Bluetooth', value:r.bluetooth_audio?'Yes':'No'});
+        if (r.toms_count!=null) q.push({label:'Toms', value:String(r.toms_count)});
+        if (r.crash_count!=null) q.push({label:'Crash cymbals', value:String(r.crash_count)});
+        if (r.ride_zones!=null) q.push({label:'Ride zones', value:String(r.ride_zones)});
+        if (r.kick_tower!=null) q.push({label:'Kick tower', value:r.kick_tower?'Yes':'No'});
+      }else if (r._cat==='Drum Amplification'){
+        // try pull structured amp specs from r.specs.data if present
+        const d = r?.specs?.data || {};
+        if (d.woofer_in) q.push({label:'Woofer', value:`${d.woofer_in}"`});
+        if (d.watt_rms || d.watt_peak) q.push({label:'Power', value:[d.watt_rms?`${d.watt_rms} W RMS`:null,d.watt_peak?`${d.watt_peak} W peak`:null].filter(Boolean).join(' / ')});
+        if (d.max_spl_db) q.push({label:'Max SPL', value:`${d.max_spl_db} dB`});
+        if (d.freq_low_hz || d.freq_high_hz) q.push({label:'Freq. Response', value:`${d.freq_low_hz||'?'} Hz – ${d.freq_high_hz||'?'} Hz`});
+        if (d.bluetooth_version || r.bluetooth_audio!=null) q.push({label:'Bluetooth', value:d.bluetooth_version || (r.bluetooth_audio?'Yes':'No')});
+        if (d.inputs) q.push({label:'Inputs', value:d.inputs});
+        if (d.outputs) q.push({label:'Outputs', value:d.outputs});
+        if (d.dimensions_mm) q.push({label:'Dimensions', value:`${d.dimensions_mm} mm`});
+        if (d.weight_kg) q.push({label:'Weight', value:`${d.weight_kg} kg`});
+      }else{
+        // Accessories / Pads / Drum Machines
+        if (r.usb_midi!=null) q.push({label:'USB/MIDI', value:r.usb_midi?'Yes':'No'});
+        if (r.bluetooth_audio!=null) q.push({label:'Bluetooth', value:r.bluetooth_audio?'Yes':'No'});
+      }
+      return q;
+    }
+
+    function quickValue(quick, label){
+      const f = quick.find(q=>q.label===label);
+      return f ? f.value : '—';
+    }
+
+    /* ===== UI ===== */
     function wireChips(){
       const labels = ['All','Electronic Drum Kits','Multipads & Drum Machines','Drum Amplification','Accessories','On Demo'];
-      $('#chips').innerHTML = labels.map(l=>`<div class="chip${state.filterLabel===l?' active':''}" data-filter="${l}">${l}</div>`).join('');
-      $('#chips').addEventListener('click',e=>{
-        const b=e.target.closest('.chip'); if(!b) return;
+      const chips = labels.map(l=>`<div class="chip${state.filterLabel===l?' active':''}" data-filter="${l}">${l}</div>`).join('');
+      const box = $('#chips'); box.innerHTML = chips;
+      box.addEventListener('click',e=>{
+        const b = e.target.closest('.chip'); if(!b) return;
         $$('#chips .chip').forEach(x=>x.classList.remove('active'));
         b.classList.add('active');
-        state.filterLabel=b.dataset.filter;
+        state.filterLabel = b.dataset.filter;
         render();
       });
     }
+
     function fitsFilter(r){
       const c = state.filterLabel;
       if (c==='All') return true;
@@ -303,28 +377,24 @@
       return deriveCategory(r)===c;
     }
 
-    /* ===== render grid ===== */
     function render(){
-      document.getElementById('cmpCount').textContent = state.compare.size;
+      $('#cmpCount').textContent = state.compare.size;
       const grid = $('#grid');
       const shown = state.rows.filter(fitsFilter);
       if (!shown.length){ grid.innerHTML = '<div class="muted">No items match this view.</div>'; return; }
       grid.innerHTML = shown.map(r=>{
-        const demo = r.on_demo ? `<div class="demo">`+(r.on_demo_label||'On Demo')+`</div>` : '';
+        const demo = r.on_demo ? `<div class="demo">${r.on_demo_label || 'On Demo'}</div>` : '';
+        const upc = getUPC(r);
         const pills = [];
         if (r.mesh) pills.push('Mesh');
         if (r.usb_midi) pills.push('USB/MIDI');
         if (r.bluetooth_audio) pills.push('Bluetooth');
-        const upc = getUPC(r);
         return `
           <div class="card" data-id="${r.id}">
-            <div class="imgbox" data-open>
-              ${demo}
-              <img src="${pickImage(r,'card')}" alt="">
-            </div>
+            <div class="imgbox">${demo}<img src="${pickImage(r,'card')}" alt=""></div>
             <div class="content">
               <div class="pill">${AED(r.price)}</div>
-              <div class="title" data-open>${r.name||''}</div>
+              <div class="title">${r.name||''}</div>
               ${upc?`<div class="muted" style="margin-bottom:8px">UPC: ${upc}</div>`:''}
               <div style="display:flex; gap:6px; flex-wrap:wrap; margin:6px 0">
                 ${pills.map(p=>`<span class="chip" style="background:#082b33;border-color:#11424a">${p}</span>`).join('')}
@@ -339,86 +409,46 @@
           </div>`;
       }).join('');
 
-      // wire cards
+      // wire cards: tap anywhere except checkbox and Explore
       $$('#grid .card').forEach(card=>{
-        card.querySelectorAll('[data-open]').forEach(n=>n.addEventListener('click',()=>openDetail(card.dataset.id)));
-        card.querySelector('[data-explore]').addEventListener('click',()=>openDetail(card.dataset.id));
-        card.querySelector('[data-compare]').addEventListener('change',(e)=>{
+        const open = ()=>openDetail(card.dataset.id);
+        card.querySelector('[data-explore]').onclick=open;
+        card.onclick = (e)=>{
+          if (e.target.closest('input,[data-explore]')) return;
+          open();
+        };
+        card.querySelector('[data-compare]').onchange=(e)=>{
           const id = String(card.dataset.id);
           if (e.currentTarget.checked) state.compare.add(id); else state.compare.delete(id);
-          document.getElementById('cmpCount').textContent = state.compare.size;
-          document.getElementById('fabCount').textContent = state.compare.size;
+          $('#cmpCount').textContent = state.compare.size;
           updateFab();
-        });
+        };
       });
     }
 
-    /* ===== Quick specs (category-aware; pulls from Supabase fields + specs JSON) ===== */
-    function rowsFromSpecs(r){
-      const cat = deriveCategory(r);
-      const J = r.specs || {};
-      const yes = v => v ? 'Yes' : 'No';
-      const rows = [];
-
-      if (cat==='Drum Kits'){
-        rows.push(['Pieces', r.pieces]);
-        rows.push(['Mesh heads', yes(!!r.mesh)]);
-        rows.push(['Factory kits', r.kits_factory]);
-        rows.push(['User kits', r.kits_user]);
-        rows.push(['Sounds', r.sounds]);
-        rows.push(['USB/MIDI', yes(!!r.usb_midi)]);
-        rows.push(['Bluetooth audio', yes(!!r.bluetooth_audio)]);
-        rows.push(['Toms', r.toms_count]);
-        rows.push(['Crash cymbals', r.crash_count]);
-        rows.push(['Ride zones', r.ride_zones]);
-        rows.push(['Kick tower', yes(!!r.kick_tower)]);
-      }else if (cat==='Drum Amplification'){
-        rows.push(['Peak power (W)', r.watt_peak || J.watt_peak]);
-        rows.push(['Bluetooth', yes(!!r.bluetooth_audio)]);
-        rows.push(['Inputs', J.inputs || J.input || '2× XLR/TRS']);
-        rows.push(['Outputs', J.outputs || (J.xlr_out ? 'XLR Out' : '—')]);
-        rows.push(['EQ / HPF', J.eq || J.hpf || (J.contour?'Contour':'—')]);
-      }else if (cat==='Multipads & Drum Machines'){
-        rows.push(['USB/MIDI', yes(!!r.usb_midi)]);
-        rows.push(['Bluetooth', yes(!!r.bluetooth_audio)]);
-        rows.push(['Factory kits', r.kits_factory || J.kits]);
-        rows.push(['Sounds', r.sounds || J.sounds]);
-        rows.push(['Inputs', J.inputs || J.trigger_inputs]);
-      }else if (cat==='Accessories'){
-        rows.push(['Type', J.type || (/headphone/i.test(r.name||'')?'Headphones':/clamp|mount/i.test(r.name||'')?'Mount/Clamp':'Accessory')]);
-        if (J.drivers) rows.push(['Drivers', J.drivers]);
-      }
-
-      return rows.filter(([k,v]) => v!=null && v!=='' && v!=='—');
-    }
-
-    function specTableHTML(rows){
-      if (!rows.length) return '<tr><td>—</td><td>—</td></tr>';
-      return rows.map(([k,v])=>`<tr><td>${k}</td><td style="text-align:right">${v}</td></tr>`).join('');
-    }
-
-    /* ===== Detail modal ===== */
     function asList(node, arr){
       node.innerHTML = '';
       if (!Array.isArray(arr) || !arr.length){ node.innerHTML = '<li>—</li>'; return; }
       node.innerHTML = arr.map(x=>`<li>${String(x)}</li>`).join('');
     }
 
+    function specRow(label, val){
+      const v = (val===true)?'Yes' : (val===false||val==null||val==='')?'—' : val;
+      return `<tr><td>${label}</td><td>${v}</td></tr>`;
+    }
+
     function openDetail(id){
       const r = state.byId.get(String(id)); if(!r) return;
-
-      // header bits
       $('#dimg').src = pickImage(r,'detail');
       $('#dname').textContent = r.name || '';
       $('#dprice').textContent = AED(r.price);
       const upc = getUPC(r);
       const upcEl = $('#dupc');
       if (upc){ upcEl.style.display='inline-block'; upcEl.textContent = `UPC: ${upc}`; } else upcEl.style.display='none';
-      const dem = $('#ddemo');
-      if (r.on_demo){ dem.style.display='inline-block'; dem.textContent = r.on_demo_label || 'On Demo'; }
-      else dem.style.display='none';
+      const dlab = $('#ddemo');
+      if (r.on_demo){ dlab.style.display='inline-block'; dlab.textContent = r.on_demo_label || 'On Demo'; }
+      else dlab.style.display='none';
 
-      // sections
       $('#ddesc').textContent = r.description || '—';
       asList($('#dfeat'), r.features);
       asList($('#dinc'), r.contents);
@@ -431,35 +461,26 @@
         $('#dni').style.display='none';
       }
 
-      // quick specs
-      $('#dspec').innerHTML = specTableHTML(rowsFromSpecs(r));
+      // Quick Specs table uses Supabase specs.quick (or fallback)
+      const Q = quickFor(r);
+      const S = $('#dspec'); S.innerHTML = Q.map(q=>specRow(q.label,q.value)).join('');
 
       const dlg = $('#detail');
       dlg.showModal();
+
+      // robust close
+      const closer = (e)=>{ if (e.target && e.target.hasAttribute('data-close')) { dlg.close(); dlg.removeEventListener('click',closer); } };
+      dlg.addEventListener('click', closer);
+      dlg.addEventListener('keydown', (e)=>{ if(e.key==='Escape'){ dlg.close(); } }, {once:true});
     }
 
     /* ===== Compare ===== */
-    function specRow(label, val){
-      const v = (val===true)?'Yes' : (val===false||val==null||val==='')?'—' : val;
-      return `<tr><td>${label}</td><td style="text-align:right">${v}</td></tr>`;
-    }
-
-    function featureDiffWhy(base, better){
-      const out = [];
-      const gt = (a,b,k,label)=>{ const av=+a[k]||0, bv=+b[k]||0; if (bv>av) out.push(`more ${label} (${av} → ${bv})`); };
-      const flag = (a,b,k,label)=>{ if ((b[k]&& !a[k])) out.push(label); };
-
-      gt(base,better,'kits_factory','factory kits');
-      gt(base,better,'kits_user','user kits');
-      gt(base,better,'sounds','sounds');
-      gt(base,better,'toms_count','toms');
-      gt(base,better,'crash_count','crash cymbals');
-      gt(base,better,'ride_zones','ride zones');
-      if ((better.mesh||0) && !base.mesh) out.push('mesh heads');
-      flag(base,better,'bluetooth_audio','Bluetooth audio');
-      flag(base,better,'usb_midi','USB/MIDI');
-      if ((+better.watt_peak||0) > (+base.watt_peak||0)) out.push(`more power (${base.watt_peak||0}W → ${better.watt_peak}W)`);
-      return out;
+    function labelUnion(rows){
+      const all = new Set();
+      rows.forEach(r=>quickFor(r).forEach(q=>all.add(q.label)));
+      // keep consistent order by PRIORITY first, then alphabetical
+      const rest = Array.from(all).filter(l=>!PRIORITY.includes(l)).sort((a,b)=>a.localeCompare(b));
+      return [...PRIORITY.filter(l=>all.has(l)), ...rest].slice(0,16);
     }
 
     function openCompare(){
@@ -468,24 +489,17 @@
       const cols = $('#cmpCols');
       if (!rows.length){ cols.innerHTML = '<div class="muted" style="padding:10px">No items selected.</div>'; }
       else{
+        const labels = labelUnion(rows);
         cols.innerHTML = rows.map(r=>{
+          const Q = quickFor(r);
+          const cell = (lab)=>quickValue(Q, lab);
           return `
             <div class="col" data-id="${r.id}">
               <div class="pad">
                 <div class="pill">${AED(r.price)}</div>
                 <div class="title" style="margin-top:6px">${r.name||''}</div>
                 <table class="specs">
-                  ${specRow('Category', deriveCategory(r))}
-                  ${specRow('On Demo', r.on_demo ? 'Yes':'No')}
-                  ${specRow('USB/MIDI', r.usb_midi ? 'Yes':'No')}
-                  ${specRow('Bluetooth', r.bluetooth_audio ? 'Yes':'No')}
-                  ${specRow('Factory kits', r.kits_factory)}
-                  ${specRow('User kits', r.kits_user)}
-                  ${specRow('Sounds', r.sounds)}
-                  ${specRow('Toms', r.toms_count)}
-                  ${specRow('Crash cymbals', r.crash_count)}
-                  ${specRow('Ride zones', r.ride_zones)}
-                  ${specRow('Kick tower', r.kick_tower ? 'Yes':'No')}
+                  ${labels.map(lab=>specRow(lab, cell(lab))).join('')}
                 </table>
                 <div style="display:flex; gap:8px; margin-top:10px">
                   <button class="btn btn-ghost" data-open>Explore</button>
@@ -497,52 +511,80 @@
 
         // wire buttons
         $$('#cmpCols .col').forEach(col=>{
-          col.querySelector('[data-open]').addEventListener('click',()=>{ $('#cmp').close(); openDetail(col.dataset.id); });
-          col.querySelector('[data-remove]').addEventListener('click',()=>{
+          col.querySelector('[data-open]').onclick=()=>{ $('#cmp').close(); openDetail(col.dataset.id); };
+          col.querySelector('[data-remove]').onclick=()=>{
             state.compare.delete(String(col.dataset.id));
-            document.getElementById('cmpCount').textContent = state.compare.size;
-            document.getElementById('fabCount').textContent = state.compare.size;
+            $('#cmpCount').textContent = state.compare.size;
+            updateFab();
             openCompare();
-          });
+          };
         });
-      }
 
-      // Recommendation Ladder
-      const ladder = $('#ladder');
-      if (rows.length>=2){
-        const sorted = rows.slice().sort((a,b)=>(+a.price)-(+b.price));
-        const base = sorted[0], better = sorted[sorted.length-1];
-        const diff = Math.max(0,(+better.price)-(+base.price));
-        const pct = base.price ? Math.round((diff/base.price)*100) : 0;
-        const reasons = featureDiffWhy(base, better);
-        ladder.innerHTML = `
-          <div class="section">
-            <div style="font-weight:900; color:#7ff5ff; margin-bottom:6px">Recommendation Ladder</div>
-            <div class="row" style="margin-bottom:6px">
-              <span class="chip" style="background:#062f36;border:1px solid #0f4950">Baseline</span>
-              <b>${base.name}</b> — ${AED(base.price)}
-            </div>
-            <div class="row" style="margin-bottom:6px">
-              <span class="chip" style="background:#062f36;border:1px solid #0f4950">Jump to</span>
-              <b>${better.name}</b> — ${AED(better.price)}
-              <span class="chip" style="background:#143a42;border:1px solid #1a4f59; margin-left:6px">+${AED(diff)} (${pct}%)</span>
-            </div>
-            <div class="muted">Why: ${reasons.length ? reasons.join(', ') : 'overall higher spec'}.</div>
-          </div>`;
-      }else{
-        ladder.innerHTML = '';
+        // Ladder (why upgrade)
+        buildLadder(rows);
       }
 
       const dlg = $('#cmp');
       dlg.showModal();
+      const closer = (e)=>{ if (e.target && e.target.hasAttribute('data-close')) { dlg.close(); dlg.removeEventListener('click',closer); } };
+      dlg.addEventListener('click', closer);
+      dlg.addEventListener('keydown', (e)=>{ if(e.key==='Escape'){ dlg.close(); } }, {once:true});
     }
 
-    /* ===== Wizard ===== */
+    function buildLadder(rows){
+      const ladder = $('#ladder');
+      if (rows.length<2){ ladder.innerHTML = ''; return; }
+      const sorted = rows.slice().sort((a,b)=>(+a.price||0)-(+b.price||0));
+      const base = sorted[0], best = sorted[sorted.length-1];
+      const diff = (+best.price||0)-(+base.price||0);
+      const pct = (base.price? Math.round((diff/base.price)*100) : 0);
+
+      // heuristics for “why”
+      const Qb = quickFor(base), Qx = quickFor(best);
+      const mapQ = (Q)=>Object.fromEntries(Q.map(q=>[q.label,String(q.value)]));
+      const qb = mapQ(Qb), qx = mapQ(Qx);
+      const hints = [];
+      // Mesh
+      if ((qb['Mesh']||'No')==='No' && (qx['Mesh']||'No')==='Yes') hints.push('mesh heads');
+      // Factory kits
+      const fkB = parseInt(qb['Factory kits']||'0',10)||0, fkX = parseInt(qx['Factory kits']||'0',10)||0;
+      if (fkX>fkB) hints.push(`${fkX-fkB} more factory kits`);
+      // Sounds
+      const sB = parseInt(qb['Sounds']||'0',10)||0, sX = parseInt(qx['Sounds']||'0',10)||0;
+      if (sX>sB) hints.push(`${sX-sB} more sounds`);
+      // Power (amps)
+      const pB = (qb['Power']||'').match(/(\d+)\s*W/i), pX = (qx['Power']||'').match(/(\d+)\s*W/i);
+      if (pB && pX && (+pX[1]>(+pB[1]))) hints.push('higher amplifier power');
+      // Bluetooth / USB
+      if ((qb['Bluetooth']||'No')==='No' && (qx['Bluetooth']||'No')==='Yes') hints.push('Bluetooth audio');
+      if ((qb['USB/MIDI']||'No')==='No' && (qx['USB/MIDI']||'No')==='Yes') hints.push('USB/MIDI connectivity');
+
+      const reason = hints.length ? hints.join(', ') : 'overall higher specification';
+      ladder.innerHTML = `
+        <div class="section" style="margin:12px">
+          <div style="font-weight:900; color:#7ff5ff; margin-bottom:6px">Recommendation Ladder</div>
+          <div class="row" style="margin-bottom:6px">
+            <span class="chip" style="background:#062f36;border:1px solid #0f4950">Baseline</span>
+            <b>${base.name}</b> — ${AED(base.price)}
+          </div>
+          <div class="row" style="margin-bottom:6px">
+            <span class="chip" style="background:#062f36;border:1px solid #0f4950">Jump to</span>
+            <b>${best.name}</b> — ${AED(best.price)}
+            <span class="bigdiff">+${AED(diff)} (${pct}%)</span>
+          </div>
+          <div class="muted">Why: ${reason}.</div>
+        </div>`;
+    }
+
+    /* ===== Wizard (simple) ===== */
     function openWizard(){
       const dlg = $('#wizard');
       const out = $('#wizOut');
       out.textContent = '';
       dlg.showModal();
+      const closer = (e)=>{ if (e.target && e.target.hasAttribute('data-close')) { dlg.close(); dlg.removeEventListener('click',closer); } };
+      dlg.addEventListener('click', closer);
+      dlg.addEventListener('keydown', (e)=>{ if(e.key==='Escape'){ dlg.close(); } }, {once:true});
       $('#wGo').onclick=()=>{
         const [lo,hi] = $('#wBud').value.split('-').map(Number);
         const conn = $('#wConn').value;
@@ -553,7 +595,6 @@
           if (conn==='Bluetooth' && !r.bluetooth_audio) return false;
           return deriveCategory(r)==='Drum Kits';
         }).sort((a,b)=>(+a.price)-(+b.price));
-
         if (!choices.length){ out.innerHTML = '<div class="muted">No kit matches your preferences.</div>'; return; }
         const top = choices[Math.min(1, choices.length-1)];
         const msg = `Because it matches your budget, ${conn==='No preference'?'your needs':'your connectivity preference'}, and offers ${top.mesh?'mesh heads':'a solid starter spec'}.`;
@@ -568,32 +609,26 @@
       };
     }
 
-    /* ===== Floating Compare FAB visibility ===== */
+    /* ===== sticky bar + FAB ===== */
     function updateFab(){
-      const show = state.compare.size>0 && window.scrollY>120;
+      const show = state.compare.size>0;
       const el = document.getElementById('compareFab');
-      el.style.display = show ? 'block' : 'none';
+      el.style.display = show ? 'flex' : 'none';
       document.getElementById('fabCount').textContent = state.compare.size;
       document.getElementById('cmpCount').textContent = state.compare.size;
     }
     document.getElementById('compareFab').addEventListener('click', ()=>openCompare());
-    window.addEventListener('scroll', updateFab);
 
-    /* ===== header buttons + ESC to close dialogs ===== */
     function wireHeader(){
       $('#btnCompare').onclick=()=>openCompare();
       $('#btnWizard').onclick=()=>openWizard();
-      document.addEventListener('keydown', e=>{
-        if (e.key==='Escape'){
-          ['detail','cmp','wizard'].forEach(id=>{ const d=document.getElementById(id); if (d && d.open) d.close(); });
-        }
-      });
-      // Close buttons
-      $$('dialog [data-close]').forEach(x=>x.addEventListener('click', e=>e.target.closest('dialog').close()));
     }
 
     /* ===== boot ===== */
-    window.addEventListener('DOMContentLoaded', async ()=>{ wireHeader(); await load(); });
+    window.addEventListener('DOMContentLoaded', async ()=>{
+      wireHeader();
+      await load();
+    });
   </script>
 </body>
 </html>
