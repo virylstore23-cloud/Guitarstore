@@ -116,6 +116,38 @@
   }
 </style>
   <link rel="stylesheet" href="/aed.css">
+<style id="demo-chip-fix">
+/* --- Compact demo chip in detail modal (keep theme colors) --- */
+#detail .pill, #detail .chip{ line-height:1.1; }
+
+#detail .pill.pill-demo,
+#detail .pill-demo,
+#detail .chip-demo,
+#detail .demo-chip,
+#detail [data-demo-chip]{
+  font-size:12px;              /* smaller text */
+  padding:6px 10px;            /* slimmer pill */
+  border-radius:14px;          /* tighter corners */
+  white-space:nowrap;          /* one line */
+  overflow:hidden;
+  text-overflow:ellipsis;      /* … when long */
+  max-width:260px;             /* desktop cap */
+}
+@media (max-width:768px){
+  #detail .pill.pill-demo,
+  #detail .pill-demo,
+  #detail .chip-demo,
+  #detail .demo-chip,
+  #detail [data-demo-chip]{
+    font-size:11px;
+    max-width:70vw;            /* mobile cap */
+  }
+}
+
+/* keep top row neat and the Close button clickable */
+#detail .toprow, #detail .pillbar{ display:flex; flex-wrap:wrap; gap:10px; align-items:center; }
+#detail [data-close], #detail .btn-close, #detail .close { position:relative; z-index:10; pointer-events:auto; }
+</style>
 </head>
 
 <body>
@@ -595,5 +627,19 @@
       await load();
     });
   </script>
+<script id="demo-chip-auto-tag">
+(function(){
+  function tagDemoChips(root){
+    (root||document).querySelectorAll("#detail .pill, #detail .chip").forEach(function(el){
+      var t=(el.textContent||"").toLowerCase();
+      if(t.includes("demo")) el.classList.add("pill-demo");
+    });
+  }
+  // initial + observe updates inside the detail modal
+  document.addEventListener("DOMContentLoaded", function(){ tagDemoChips(document); });
+  new MutationObserver(function(){ tagDemoChips(document); })
+    .observe(document.body, {subtree:true, childList:true});
+})();
+</script>
 </body>
 </html>
