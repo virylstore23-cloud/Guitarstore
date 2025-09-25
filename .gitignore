@@ -20,3 +20,11 @@ backups/
 public/*.backup*.html
 public/*.bak.*.js
 public/*.broken.*
+# More backups/scratch
+public/*.backup*.js
+public/*before-*.html
+public/index.before-*.html
+
+# (Optional) ignore local seed files – uncomment if you don't want them in Git
+# seed_*.json
+# seed_*.sh
