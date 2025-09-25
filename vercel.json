@@ -1,12 +1,5 @@
 {
-  "name": "guitarstore",
-  "builds": [
-    { "src": "public/**", "use": "@vercel/static" },
-    { "src": "api/**/*.js", "use": "@vercel/node" }
-  ],
-  "routes": [
-    { "src": "/api/(.*)", "dest": "/api/$1" },
-    { "handle": "filesystem" },
-    { "src": "/(.*)", "dest": "/public/$1" }
-  ]
+  "framework": "other",
+  "buildCommand": "npm run build",
+  "outputDirectory": "out"
 }

@@ -1,11 +1,8 @@
 {
-  "name": "alesis-kiosk-2025",
+  "name": "guitarstore",
   "private": true,
-  "version": "1.0.0",
+  "engines": { "node": "20.x" },
   "scripts": {
-    "start": "npx http-server public -p 5173 -c-1"
-  },
-  "devDependencies": {
-    "http-server": "^14.1.1"
+    "build": "rm -rf out && mkdir -p out && cp -R public/* out/"
   }
 }
