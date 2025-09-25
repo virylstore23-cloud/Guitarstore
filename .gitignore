@@ -16,3 +16,7 @@ out/
 # local backups
 public/*.bak
 public/index.html.bak
+backups/
+public/*.backup*.html
+public/*.bak.*.js
+public/*.broken.*
