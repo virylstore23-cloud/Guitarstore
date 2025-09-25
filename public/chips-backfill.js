@@ -1,70 +1,101 @@
-/** Backfill up to 3 chips from Supabase (priority Mesh > USB/MIDI > Bluetooth, then features[]) */
-async function backfillChipsMax3() {
-  if (!window.supabase) return;
+/** Backfill up to 3 feature chips per kit card.
+ * Priority: Mesh, USB/MIDI, Bluetooth, then unique short features.
+ * Reads from element dataset (data-*) so it works with current HTML.
+ */
+(function(){
+  const MAX = 3;
 
-  const cards = [...document.querySelectorAll('#kitGrid .kit-card')];
+  const yes = v => v === true || v === 'true' || v === 1 || v === '1';
 
-  const targets = cards
-    .filter(c => !c.querySelector('.pill,.chip'))
-    .map(c => {
-      const raw = c.querySelector('[data-upc]')?.getAttribute('data-upc')
-        || c.querySelector('.upc')?.textContent || '';
-      return { el: c, upc: raw.replace(/\D/g,'') };
-    })
-    .filter(x => x.upc);
+  function parseFeatures(raw){
+    if (!raw) return [];
+    if (Array.isArray(raw)) return raw;
+    try {
+      const j = JSON.parse(raw);
+      if (Array.isArray(j)) return j;
+    } catch(_) {}
+    // fall back to comma-separated
+    return String(raw).split(',').map(s => s.trim()).filter(Boolean);
+  }
 
-  if (!targets.length) return;
+  function ensureChipRow(el){
+    // Try a few common containers, or create our own light wrapper.
+    let row =
+      el.querySelector('.chip-row') ||
+      el.querySelector('.card-chips') ||
+      el.querySelector('.pills') ||
+      el.querySelector('.tags');
 
-  const upcs = [...new Set(targets.map(t => t.upc))];
+    if (!row) {
+      row = document.createElement('div');
+      row.className = 'chip-row';
+      // append near the title if possible
+      const h = el.querySelector('h3, h2, .title') || el.firstElementChild;
+      if (h && h.nextSibling) el.insertBefore(row, h.nextSibling);
+      else el.appendChild(row);
+    }
+    // Remove any chips we added previously
+    row.querySelectorAll('[data-chip-auto]').forEach(n => n.remove());
+    return row;
+  }
 
-  const { data, error } = await supabase
-    .from('products_features')
-    .select('upc,mesh,usb_midi,bluetooth_audio,features')
-    .in('upc', upcs);
-
-  if (error) { console.warn('Supabase chips error', error); return; }
-
-  const byUPC = new Map(
-    (data || []).map(r => [String(r.upc), {
-      mesh: !!r.mesh, usb: !!r.usb_midi, bt: !!r.bluetooth_audio,
-      features: Array.isArray(r.features) ? r.features : []
-    }])
-  );
-
-  const addChips = (el, labels) => {
-    const container = el.querySelector('.tags, .pills, .meta') || el;
-    labels.forEach(txt => {
-      const pill = document.createElement('span');
-      pill.className = 'pill';
-      pill.textContent = txt;
-      container.appendChild(pill);
+  function addChips(el, labels){
+    const row = ensureChipRow(el);
+    labels.forEach(txt=>{
+      const b = document.createElement('button');
+      b.className = 'chip';
+      b.type = 'button';
+      b.textContent = txt;
+      b.setAttribute('data-chip-auto','');
+      row.appendChild(b);
     });
-  };
+  }
 
-  targets.forEach(({el, upc}) => {
-    const rec = byUPC.get(String(upc));
-    if (!rec) return;
-
+  function pickLabels(rec){
     const picked = [];
     const seen = new Set();
     const add = (label) => {
       const clean = (label || '').trim();
       if (!clean || clean.length > 24) return;
       const key = clean.toLowerCase();
-      if (seen.has(key) || picked.length >= 3) return;
-      seen.add(key); picked.push(clean);
+      if (seen.has(key) || picked.length >= MAX) return;
+      seen.add(key);
+      picked.push(clean);
     };
 
     if (rec.mesh) add('Mesh');
     if (rec.usb)  add('USB/MIDI');
     if (rec.bt)   add('Bluetooth');
 
-    for (const f of rec.features) {
-      if (picked.length >= 3) break;
+    for (const f of rec.features){
+      if (picked.length >= MAX) break;
       add(f);
     }
+    return picked;
+  }
 
-    if (picked.length) addChips(el, picked);
-  });
-}
-window.addEventListener('DOMContentLoaded', backfillChipsMax3);
+  function normalizeRecord(rowLike){
+    const row = rowLike || {};
+    const rec = {
+      mesh: yes(row.mesh ?? row.dataset?.mesh),
+      // map usb_midi -> usb, bluetooth_audio -> bt
+      usb:  yes(row.usb ?? row.usb_midi ?? row.dataset?.usb ?? row.dataset?.usbMidi ?? row.dataset?.usb_midi),
+      bt:   yes(row.bt  ?? row.bluetooth_audio ?? row.dataset?.bt  ?? row.dataset?.bluetooth ?? row.dataset?.bluetoothAudio ?? row.dataset?.bluetooth_audio),
+      features: []
+    };
+    // Accept JSON array in data-features or comma-separated
+    const df = row.features ?? row.dataset?.features;
+    rec.features = parseFeatures(df).filter(s => s.length <= 24);
+    return rec;
+  }
+
+  function backfill(){
+    document.querySelectorAll('.kit-card').forEach(el=>{
+      const rec = normalizeRecord(el);
+      const labels = pickLabels(rec);
+      if (labels.length) addChips(el, labels);
+    });
+  }
+
+  window.addEventListener('DOMContentLoaded', backfill);
+})();
