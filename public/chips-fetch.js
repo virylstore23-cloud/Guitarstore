@@ -1,40 +1,65 @@
-/** Fetch mesh/USB/Bluetooth + features by UPC and stamp them onto .kit-card */
-(async function(){
-  const EXT = (window.EXT||window);
-  const URL = EXT.SUPABASE_URL;
-  const KEY = EXT.SUPABASE_ANON_KEY;
-  if(!URL || !KEY) return console.warn('[chips-fetch] Missing SUPABASE env');
+import { chipsFor } from './chips-for.js';
 
-  // Collect UPCs from cards
-  const cards = Array.from(document.querySelectorAll('.kit-card'));
-  const upcs = cards.map(el => (el.dataset.upc || '').trim()).filter(Boolean);
-  if(!upcs.length) return;
+const SUPABASE_URL = window.SUPABASE_URL || (document.querySelector('meta[name="supabase-url"]')?.content);
+const SUPABASE_ANON_KEY = window.SUPABASE_ANON_KEY || (document.querySelector('meta[name="supabase-key"]')?.content);
 
-  // Fetch rows from the products_features view
-  const q = new URL(`${URL}/rest/v1/products_features`);
-  q.searchParams.set('select', 'upc,mesh,usb_midi,bluetooth_audio,features');
-  // in() filter
-  q.searchParams.set('upc', `in.(${upcs.map(u=>`"${u}"`).join(',')})`);
+// naive REST fetch - assumes RLS allows anon read for products_features
+async function getByUPCs(upcs){
+  const url = `${SUPABASE_URL}/rest/v1/products_features?select=upc,mesh,usb_midi,bluetooth_audio,features&upc=in.(${upcs.map(u=>`"${u}"`).join(',')})`;
+  const res = await fetch(url, { headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` }});
+  if (!res.ok) throw new Error(`Supabase REST ${res.status}`);
+  const rows = await res.json();
+  const map = new Map(rows.map(r => [String(r.upc), r]));
+  return map;
+}
 
-  const resp = await fetch(q, {
-    headers: { apikey: KEY, Authorization: `Bearer ${KEY}` }
-  }).catch(e=>console.error(e));
-  if(!resp || !resp.ok) return console.warn('[chips-fetch] fetch failed');
+function ensureChipRow(el){
+  let row = el.querySelector('.chip-row') || el.querySelector('.card-chips') || el.querySelector('.pills') || el.querySelector('.tags');
+  if (!row) {
+    row = document.createElement('div');
+    row.className = 'chip-row';
+    const h = el.querySelector('h3, h2, .title') || el.firstElementChild;
+    if (h && h.nextSibling) el.insertBefore(row, h.nextSibling);
+    else el.appendChild(row);
+  }
+  row.querySelectorAll('[data-chip-auto]').forEach(n => n.remove());
+  return row;
+}
 
-  const rows = await resp.json();
-  const byUPC = new Map(rows.map(r => [String(r.upc||'').trim(), r]));
-
-  cards.forEach(el=>{
-    const upc = (el.dataset.upc || '').trim();
-    const r = byUPC.get(upc);
-    if(!r) return;
-    // stamp data-* so backfill can read it
-    if (r.mesh != null)              el.dataset.mesh = String(!!r.mesh);
-    if (r.usb_midi != null)          el.dataset.usbMidi = String(!!r.usb_midi);
-    if (r.bluetooth_audio != null)   el.dataset.bluetoothAudio = String(!!r.bluetooth_audio);
-    if (Array.isArray(r.features))   el.dataset.features = JSON.stringify(r.features);
+function addChips(el, labels){
+  const row = ensureChipRow(el);
+  labels.forEach(txt=>{
+    const b = document.createElement('button');
+    b.className = 'chip';
+    b.type = 'button';
+    b.textContent = txt;
+    b.setAttribute('data-chip-auto','');
+    row.appendChild(b);
   });
+}
 
-  // Let the backfill script run (if it already loaded) or fire an event it listens for
-  document.dispatchEvent(new CustomEvent('chips:data-ready'));
-})();
+async function run(){
+  const cards = Array.from(document.querySelectorAll('.kit-card'));
+  if (!cards.length) return;
+
+  const upcs = cards.map(el => el.dataset.upc || el.getAttribute('data-upc')).filter(Boolean).map(String);
+  if (!upcs.length) return;
+
+  let byUPC;
+  try {
+    byUPC = await getByUPCs(upcs);
+  } catch(e){
+    console.warn('Supabase fetch failed:', e);
+    return;
+  }
+
+  for (const el of cards){
+    const upc = String(el.dataset.upc || el.getAttribute('data-upc') || '');
+    const rec = byUPC.get(upc);
+    if (!rec) continue;
+    const chips = chipsFor(rec);
+    if (chips.length) addChips(el, chips);
+  }
+}
+
+window.addEventListener('DOMContentLoaded', run);
