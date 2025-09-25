@@ -1,7 +1,6 @@
 {
   "name": "guitarstore",
   "private": true,
-  "engines": { "node": "20.x" },
   "scripts": {
     "build": "rm -rf out && mkdir -p out && cp -R public/* out/"
   }
