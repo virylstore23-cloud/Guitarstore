@@ -1,0 +1,269 @@
+[
+  {
+    "slug":"surge-mesh-se",
+    "name":"Surge Mesh Special Edition",
+    "description":"Youth-focused mesh kit with learning modes.",
+    "price":2856,
+    "category":"Drum Kits",
+    "primary_image_url":"https://musicmajlis.co/cdn/shop/products/alesis-surge-mesh-special-edition-electronic-drum-kit-musicmajlis-1_600x.webp?v=1738809732",
+    "detail_image_url":"https://alesis.com/images/uploads/product-overview-images/Overview-1.jpg",
+    "usb_midi":true, "bluetooth_audio":false,
+    "module_engine":"Surge", "kits_factory":24, "kits_user":16, "sounds":385,
+    "ride_zones":1, "crash_count":1, "kick_tower":true,
+    "toms_count":3, "toms_sizes_in":[6,6,6],
+    "learning_block":{"coach":true,"metronome":true,"recording":true},
+    "on_demo":false
+  },
+
+  {
+    "slug":"strata-prime",
+    "name":"Strata Prime",
+    "description":"Alesis Strata Prime 10-Piece with touchscreen module.",
+    "price":12669,
+    "category":"Drum Kits",
+    "primary_image_url":"https://www.twice.com/wp-content/uploads/2024/03/unnamed-3-726x484.jpg",
+    "detail_image_url":"https://musicmajlis.co/cdn/shop/files/alesis-strata-prime-10-piece-electronic-drum-kit-with-touch-screen-drum-module-musicmajlis-1_600x.jpg?v=1738816040",
+    "usb_midi":true, "bluetooth_audio":true,
+    "module_engine":"BFD3","kits_factory":75,
+    "ride_zones":3, "crash_count":2, "kick_tower":true,
+    "toms_count":4, "toms_sizes_in":[8,10,12,14]
+  },
+
+  {
+    "slug":"strata-core",
+    "name":"Strata Core",
+    "description":"9-piece kit with 7-inch screen.",
+    "price":8899,
+    "category":"Drum Kits",
+    "primary_image_url":"https://d22vnyn5hrkt58.cloudfront.net/catalog/product/cache/454a0379297f4b9275e190d26c1209db/m/i/microsoftteams-image.png",
+    "detail_image_url":"https://cdn.gearnews.com/wp-content/uploads/2024/10/Strata-Core-1-770x425.jpg",
+    "usb_midi":true, "bluetooth_audio":true,
+    "module_engine":"BFD","kits_factory":50,
+    "ride_zones":3, "crash_count":1, "kick_tower":true,
+    "toms_count":3, "toms_sizes_in":[8,8,10]
+  },
+
+  {
+    "slug":"strata-club",
+    "name":"Strata Club",
+    "description":"7-piece kit with 7-inch touchscreen module.",
+    "price":8189,
+    "category":"Drum Kits",
+    "primary_image_url":"https://musicmajlis.co/cdn/shop/files/ale-strataclub-1_600x.webp?v=1754553186",
+    "detail_image_url":"https://cdn.gearnews.com/wp-content/uploads/2025/04/Strata-Club-Lifestyle-5.jpg",
+    "usb_midi":true, "bluetooth_audio":true,
+    "module_engine":"BFD3","kits_factory":75,
+    "ride_zones":3, "crash_count":1, "kick_tower":true,
+    "toms_count":2, "toms_sizes_in":[10,10]
+  },
+
+  {
+    "slug":"crimson-iii",
+    "name":"Crimson III",
+    "description":"9-piece mesh kit with learning tools.",
+    "price":4999,
+    "category":"Drum Kits",
+    "primary_image_url":"https://musicmajlis.co/cdn/shop/files/assets_47c5d023e7b3451a86ac03602c65dce8_fda10fba3363418985a84324922c4f6c_600x.webp?v=1744825104",
+    "detail_image_url":"https://drummersreview.com/wp-content/uploads/2024/10/ALESISNITRO_hi_-06WEB-696x533.jpg",
+    "usb_midi":true, "bluetooth_audio":true,
+    "module_engine":"Crimson","kits_factory":40,"kits_user":40,"sounds":471,
+    "ride_zones":3, "crash_count":1, "kick_tower":true,
+    "toms_count":3, "toms_sizes_in":[8,8,10],
+    "learning_block":{"coach":true,"metronome":true,"recording":true}
+  },
+
+  {
+    "slug":"nitro-pro",
+    "name":"Nitro Pro",
+    "description":"8-piece mesh kit with Bluetooth.",
+    "price":3679,
+    "category":"Drum Kits",
+    "primary_image_url":"https://drumspy.com/wp-content/uploads/2024/09/Nick-Playing-Nitro-Pro-3-1024x576.webp",
+    "detail_image_url":"https://musicmajlis.co/cdn/shop/files/5d8d5d8ff5aojkAXoCDaFBswl1xMK44fe9hrXXpU_600x.webp?v=1738819993",
+    "usb_midi":true, "bluetooth_audio":true,
+    "module_engine":"Nitro","kits_factory":36,"sounds":500,
+    "ride_zones":1, "crash_count":1, "kick_tower":true,
+    "toms_count":3, "toms_sizes_in":[8,8,8],
+    "learning_block":{"coach":true,"metronome":true,"recording":true}
+  },
+
+  {
+    "slug":"nitro-pro-xl",
+    "name":"Nitro Pro XL",
+    "description":"10-piece mesh kit with Bluetooth.",
+    "price":3499,
+    "category":"Drum Kits",
+    "primary_image_url":"https://static.bax-shop.es/image/product/1342781/5557974/03f4c380/450x450/1731317823NITROPROXLKITXEUK_11.jpg",
+    "detail_image_url":"https://musicmajlis.co/cdn/shop/files/thumbnail_image001_6b57948c-899a-4b62-9b1d-92fac8ff4bac_600x.jpg?v=1751690826",
+    "usb_midi":true, "bluetooth_audio":true,
+    "module_engine":"Nitro","kits_factory":36,
+    "ride_zones":1, "crash_count":2, "kick_tower":true,
+    "toms_count":4, "toms_sizes_in":[8,8,8,8]
+  },
+
+  {
+    "slug":"nitro-max-kit",
+    "name":"Nitro Max Kit",
+    "description":"8-piece mesh kit with Bluetooth audio.",
+    "price":1899,
+    "category":"Drum Kits",
+    "primary_image_url":"https://musicmajlis.co/cdn/shop/files/alesis-nitro-max-8-piece-electronic-drum-kit-with-mesh-heads-and-bluetooth-musicmajlis-1_600x.jpg?v=1738813885",
+    "detail_image_url":"https://d22vnyn5hrkt58.cloudfront.net/catalog/product/cache/454a0379297f4b9275e190d26c1209db/m/i/microsoftteams-image.png",
+    "usb_midi":true, "bluetooth_audio":true,
+    "module_engine":"Nitro","kits_factory":32,"sounds":440,
+    "ride_zones":1, "crash_count":1, "kick_tower":true,
+    "toms_count":3, "toms_sizes_in":[8,8,8],
+    "learning_block":{"coach":true,"metronome":true,"recording":true},
+    "on_demo":true, "on_demo_label":"Play this kit on demo"
+  },
+
+  {
+    "slug":"turbo-mesh-kit",
+    "name":"Turbo Mesh Kit",
+    "description":"7-piece kit with next-gen mesh heads.",
+    "price":1518,
+    "category":"Drum Kits",
+    "primary_image_url":"https://musicmajlis.co/cdn/shop/products/alesis-turbo-mesh-electronic-drum-kit-musicmajlis-1_600x.webp?v=1738766131",
+    "detail_image_url":"https://alesis.com/images/uploads/product-overview-images/alesis-turbo-mesh-kit-overview-03.jpg",
+    "usb_midi":false, "bluetooth_audio":false,
+    "module_engine":"Turbo","kits_factory":10,
+    "ride_zones":1, "crash_count":1, "kick_tower":false,
+    "toms_count":3, "toms_sizes_in":[8,8,8]
+  },
+
+  {
+    "slug":"debut-kit",
+    "name":"Debut Kit",
+    "description":"Complete starter electronic drum system.",
+    "price":1149,
+    "category":"Drum Kits",
+    "primary_image_url":"https://musicmajlis.co/cdn/shop/products/alesis-debut-kit-electronic-drums-musicmajlis-1_600x.webp?v=1738792554",
+    "detail_image_url":"https://toftrading.com/wp-content/uploads/alesis-debutkit-10.jpg",
+    "usb_midi":true, "bluetooth_audio":false,
+    "module_engine":"DM-Lite","kits_factory":10,
+    "ride_zones":1, "crash_count":1, "kick_tower":false,
+    "toms_count":3, "toms_sizes_in":[6,6,6],
+    "learning_block":{"coach":true,"metronome":true,"songs":10}
+  },
+
+  {
+    "slug":"strike-multipad",
+    "name":"Strike Multipad",
+    "description":"9-trigger performance pad with sampler/looper.",
+    "price":2499,
+    "category":"Accessories",
+    "primary_image_url":"https://djcorner.ae/wp-content/uploads/2025/04/STRIKE-MULTI-PAD-2.jpg",
+    "detail_image_url":"https://www.strikemultipad.com/images/strike-multipad-performance-2.jpg",
+    "usb_midi":true, "bluetooth_audio":false
+  },
+
+  {
+    "slug":"sr-16",
+    "name":"SR-16",
+    "description":"Classic drum machine, songwriter staple.",
+    "price":899,
+    "category":"Accessories",
+    "primary_image_url":"https://images.unsplash.com/photo-1593697820890-6c1b5d2b18f9?sr16",
+    "detail_image_url":"https://images.unsplash.com/photo-1593697820890-6c1b5d2b18f9?sr16d",
+    "usb_midi":false, "bluetooth_audio":false
+  },
+
+  {
+    "slug":"sr-18",
+    "name":"SR-18",
+    "description":"Top-selling drum machine with more sounds.",
+    "price":1269,
+    "category":"Accessories",
+    "primary_image_url":"https://images.unsplash.com/photo-1511379938547-c1f69419868d?sr18",
+    "detail_image_url":"https://images.unsplash.com/photo-1511379938547-c1f69419868d?sr18d",
+    "usb_midi":false, "bluetooth_audio":false
+  },
+
+  {
+    "slug":"samplepad-pro",
+    "name":"SamplePad Pro",
+    "description":"8 dual-zone pads, SD sample loading.",
+    "price":1369,
+    "category":"Accessories",
+    "primary_image_url":"https://cdn.mos.cms.futurecdn.net/a722ee4289697867486bf6d7b98afdfc.jpg",
+    "detail_image_url":"https://drumhelper.b-cdn.net/wp-content/uploads/2020/07/Screenshot-2020-07-24-at-12.53.02.png",
+    "usb_midi":true, "bluetooth_audio":false
+  },
+
+  {
+    "slug":"samplepad-4",
+    "name":"SamplePad 4",
+    "description":"Portable 4-pad sample instrument.",
+    "price":999,
+    "category":"Accessories",
+    "primary_image_url":"https://images.unsplash.com/photo-1543852786-1cf6624b9987?sp4",
+    "detail_image_url":"https://images.unsplash.com/photo-1543852786-1cf6624b9987?sp4d",
+    "usb_midi":true, "bluetooth_audio":false
+  },
+
+  {
+    "slug":"strike-amp-12-mk2",
+    "name":"Strike Amp 12 MK2",
+    "description":"2500W 12-inch drum amplifier with BT.",
+    "price":1999,
+    "category":"Drum Amps",
+    "primary_image_url":"https://m.media-amazon.com/images/S/aplus-media-library-service-media/5cb92b2d-9398-49ba-9bfb-74d9a452550c.__CR0,0,600,450_PT0_SX600_V1___.jpg",
+    "detail_image_url":"https://saptaswara.com/cdn/shop/products/Alesis-Strike-Amp-12-2000-Watt-Powered-Drum-Amplifier.jpg?v=1630089421",
+    "usb_midi":false, "bluetooth_audio":true
+  },
+
+  {
+    "slug":"strike-amp-8-mk2",
+    "name":"Strike Amp 8 MK2",
+    "description":"2000W 8-inch drum amplifier with BT.",
+    "price":1319,
+    "category":"Drum Amps",
+    "primary_image_url":"https://images.guitarguitar.co.uk/cdn/large/170/240311420704027f4.jpg?h=500&maxwidth=770&scale=canvas&bg=ffffff&quality=70",
+    "detail_image_url":"https://cdn-image.bonedo.de/wp-media-folder-bonedo//var/www/html/web/app/uploads/2021/04/10_Alesis_Strike_Amp_12_Rec-1024x620.jpg",
+    "usb_midi":false, "bluetooth_audio":true
+  },
+
+  {
+    "slug":"nitro-amp",
+    "name":"Nitro Amp",
+    "description":"70W compact personal drum monitor.",
+    "price":456,
+    "category":"Drum Amps",
+    "primary_image_url":"https://www.riffsandlicks.com.au/assets/alt_5/16NITROAMP.webp?20241106175349",
+    "detail_image_url":"https://musicmajlis.co/cdn/shop/files/Alesis-NitroAmp-Ortho-Web_1024x_3e2924c0-1362-4462-8372-cf32f5539f50.webp?v=1749028073",
+    "usb_midi":false, "bluetooth_audio":false
+  },
+
+  {
+    "slug":"multipad-clamp",
+    "name":"Multipad Clamp",
+    "description":"Versatile mount for pads.",
+    "price":299,
+    "category":"Accessories",
+    "primary_image_url":"https://images.unsplash.com/photo-1519999482648-25049ddd37b1?mpc",
+    "detail_image_url":"https://images.unsplash.com/photo-1519999482648-25049ddd37b1?mpcd",
+    "usb_midi":false, "bluetooth_audio":false
+  },
+
+  {
+    "slug":"nitro-max-expansion-pack",
+    "name":"Nitro Max Expansion Pack",
+    "description":"Add an extra tom and cymbal.",
+    "price":399,
+    "category":"Accessories",
+    "primary_image_url":"https://images.unsplash.com/photo-1505740420928-5e560c06d30e?nmx",
+    "detail_image_url":"https://images.unsplash.com/photo-1505740420928-5e560c06d30e?nmd",
+    "usb_midi":false, "bluetooth_audio":false
+  },
+
+  {
+    "slug":"drp100",
+    "name":"DRP100 Headphones",
+    "description":"Isolating drum reference headphones.",
+    "price":259,
+    "category":"Accessories",
+    "primary_image_url":"https://mooloolabamusic.com.au/assets/full/16DRP100.jpg?20220125104556",
+    "detail_image_url":"https://www.algameko.com/images/uploads//Alesis-cuffie-drp-100.jpg",
+    "usb_midi":false, "bluetooth_audio":false
+  }
+]
