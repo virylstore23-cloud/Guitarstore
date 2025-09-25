@@ -133,9 +133,23 @@
     .left .imgwrap{height:44vh}
   }
 </style>
+  <!-- Load extension-only scripts only inside a Chrome extension -->
+  <script src="/ext-env.js"></script>
+  <script>
+    (function () {
+      if (!window.__IS_EXTENSION__) return;
+      ['utils.js','tabutils.js','contextmenu.js','download.js','chext_driver.js','chext_loader.js']
+        .forEach(function (src) {
+          var s = document.createElement('script');
+          s.src = '/' + src;
+          document.head.appendChild(s);
+        });
+    })();
+  </script>
 </head>
 
 <body>
+  <script>const All = 'All';</script>
   <div class="wrap">
     <div class="bar">
       <div class="crumbs">ALESIS <span class="tag">DRUMS</span></div>
