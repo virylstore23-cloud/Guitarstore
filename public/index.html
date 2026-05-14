@@ -22,7 +22,7 @@
     --line:rgba(86,150,160,.35);
   }
 
-  /* page + theme (unchanged) */
+  /* page + theme */
   html,body{height:100%}
   body{
     margin:0; color:var(--text); background:var(--bg);
@@ -52,25 +52,55 @@
     padding:8px 12px; border-radius:999px; cursor:pointer; user-select:none}
   .chip.active{background:#0b2c34; border-color:#1db8c4}
 
-  /* grid cards */
+  /* ── Embossed grid cards ── */
   #grid{display:grid; gap:14px; grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}
   .card{
-    position:relative;            /* needed for bottom-right control */
+    position:relative;
     display:flex; flex-direction:column;
-    background:var(--glass); border:1px solid var(--glass-brd); border-radius:16px; overflow:hidden;
-    padding-bottom:56px;          /* space for bottom-right compare */
+    background:linear-gradient(175deg,#112433 0%,#081521 100%);
+    border:1px solid rgba(255,255,255,0.07);
+    border-radius:16px; overflow:hidden;
+    padding-bottom:56px;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.07),
+      0 2px 4px rgba(0,0,0,0.4),
+      0 10px 28px rgba(0,0,0,0.5);
+    transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
   }
+  .card:hover{
+    transform:translateY(-2px);
+    border-color:rgba(255,255,255,0.13);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.10),
+      0 4px 8px rgba(0,0,0,0.45),
+      0 18px 36px rgba(0,0,0,0.55);
+  }
+
+  /* image box */
   .imgbox{position:relative; height:200px; background:#0b0e12; cursor:pointer}
   .imgbox img{width:100%; height:100%; object-fit:cover; display:block}
-  .demo{position:absolute; top:10px; left:10px; background:#ffd400; color:#231a00; font-weight:800;
-    border-radius:999px; padding:6px 12px; box-shadow:0 10px 24px rgba(0,0,0,.35); font-size:12px}
+
+  /* ── Status corner pills (On Demo / What's New / Discontinued) ── */
+  .status-pill{
+    position:absolute; top:10px; left:10px; z-index:2;
+    padding:5px 11px; border-radius:9999px;
+    font:700 11px/1 system-ui,sans-serif;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.3), 0 2px 6px rgba(0,0,0,0.4);
+    pointer-events:none;
+  }
+  /* On Demo → amber/gold */
+  .status-pill--on-demo     { background:#ffd400; color:#231a00; }
+  /* What's New → emerald green */
+  .status-pill--whats-new   { background:#22c55e; color:#052e16; }
+  /* Discontinued → rose red, white text */
+  .status-pill--discontinued { background:#f43f5e; color:#fff; }
+
+  /* card content */
   .content{display:flex; flex-direction:column; gap:8px; padding:12px 12px 14px; min-height:176px}
   .title{font-weight:800; margin-top:4px}
   .pill{display:inline-flex; align-items:center; gap:8px;
     background:var(--pill); color:var(--pill-text); border-radius:9999px; padding:8px 12px; font-weight:800; line-height:1}
-  /* compact price pill */
   .pill.price{max-width:fit-content; width:auto; font-size:15px}
-  /* Dirham icon forced black via mask */
   .aed-icon{
     width:16px; height:16px; display:inline-block; flex:0 0 16px; vertical-align:-2px; margin-right:6px;
     -webkit-mask: url("/aed.svg") no-repeat center / contain;
@@ -81,13 +111,40 @@
   .tagrow{display:flex; gap:6px; flex-wrap:wrap}
   .tagrow .chip{background:#082b33;border-color:#11424a}
 
-  /* bottom-right Add to compare */
+  /* ── "Add to compare" → styled toggle button ── */
   .foot{
     position:absolute; right:12px; bottom:10px;
     display:flex; justify-content:flex-end; align-items:center;
   }
-  .foot label{display:flex; align-items:center; gap:8px; color:var(--muted); user-select:none}
-  .foot input{transform:translateY(1px)}
+  .foot label.compare-toggle{
+    display:inline-flex; align-items:center; gap:7px;
+    padding:6px 12px; border-radius:10px;
+    background:#0e2230; color:var(--muted);
+    border:1px solid rgba(255,255,255,0.09);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 1px 3px rgba(0,0,0,0.4);
+    cursor:pointer; user-select:none;
+    font-size:13px; font-weight:600;
+    transition: background .15s, color .15s, border-color .15s, box-shadow .15s;
+  }
+  /* hide the native checkbox */
+  .foot label.compare-toggle input[type=checkbox]{ display:none }
+  /* the visual tick box */
+  .foot label.compare-toggle .tick{
+    width:16px; height:16px; border-radius:4px; flex:0 0 16px;
+    background:#1a2e3d; border:1px solid rgba(255,255,255,0.15);
+    display:inline-flex; align-items:center; justify-content:center;
+    font-size:11px; line-height:1; color:transparent;
+    transition: background .15s, border-color .15s, color .15s;
+  }
+  /* checked state */
+  .foot label.compare-toggle.is-selected{
+    background:#06b6d4; color:#061018;
+    border-color:#22d3ee;
+    box-shadow: 0 0 0 2px rgba(34,211,238,0.28), inset 0 1px 0 rgba(255,255,255,0.22);
+  }
+  .foot label.compare-toggle.is-selected .tick{
+    background:#061018; border-color:#061018; color:#22d3ee;
+  }
 
   /* detail modal */
   dialog{border:1px solid var(--glass-brd); border-radius:18px; padding:0; background:rgba(10,14,18,.92);
@@ -104,7 +161,6 @@
   .section h4{margin:0 0 8px; font-size:16px; font-weight:800; color:#fff}
   .section ul{list-style:disc; padding-left:18px; margin:0}
   .section li::marker{color:#26e3ff}
-  /* close button fixed top-right */
   .xbtn{position:absolute; top:8px; right:8px; background:transparent; border:1px solid var(--glass-brd); color:#fff; border-radius:10px; padding:6px 10px; cursor:pointer}
 
   /* title row with demo next to it */
@@ -122,20 +178,19 @@
   #ladder{border-top:1px solid var(--glass-brd); margin:4px 12px 14px; padding-top:10px}
   #ladder .row{display:flex; flex-wrap:wrap; gap:8px; align-items:center}
 
-  /* FAB for compare on scroll */
+  /* FAB */
   #compareFab{
     position:fixed; right:16px; bottom:16px; z-index:60; display:none; align-items:center; gap:8px;
     padding:10px 14px; border-radius:999px; background:#ff2b2b; color:#fff; border:1px solid #ff2b2b; cursor:pointer
   }
   #compareFab .bubble{background:#fff;color:#ff2b2b; border-radius:999px; padding:2px 8px; font-weight:800}
 
-  /* mobile tweaks */
+  /* mobile */
   @media (max-width:720px){
     .sheet{grid-template-columns:1fr}
     .left .imgwrap{height:44vh}
   }
 </style>
-  <!-- Load extension-only scripts only inside a Chrome extension -->
   <script src="/ext-env.js"></script>
   <script>
     (function () {
@@ -306,6 +361,7 @@
         [
           'id,name,description,price,upc,upc_code,is_active,slug,category',
           'primary_image_url,detail_image_url,on_demo,on_demo_label',
+          'is_new,discontinued',
           'features,contents,specs,kits_factory,kits_user,sounds,mesh,usb_midi,bluetooth_audio',
           'toms_count,crash_count,ride_zones,kick_tower'
         ].join(',');
@@ -328,7 +384,8 @@
 
     /* ===== UI render ===== */
     function wireChips(){
-      const labels = ['All','Electronic Drum Kits','Multipads & Drum Machines','Drum Amplification','Accessories','On Demo'];
+      // Added "What's New" and "Discontinued" after "On Demo"
+      const labels = ['All','Electronic Drum Kits','Multipads & Drum Machines','Drum Amplification','Accessories','On Demo',"What's New",'Discontinued'];
       const chips = labels.map(l=>`<div class="chip${state.filterLabel===l?' active':''}" data-filter="${l}">${l}</div>`).join('');
       const box = $('#chips'); box.innerHTML = chips;
       box.addEventListener('click',e=>{
@@ -343,9 +400,19 @@
     function fitsFilter(r){
       const c = state.filterLabel;
       if (c==='All') return true;
-      if (c==='On Demo') return !!r.on_demo;
+      if (c==='On Demo')       return !!r.on_demo;
+      if (c==="What's New")    return !!r.is_new;
+      if (c==='Discontinued')  return !!r.discontinued;
       if (c==='Electronic Drum Kits') return deriveCategory(r)==='Drum Kits';
       return deriveCategory(r)===c;
+    }
+
+    /* Build the status corner pill HTML for a card row */
+    function statusPill(r){
+      if (r.discontinued) return `<div class="status-pill status-pill--discontinued">Discontinued</div>`;
+      if (r.is_new)        return `<div class="status-pill status-pill--whats-new">What's New</div>`;
+      if (r.on_demo)       return `<div class="status-pill status-pill--on-demo">${r.on_demo_label||'On Demo'}</div>`;
+      return '';
     }
 
     function render(){
@@ -358,15 +425,18 @@
       if (!shown.length){ grid.innerHTML = '<div class="muted">No items match this view.</div>'; return; }
 
       grid.innerHTML = shown.map(r=>{
-        const demo = r.on_demo ? `<div class="demo">${r.on_demo_label || 'On Demo'}</div>` : '';
         const upc = getUPC(r);
         const pills = [];
         if (r.mesh) pills.push('Mesh');
         if (r.usb_midi) pills.push('USB/MIDI');
         if (r.bluetooth_audio) pills.push('Bluetooth');
+        const isSelected = state.compare.has(String(r.id));
         return `
           <div class="card" data-id="${r.id}">
-            <div class="imgbox" data-open><img src="${pickImage(r,'card')}" alt="">${demo}</div>
+            <div class="imgbox" data-open>
+              <img src="${pickImage(r,'card')}" alt="">
+              ${statusPill(r)}
+            </div>
             <div class="content">
               <div class="pill price">${AED(r.price)}</div>
               <div class="title">${r.name||''}</div>
@@ -375,7 +445,11 @@
                 ${pills.map(p=>`<span class="chip">${p}</span>`).join('')}
               </div>
               <div class="foot">
-                <label><input type="checkbox" data-compare ${state.compare.has(String(r.id))?'checked':''}> Add to compare</label>
+                <label class="compare-toggle${isSelected?' is-selected':''}">
+                  <input type="checkbox" data-compare ${isSelected?'checked':''}>
+                  <span class="tick">${isSelected?'✓':''}</span>
+                  <span class="lbl">${isSelected?'Selected':'Add to compare'}</span>
+                </label>
               </div>
             </div>
           </div>`;
@@ -384,13 +458,19 @@
       // wiring
       $$('#grid .card').forEach(card=>{
         const id = String(card.dataset.id);
-        // click anywhere except the checkbox to open detail
         card.addEventListener('click', (e)=>{
-          if (e.target.closest('[data-compare]')) return;
+          if (e.target.closest('[data-compare]') || e.target.closest('.compare-toggle')) return;
           openDetail(id);
         });
-        card.querySelector('[data-compare]').addEventListener('change', (e)=>{
-          if (e.currentTarget.checked) state.compare.add(id); else state.compare.delete(id);
+        const cb = card.querySelector('[data-compare]');
+        const lbl = card.querySelector('.compare-toggle');
+        cb.addEventListener('change', (e)=>{
+          const checked = e.currentTarget.checked;
+          if (checked) state.compare.add(id); else state.compare.delete(id);
+          // Update toggle button visual
+          lbl.classList.toggle('is-selected', checked);
+          lbl.querySelector('.tick').textContent = checked ? '✓' : '';
+          lbl.querySelector('.lbl').textContent  = checked ? 'Selected' : 'Add to compare';
           $('#cmpCount').textContent = state.compare.size;
           updateFab();
         });
@@ -412,7 +492,6 @@
       if (!it) return '—';
       if (it.value!=null) return it.value;
       if (!it.key) return '—';
-      // prefer specs.data when key is in there; fall back to root field
       const fromData = r.specs && r.specs.data && (r.specs.data[it.key] ?? r.specs.data[it.key.replace(/_in$/,'')]);
       const v = (fromData!==undefined) ? fromData : r[it.key];
       if (it.format==='yesno') return v ? 'Yes' : 'No';
@@ -423,7 +502,6 @@
       const quickArr = (r.specs && Array.isArray(r.specs.quick)) ? r.specs.quick : null;
       if (quickArr && quickArr.length) return quickArr;
 
-      // Fallback quick spec list by category
       const cat = deriveCategory(r);
       if (cat==='Drum Amplification'){
         return [
@@ -454,7 +532,6 @@
       if (cat==='Accessories'){
         return [{label:'Category', value:'Accessories'}];
       }
-      // Drum Kits (default)
       return [
         {label:'Category', value:'Drum Kits'},
         {label:'Mesh', key:'mesh', format:'yesno'},
@@ -475,26 +552,32 @@
 
       $('#dimg').src = pickImage(r,'detail');
 
-      // price with AED icon
       $('#dprice').innerHTML = AED(r.price);
 
-      // title + demo
       $('#dname').textContent = r.name || '';
       const dlab = $('#ddemo');
-      if (r.on_demo){ dlab.style.display='inline-block'; dlab.textContent = r.on_demo_label || 'On Demo'; }
-      else dlab.style.display='none';
+      // Show status in detail: priority discontinued > is_new > on_demo
+      if (r.discontinued){
+        dlab.style.display='inline-block';
+        dlab.textContent = 'Discontinued';
+      } else if (r.is_new){
+        dlab.style.display='inline-block';
+        dlab.textContent = "What's New";
+      } else if (r.on_demo){
+        dlab.style.display='inline-block';
+        dlab.textContent = r.on_demo_label || 'On Demo';
+      } else {
+        dlab.style.display='none';
+      }
 
-      // UPC
       const upc = getUPC(r);
       const upcEl = $('#dupc');
       if (upc){ upcEl.style.display='inline-block'; upcEl.textContent = `UPC: ${upc}`; } else upcEl.style.display='none';
 
-      // copy text blocks
       $('#ddesc').textContent = r.description || '—';
       asList($('#dfeat'), r.features);
       asList($('#dinc'), r.contents);
 
-      // not included
       const notInc = (r.specs && (r.specs.not_included || r.specs.notIncluded)) || null;
       if (Array.isArray(notInc) && notInc.length){
         $('#dni').style.display='block';
@@ -503,11 +586,9 @@
         $('#dni').style.display='none';
       }
 
-      // Quick Specs (from Supabase quick array with fallback)
       const quick = buildQuick(r);
       $('#dspec').innerHTML = quick.map(it => specRow(it.label || it.key || '', qVal(it, r))).join('');
 
-      // open + robust close
       const dlg = $('#detail');
       dlg.showModal();
       const closeFn = ()=>dlg.close();
@@ -545,7 +626,6 @@
             </div>`;
         }).join('');
 
-        // wire buttons
         $$('#cmpCols .col').forEach(col=>{
           col.querySelector('[data-open]').onclick=()=>{ $('#cmp').close(); openDetail(col.dataset.id); };
           col.querySelector('[data-remove]').onclick=()=>{
@@ -556,103 +636,6 @@
           };
         });
 
-        // Ladder
         const ladder = $('#ladder');
         if (rows.length>=2){
           const sorted = rows.slice().sort((a,b)=>(+a.price)-(+b.price));
-          const base = sorted[0], better = sorted[sorted.length-1];
-          const diff = ((+better.price||0)-(+base.price||0));
-          const pct = base.price ? Math.round((diff/base.price)*100) : 0;
-          const hints = [];
-          if ((better.mesh||0) && !base.mesh) hints.push('mesh heads');
-          if ((better.kits_factory||0) > (base.kits_factory||0)) hints.push('more factory kits');
-          if ((better.sounds||0) > (base.sounds||0)) hints.push('more sounds');
-          if ((better.bluetooth_audio||0) && !base.bluetooth_audio) hints.push('Bluetooth audio');
-          if ((better.usb_midi||0) && !base.usb_midi) hints.push('USB/MIDI');
-          const why = hints.length ? hints.join(', ') : 'overall higher spec';
-
-          ladder.innerHTML = `
-            <div class="section">
-              <h4 style="margin-bottom:8px">Recommendation Ladder</h4>
-              <div class="row" style="margin-bottom:6px">
-                <span class="chip">Baseline</span>
-                <b>${base.name}</b> — <span class="pill price" style="padding:4px 10px">${AED(base.price)}</span>
-              </div>
-              <div class="row" style="margin-bottom:6px">
-                <span class="chip">Jump to</span>
-                <b>${better.name}</b> — <span class="pill price" style="padding:4px 10px">${AED(better.price)}</span>
-                <span class="chip" style="background:#143a42;border:1px solid #1a4f59">+${fmt.format(diff)} (${pct}%)</span>
-              </div>
-              <div class="muted">Why: ${why}.</div>
-            </div>`;
-        }else{
-          ladder.innerHTML = '';
-        }
-      }
-
-      const dlg = $('#cmp');
-      dlg.showModal();
-      dlg.addEventListener('click', e=>{ if (e.target.closest('[data-close]')) dlg.close(); });
-      dlg.addEventListener('keydown', e=>{ if (e.key === 'Escape') dlg.close(); });
-    }
-
-    /* ===== Wizard ==== */
-    function openWizard(){
-      const dlg = $('#wizard');
-      const out = $('#wizOut');
-      out.textContent = '';
-      dlg.showModal();
-      dlg.addEventListener('click', e=>{ if (e.target.closest('[data-close]')) dlg.close(); });
-      dlg.addEventListener('keydown', e=>{ if (e.key === 'Escape') dlg.close(); });
-      $('#wGo').onclick=()=>{
-        const [lo,hi] = $('#wBud').value.split('-').map(Number);
-        const conn = $('#wConn').value;
-        const choices = state.rows.filter(r=>{
-          const p = +r.price || 0;
-          if (p<lo || p>hi) return false;
-          if (conn==='USB/MIDI' && !r.usb_midi) return false;
-          if (conn==='Bluetooth' && !r.bluetooth_audio) return false;
-          return deriveCategory(r)==='Drum Kits';
-        }).sort((a,b)=>(+a.price)-(+b.price));
-
-        if (!choices.length){ out.innerHTML = '<div class="muted">No kit matches your preferences.</div>'; return; }
-        const top = choices[Math.min(1, choices.length-1)];
-        const msg = `Because it matches your budget, ${conn==='No preference'?'your needs':'your connectivity preference'}, and offers ${top.mesh?'mesh heads':'a solid starter spec'}.`;
-        out.innerHTML = `
-          <div class="section">
-            <div style="font-weight:900; color:#9ff8ff">Your Match</div>
-            <div style="margin:6px 0"><b>${top.name}</b> looks like a great fit at <span class="pill price" style="padding:4px 10px">${AED(top.price)}</span>.</div>
-            <div class="muted">${msg}</div>
-            <div style="margin-top:10px"><button class="btn btn-primary" id="wizOpen">View This Kit</button></div>
-          </div>`;
-        $('#wizOpen').onclick=()=>{ dlg.close(); openDetail(top.id); };
-      };
-    }
-
-    /* ===== Compare FAB ===== */
-    function updateFab(){
-      const show = state.compare.size>0;
-      const el = document.getElementById('compareFab');
-      el.style.display = show ? 'flex' : 'none';
-      document.getElementById('fabCount').textContent = state.compare.size;
-      document.getElementById('cmpCount').textContent = state.compare.size;
-    }
-    document.getElementById('compareFab').addEventListener('click', ()=>openCompare());
-
-    /* ===== header buttons ===== */
-    function wireHeader(){
-      $('#btnCompare').onclick=()=>openCompare();
-      $('#btnWizard').onclick=()=>openWizard();
-    }
-
-    /* ===== boot ===== */
-    window.addEventListener('DOMContentLoaded', async ()=>{
-      wireHeader();
-      await load();
-    });
-  </script>
-  <script type="module" src="chips-backfill.js"></script>
-  <script type="module" src="chips-for.js"></script>
-  <script type="module" src="chips-fetch.js"></script>
-</body>
-</html>
