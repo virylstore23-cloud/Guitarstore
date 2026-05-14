@@ -361,7 +361,7 @@
         [
           'id,name,description,price,upc,upc_code,is_active,slug,category',
           'primary_image_url,detail_image_url,on_demo,on_demo_label',
-          'is_new,discontinued',
+          'is_new,discontinued,is_new_label,discontinued_label',
           'features,contents,specs,kits_factory,kits_user,sounds,mesh,usb_midi,bluetooth_audio',
           'toms_count,crash_count,ride_zones,kick_tower'
         ].join(',');
@@ -409,8 +409,8 @@
 
     /* Build the status corner pill HTML for a card row */
     function statusPill(r){
-      if (r.discontinued) return `<div class="status-pill status-pill--discontinued">Discontinued</div>`;
-      if (r.is_new)        return `<div class="status-pill status-pill--whats-new">What's New</div>`;
+      if (r.discontinued) return `<div class="status-pill status-pill--discontinued">${r.discontinued_label||'Discontinued'}</div>`;
+      if (r.is_new)        return `<div class="status-pill status-pill--whats-new">${r.is_new_label||"What's New"}</div>`;
       if (r.on_demo)       return `<div class="status-pill status-pill--on-demo">${r.on_demo_label||'On Demo'}</div>`;
       return '';
     }
@@ -559,10 +559,10 @@
       // Show status in detail: priority discontinued > is_new > on_demo
       if (r.discontinued){
         dlab.style.display='inline-block';
-        dlab.textContent = 'Discontinued';
+        dlab.textContent = r.discontinued_label || 'Discontinued';
       } else if (r.is_new){
         dlab.style.display='inline-block';
-        dlab.textContent = "What's New";
+        dlab.textContent = r.is_new_label || "What's New";
       } else if (r.on_demo){
         dlab.style.display='inline-block';
         dlab.textContent = r.on_demo_label || 'On Demo';
