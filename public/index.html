@@ -9,7 +9,7 @@
 
 <style>
   :root{
-    --bg:#0b0f13;
+    --bg:#07101a;
     --panel:#0f141a;
     --glass:rgba(15,21,27,.72);
     --glass-brd:rgba(55,137,153,.35);
@@ -29,8 +29,10 @@
     font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Arial,Helvetica,sans-serif;
     -webkit-font-smoothing:antialiased;
     background-image:
-      radial-gradient(800px 520px at 20% 12%, rgba(0,209,234,.08) 0,transparent 62%),
-      radial-gradient(800px 520px at 88% 8%, rgba(0,209,234,.07) 0,transparent 60%);
+      radial-gradient(ellipse 75% 45% at 14% 0%,   rgba(0,180,210,.14) 0%, transparent 65%),
+      radial-gradient(ellipse 60% 38% at 88% 4%,   rgba(0,160,200,.10) 0%, transparent 60%),
+      radial-gradient(ellipse 45% 30% at 50% 105%,  rgba(0,100,140,.08) 0%, transparent 70%);
+    background-attachment: fixed;
   }
   .wrap{max-width:1160px; margin:28px auto; padding:0 16px}
 
@@ -47,106 +49,107 @@
   .btn-ghost{background:transparent}
 
   /* filter chips */
-  #chips{display:flex; gap:10px; flex-wrap:wrap; margin:16px 0 10px}
+  #chips{display:flex; gap:9px; flex-wrap:wrap; margin:16px 0 10px}
   .chip{
     border:1px solid transparent; padding:8px 16px; border-radius:999px;
     cursor:pointer; user-select:none; font-weight:600; font-size:13px;
-    transition: transform .12s ease, box-shadow .12s ease, opacity .12s ease;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.12), 0 2px 6px rgba(0,0,0,0.40);
+    transition: all .15s ease;
+    opacity:.65;
   }
-  .chip:hover{ transform:translateY(-1px); box-shadow: inset 0 1px 0 rgba(255,255,255,0.16), 0 4px 10px rgba(0,0,0,0.50); }
-  .chip:not(.active){ opacity:.72; }
-  .chip.active{ opacity:1; box-shadow: inset 0 1px 0 rgba(255,255,255,0.20), 0 4px 14px rgba(0,0,0,0.55), 0 0 0 2px rgba(255,255,255,0.18); transform:translateY(-1px); }
+  .chip:hover{ opacity:.88; transform:translateY(-1px); }
+  .chip.active{
+    opacity:1; transform:translateY(-1px);
+  }
 
-  /* All — neutral silver */
-  .chip[data-filter="All"]               { background:linear-gradient(135deg,#2a3f52,#1a2d3e); color:#cdeef2; border-color:rgba(100,180,200,.35); }
-  .chip[data-filter="All"].active        { background:linear-gradient(135deg,#3a5568,#2a4255); border-color:rgba(100,180,200,.6); }
+  /* All — cool blue-grey */
+  .chip[data-filter="All"]{ background:rgba(180,210,230,.10); color:#c8e8f5; border-color:rgba(180,210,230,.28); }
+  .chip[data-filter="All"].active{ background:rgba(180,210,230,.20); border-color:rgba(180,210,230,.65); box-shadow:0 0 0 2px rgba(180,210,230,.18); }
 
-  /* Electronic Drum Kits — teal */
-  .chip[data-filter="Electronic Drum Kits"]        { background:linear-gradient(135deg,#0c3a44,#082830); color:#7ef4ff; border-color:rgba(0,200,220,.35); }
-  .chip[data-filter="Electronic Drum Kits"].active  { background:linear-gradient(135deg,#0f4f5e,#0b3a47); border-color:rgba(0,200,220,.7); }
+  /* Electronic Drum Kits — cyan/teal (site primary) */
+  .chip[data-filter="Electronic Drum Kits"]{ background:rgba(0,209,234,.10); color:#00e4ff; border-color:rgba(0,209,234,.32); }
+  .chip[data-filter="Electronic Drum Kits"].active{ background:rgba(0,209,234,.18); border-color:rgba(0,209,234,.75); box-shadow:0 0 0 2px rgba(0,209,234,.18),0 0 14px rgba(0,209,234,.16); }
 
-  /* Multipads — indigo/purple */
-  .chip[data-filter="Multipads & Drum Machines"]        { background:linear-gradient(135deg,#1e1a4a,#150f38); color:#b8b0ff; border-color:rgba(120,100,255,.35); }
-  .chip[data-filter="Multipads & Drum Machines"].active  { background:linear-gradient(135deg,#2a2462,#1c164e); border-color:rgba(120,100,255,.7); }
+  /* Multipads & Drum Machines — violet */
+  .chip[data-filter="Multipads & Drum Machines"]{ background:rgba(139,92,246,.12); color:#c4b5fd; border-color:rgba(139,92,246,.34); }
+  .chip[data-filter="Multipads & Drum Machines"].active{ background:rgba(139,92,246,.22); border-color:rgba(139,92,246,.75); box-shadow:0 0 0 2px rgba(139,92,246,.18),0 0 14px rgba(139,92,246,.16); }
 
-  /* Drum Amplification — orange/warm */
-  .chip[data-filter="Drum Amplification"]        { background:linear-gradient(135deg,#3a1f08,#2a1505); color:#ffbb70; border-color:rgba(255,150,50,.35); }
-  .chip[data-filter="Drum Amplification"].active  { background:linear-gradient(135deg,#4e2a0a,#381c07); border-color:rgba(255,150,50,.7); }
+  /* Drum Amplification — warm amber/orange */
+  .chip[data-filter="Drum Amplification"]{ background:rgba(251,146,60,.10); color:#fdba74; border-color:rgba(251,146,60,.32); }
+  .chip[data-filter="Drum Amplification"].active{ background:rgba(251,146,60,.20); border-color:rgba(251,146,60,.75); box-shadow:0 0 0 2px rgba(251,146,60,.18),0 0 14px rgba(251,146,60,.14); }
 
-  /* Accessories — slate green */
-  .chip[data-filter="Accessories"]        { background:linear-gradient(135deg,#0e3020,#091f14); color:#72e8a0; border-color:rgba(50,200,100,.35); }
-  .chip[data-filter="Accessories"].active  { background:linear-gradient(135deg,#134228,#0c2b1a); border-color:rgba(50,200,100,.7); }
+  /* Accessories — emerald */
+  .chip[data-filter="Accessories"]{ background:rgba(52,211,153,.10); color:#6ee7b7; border-color:rgba(52,211,153,.30); }
+  .chip[data-filter="Accessories"].active{ background:rgba(52,211,153,.18); border-color:rgba(52,211,153,.72); box-shadow:0 0 0 2px rgba(52,211,153,.18),0 0 14px rgba(52,211,153,.14); }
 
-  /* On Demo — amber/gold (matches pill) */
-  .chip[data-filter="On Demo"]        { background:linear-gradient(135deg,#3a2c00,#261e00); color:#ffd400; border-color:rgba(255,212,0,.35); }
-  .chip[data-filter="On Demo"].active  { background:linear-gradient(135deg,#503d00,#362900); border-color:rgba(255,212,0,.7); }
+  /* On Demo — gold (matches corner pill) */
+  .chip[data-filter="On Demo"]{ background:rgba(255,212,0,.10); color:#ffd400; border-color:rgba(255,212,0,.32); }
+  .chip[data-filter="On Demo"].active{ background:rgba(255,212,0,.18); border-color:rgba(255,212,0,.75); box-shadow:0 0 0 2px rgba(255,212,0,.20),0 0 14px rgba(255,212,0,.18); }
 
-  /* What's New — emerald (matches pill) */
-  .chip[data-filter="What's New"]        { background:linear-gradient(135deg,#0a3020,#062015); color:#22c55e; border-color:rgba(34,197,94,.35); }
-  .chip[data-filter="What's New"].active  { background:linear-gradient(135deg,#0f4229,#0a2e1c); border-color:rgba(34,197,94,.7); }
+  /* What's New — green (matches corner pill) */
+  .chip[data-filter="What's New"]{ background:rgba(34,197,94,.10); color:#4ade80; border-color:rgba(34,197,94,.30); }
+  .chip[data-filter="What's New"].active{ background:rgba(34,197,94,.18); border-color:rgba(34,197,94,.72); box-shadow:0 0 0 2px rgba(34,197,94,.18),0 0 14px rgba(34,197,94,.14); }
 
-  /* Discontinued — rose/red (matches pill) */
-  .chip[data-filter="Discontinued"]        { background:linear-gradient(135deg,#3a0a14,#28060e); color:#fb7185; border-color:rgba(244,63,94,.35); }
-  .chip[data-filter="Discontinued"].active  { background:linear-gradient(135deg,#500e1c,#3a0b14); border-color:rgba(244,63,94,.7); }
+  /* Discontinued — rose (matches corner pill) */
+  .chip[data-filter="Discontinued"]{ background:rgba(244,63,94,.10); color:#fca5a5; border-color:rgba(244,63,94,.32); }
+  .chip[data-filter="Discontinued"].active{ background:rgba(244,63,94,.18); border-color:rgba(244,63,94,.72); box-shadow:0 0 0 2px rgba(244,63,94,.20),0 0 14px rgba(244,63,94,.16); }
 
   /* ── Embossed grid cards — brushed-metal inset-channel style ── */
   #grid{display:grid; gap:20px; grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}
 
-  /* outer "tray" that provides the raised-platform illusion */
+  /* outer bevel — polished chrome light sweep */
   .card-wrap{
-    border-radius:20px; padding:3px;
-    background:linear-gradient(145deg,
-      rgba(255,255,255,0.18) 0%,
-      rgba(255,255,255,0.06) 30%,
-      rgba(0,0,0,0.50) 70%,
-      rgba(0,0,0,0.70) 100%);
+    border-radius:20px; padding:2px;
+    background: linear-gradient(130deg,
+      #ffffff   0%,
+      #b8d4e8   7%,
+      #4a7a9a  20%,
+      #1a3a54  40%,
+      #0a1e30  62%,
+      #04101e  82%,
+      #020810 100%);
     box-shadow:
-      /* deep outer drop — card sits above the page */
-      0 8px 20px rgba(0,0,0,0.55),
-      0 24px 56px rgba(0,0,0,0.65),
-      0 48px 80px rgba(0,0,0,0.40),
-      /* subtle outer rim highlight (top-left) */
-      -1px -1px 0 rgba(255,255,255,0.12);
-    transition: transform .20s cubic-bezier(.22,1,.36,1),
-                box-shadow .20s ease;
+      0 6px 18px  rgba(0,0,0,0.55),
+      0 20px 48px rgba(0,0,0,0.62),
+      0 40px 70px rgba(0,0,0,0.38);
+    transition: transform .22s cubic-bezier(.22,1,.36,1), box-shadow .22s ease;
   }
   .card-wrap:hover{
-    transform:translateY(-6px) scale(1.013);
+    transform: translateY(-7px) scale(1.014);
     box-shadow:
-      0 16px 32px rgba(0,0,0,0.60),
-      0 36px 72px rgba(0,0,0,0.70),
-      0 60px 90px rgba(0,0,0,0.45),
-      -1px -1px 0 rgba(255,255,255,0.16),
-      0 0 0 1px rgba(0,209,234,0.22),
-      0 0 48px rgba(0,209,234,0.10);
+      0 14px 30px rgba(0,0,0,0.62),
+      0 32px 68px rgba(0,0,0,0.70),
+      0 56px 88px rgba(0,0,0,0.42),
+      0 0 0 1px  rgba(0,209,234,0.32),
+      0 0 52px   rgba(0,209,234,0.13);
   }
 
+  /* inner panel — smooth polished steel surface */
   .card{
     position:relative;
     display:flex; flex-direction:column;
-    border-radius:17px; overflow:hidden;
+    border-radius:18px; overflow:hidden;
     padding-bottom:56px;
-    /* brushed-metal panel: lighter than --bg, dark-to-darker gradient */
-    background:
-      /* fine horizontal brushed-line texture via repeating-linear-gradient */
-      repeating-linear-gradient(
-        180deg,
-        rgba(255,255,255,0.022) 0px,
-        rgba(255,255,255,0.022) 1px,
-        transparent 1px,
-        transparent 3px
-      ),
-      linear-gradient(170deg,#1e3548 0%,#112538 40%,#0c1e30 70%,#091826 100%);
-    /* inset channel: dark top+left inner edges, bright bottom+right = pressed-in */
+    background: linear-gradient(150deg,
+      #223545  0%,
+      #192c3c 14%,
+      #11222f 28%,
+      #0d1c2a 44%,
+      #091520 60%,
+      #060f18 76%,
+      #040c14 100%);
     box-shadow:
-      inset  2px  2px  6px rgba(0,0,0,0.70),   /* top-left dark channel */
-      inset -1px -1px  4px rgba(255,255,255,0.08), /* bottom-right inner shine */
-      inset  0    0   18px rgba(0,0,0,0.30);    /* inner ambient shadow */
+      inset 0  1px 0   rgba(210,235,255,0.18),
+      inset 0 -1px 0   rgba(0,0,0,0.55),
+      inset 1px 0  0   rgba(190,225,248,0.08),
+      inset -1px 0 0   rgba(0,0,0,0.40),
+      inset 0  0  28px rgba(0,0,0,0.22);
   }
 
-  /* image box */
-  .imgbox{position:relative; height:200px; background:#0b0e12; cursor:pointer}
+  /* image box — deep polished steel well */
+  .imgbox{
+    position:relative; height:200px; cursor:pointer;
+    background: linear-gradient(170deg,#0f2030 0%,#09182a 60%,#060f1e 100%);
+  }
   .imgbox img{width:100%; height:100%; object-fit:cover; display:block}
 
   /* ── Status corner pills (On Demo / What's New / Discontinued) ── */
