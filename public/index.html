@@ -53,27 +53,32 @@
   .chip.active{background:#0b2c34; border-color:#1db8c4}
 
   /* ── Embossed grid cards ── */
-  #grid{display:grid; gap:14px; grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}
+  #grid{display:grid; gap:18px; grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}
   .card{
     position:relative;
     display:flex; flex-direction:column;
-    background:linear-gradient(175deg,#112433 0%,#081521 100%);
-    border:1px solid rgba(255,255,255,0.07);
-    border-radius:16px; overflow:hidden;
+    background:linear-gradient(170deg,#1a3244 0%,#0e2030 55%,#081421 100%);
+    border-radius:18px; overflow:hidden;
     padding-bottom:56px;
+    border:1px solid rgba(255,255,255,0.10);
+    border-top-color:rgba(255,255,255,0.20);
     box-shadow:
-      inset 0 1px 0 rgba(255,255,255,0.07),
-      0 2px 4px rgba(0,0,0,0.4),
-      0 10px 28px rgba(0,0,0,0.5);
-    transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+      inset 0 1px 0 rgba(255,255,255,0.13),
+      0 4px 8px rgba(0,0,0,0.50),
+      0 16px 40px rgba(0,0,0,0.65),
+      0 32px 56px rgba(0,0,0,0.40);
+    transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
   }
   .card:hover{
-    transform:translateY(-2px);
-    border-color:rgba(255,255,255,0.13);
+    transform:translateY(-5px) scale(1.012);
+    border-color:rgba(0,200,220,0.35);
+    border-top-color:rgba(0,200,220,0.50);
     box-shadow:
-      inset 0 1px 0 rgba(255,255,255,0.10),
-      0 4px 8px rgba(0,0,0,0.45),
-      0 18px 36px rgba(0,0,0,0.55);
+      inset 0 1px 0 rgba(255,255,255,0.18),
+      0 8px 16px rgba(0,0,0,0.55),
+      0 24px 52px rgba(0,0,0,0.70),
+      0 0 0 1px rgba(0,200,220,0.18),
+      0 0 36px rgba(0,200,220,0.10);
   }
 
   /* image box */
@@ -284,39 +289,64 @@
   <!-- Wizard -->
   <dialog id="wizard">
     <div class="bar" style="padding:10px 12px 0">
-      <div style="font-weight:900">Find My Perfect Kit</div>
+      <div style="font-weight:900">&#127941; Find My Perfect Kit</div>
       <div class="grow"></div>
       <button class="btn btn-ghost" data-close>Close</button>
     </div>
-    <div style="padding:12px">
-      <div style="display:grid; gap:10px; grid-template-columns:repeat(auto-fit,minmax(220px,1fr))">
-        <label>Experience
-          <select id="wExp" class="btn" style="display:block;width:100%;margin-top:6px">
-            <option>Beginner</option><option>Intermediate</option><option>Advanced</option>
+    <div style="padding:14px 16px 18px">
+      <div class="muted" style="margin-bottom:14px;font-size:13px">Answer a few questions and we'll match you to the right kit from our live catalogue.</div>
+      <div style="display:grid; gap:12px; grid-template-columns:repeat(auto-fit,minmax(210px,1fr))">
+        <label style="font-size:13px;font-weight:700;color:#9ff8ff">&#127891; Experience level
+          <select id="wExp" class="btn" style="display:block;width:100%;margin-top:6px;font-weight:500">
+            <option value="beginner">Beginner — just starting out</option>
+            <option value="intermediate">Intermediate — played a few years</option>
+            <option value="advanced">Advanced — gigging / recording</option>
           </select>
         </label>
-        <label>Budget
-          <select id="wBud" class="btn" style="display:block;width:100%;margin-top:6px">
+        <label style="font-size:13px;font-weight:700;color:#9ff8ff">&#128176; Budget
+          <select id="wBud" class="btn" style="display:block;width:100%;margin-top:6px;font-weight:500">
             <option value="0-2000">AED 0 – 2,000</option>
-            <option value="2000-5000" selected>AED 2,000 – 5,000</option>
-            <option value="5000-15000">AED 5,000 – 15,000</option>
+            <option value="2000-4000">AED 2,000 – 4,000</option>
+            <option value="4000-7000" selected>AED 4,000 – 7,000</option>
+            <option value="7000-12000">AED 7,000 – 12,000</option>
+            <option value="12000-999999">AED 12,000+</option>
           </select>
         </label>
-        <label>Goal
-          <select id="wGoal" class="btn" style="display:block;width:100%;margin-top:6px">
-            <option>Learning</option><option>Recording</option><option>Live</option>
+        <label style="font-size:13px;font-weight:700;color:#9ff8ff">&#127968; Playing space
+          <select id="wSpace" class="btn" style="display:block;width:100%;margin-top:6px;font-weight:500">
+            <option value="compact">Compact — bedroom / apartment</option>
+            <option value="standard">Standard — dedicated room</option>
+            <option value="studio">Studio — professional space</option>
           </select>
         </label>
-        <label>Connectivity
-          <select id="wConn" class="btn" style="display:block;width:100%;margin-top:6px">
-            <option>USB/MIDI</option><option>Bluetooth</option><option>No preference</option>
+        <label style="font-size:13px;font-weight:700;color:#9ff8ff">&#127919; Primary goal
+          <select id="wGoal" class="btn" style="display:block;width:100%;margin-top:6px;font-weight:500">
+            <option value="learning">Learning &amp; practice</option>
+            <option value="recording">Home recording / production</option>
+            <option value="live">Live performance</option>
+            <option value="versatile">All-round / versatile</option>
+          </select>
+        </label>
+        <label style="font-size:13px;font-weight:700;color:#9ff8ff">&#128266; Noise sensitivity
+          <select id="wNoise" class="btn" style="display:block;width:100%;margin-top:6px;font-weight:500">
+            <option value="low">Low — neighbours won't mind</option>
+            <option value="high">High — need to keep it quiet</option>
+          </select>
+        </label>
+        <label style="font-size:13px;font-weight:700;color:#9ff8ff">&#128268; Connectivity
+          <select id="wConn" class="btn" style="display:block;width:100%;margin-top:6px;font-weight:500">
+            <option value="any">No preference</option>
+            <option value="usb">USB/MIDI important</option>
+            <option value="bt">Bluetooth important</option>
+            <option value="both">Both USB &amp; Bluetooth</option>
           </select>
         </label>
       </div>
-      <div style="margin-top:12px">
-        <button id="wGo" class="btn btn-primary">Get Recommendation</button>
+      <div style="margin-top:16px;display:flex;gap:10px;align-items:center">
+        <button id="wGo" class="btn btn-primary" style="padding:11px 22px">&#10024; Find My Kit</button>
+        <span class="muted" style="font-size:12px">Matches from our live stock</span>
       </div>
-      <div id="wizOut" style="margin-top:14px"></div>
+      <div id="wizOut" style="margin-top:16px"></div>
     </div>
   </dialog>
 
@@ -675,6 +705,94 @@
     }
 
     /* ===== Wizard ===== */
+    function scoreKit(r, opts){
+      // opts: { lo, hi, exp, space, goal, noise, conn }
+      let score = 0;
+      const p = +r.price || 0;
+      const cat = deriveCategory(r);
+
+      // ── Hard gate: only drum kits ──
+      if (cat !== 'Drum Kits') return -999;
+
+      // ── Budget: must be within range (hard), bonus for ideal zone ──
+      if (p < opts.lo || p > opts.hi) return -999;
+      const budRange = opts.hi - opts.lo;
+      const midPoint = opts.lo + budRange * 0.6; // favour kits in upper 60% of budget
+      if (p >= midPoint) score += 3;
+      else score += 1;
+
+      // ── Experience ──
+      if (opts.exp === 'beginner'){
+        // beginners: simpler kits, lower price within budget
+        score += (r.kits_factory||0) <= 20 ? 2 : 0;
+        score += p < opts.lo + budRange*0.5 ? 2 : 0;
+      } else if (opts.exp === 'intermediate'){
+        score += (r.kits_factory||0) >= 20 ? 2 : 0;
+        score += (r.sounds||0) >= 300 ? 1 : 0;
+      } else { // advanced
+        score += (r.kits_factory||0) >= 30 ? 2 : 0;
+        score += (r.sounds||0) >= 500 ? 2 : 0;
+        score += r.usb_midi ? 1 : 0;
+      }
+
+      // ── Space ──
+      if (opts.space === 'compact'){
+        // mesh pads are quieter; fewer toms = smaller footprint
+        score += r.mesh ? 3 : 0;
+        score += (r.toms_count||4) <= 3 ? 2 : 0;
+      } else if (opts.space === 'studio'){
+        score += (r.toms_count||0) >= 4 ? 2 : 0;
+        score += (r.crash_count||0) >= 2 ? 1 : 0;
+      }
+
+      // ── Goal ──
+      if (opts.goal === 'recording'){
+        score += r.usb_midi ? 4 : 0;
+        score += (r.sounds||0) >= 500 ? 2 : 0;
+        score += r.mesh ? 1 : 0; // low noise = usable while recording
+      } else if (opts.goal === 'live'){
+        score += (r.kits_factory||0) >= 25 ? 2 : 0;
+        score += r.kick_tower ? 2 : 0; // proper kick feel on stage
+        score += r.bluetooth_audio ? 1 : 0;
+      } else if (opts.goal === 'learning'){
+        score += (r.kits_factory||0) >= 15 ? 2 : 0;
+        score += r.mesh ? 2 : 0; // quiet = practice more
+      } else { // versatile
+        score += r.usb_midi ? 2 : 0;
+        score += r.mesh ? 1 : 0;
+        score += (r.sounds||0) >= 400 ? 1 : 0;
+      }
+
+      // ── Noise sensitivity ──
+      if (opts.noise === 'high'){
+        if (!r.mesh) return -999; // hard filter: must have mesh for quiet playing
+        score += 3;
+      }
+
+      // ── Connectivity ──
+      if (opts.conn === 'usb')  { score += r.usb_midi ? 4 : -2; }
+      if (opts.conn === 'bt')   { score += r.bluetooth_audio ? 4 : -2; }
+      if (opts.conn === 'both') { score += (r.usb_midi&&r.bluetooth_audio) ? 5 : (r.usb_midi||r.bluetooth_audio) ? 1 : -3; }
+
+      // ── Bonus: on demo = can try before buying ──
+      if (r.on_demo) score += 1;
+
+      return score;
+    }
+
+    function wizardReasons(r, opts){
+      const reasons = [];
+      if (r.mesh) reasons.push('mesh heads for quieter playing');
+      if (r.usb_midi && (opts.goal==='recording'||opts.conn==='usb'||opts.conn==='both')) reasons.push('USB/MIDI for direct recording');
+      if (r.bluetooth_audio && (opts.conn==='bt'||opts.conn==='both')) reasons.push('Bluetooth audio');
+      if ((r.kits_factory||0) >= 25) reasons.push(`${r.kits_factory} factory kits to explore`);
+      if ((r.sounds||0) >= 400) reasons.push(`${r.sounds} sounds built in`);
+      if (r.kick_tower) reasons.push('kick tower for authentic feel');
+      if (r.on_demo) reasons.push('available on demo — try before you buy');
+      if (!reasons.length) reasons.push('solid match for your budget and experience');
+      return reasons.slice(0,4);
+    }
+
     function openWizard(){
       const dlg = $('#wizard');
       const out = $('#wizOut');
@@ -682,28 +800,79 @@
       dlg.showModal();
       dlg.addEventListener('click', e=>{ if (e.target.closest('[data-close]')) dlg.close(); });
       dlg.addEventListener('keydown', e=>{ if (e.key === 'Escape') dlg.close(); });
+
       $('#wGo').onclick=()=>{
         const [lo,hi] = $('#wBud').value.split('-').map(Number);
-        const conn = $('#wConn').value;
-        const choices = state.rows.filter(r=>{
-          const p = +r.price || 0;
-          if (p<lo || p>hi) return false;
-          if (conn==='USB/MIDI' && !r.usb_midi) return false;
-          if (conn==='Bluetooth' && !r.bluetooth_audio) return false;
-          return deriveCategory(r)==='Drum Kits';
-        }).sort((a,b)=>(+a.price)-(+b.price));
+        const opts = {
+          lo, hi,
+          exp:   $('#wExp').value,
+          space: $('#wSpace').value,
+          goal:  $('#wGoal').value,
+          noise: $('#wNoise').value,
+          conn:  $('#wConn').value,
+        };
 
-        if (!choices.length){ out.innerHTML = '<div class="muted">No kit matches your preferences.</div>'; return; }
-        const top = choices[Math.min(1, choices.length-1)];
-        const msg = `Because it matches your budget, ${conn==='No preference'?'your needs':'your connectivity preference'}, and offers ${top.mesh?'mesh heads':'a solid starter spec'}.`;
+        // Score every kit, keep top 3
+        const scored = state.rows
+          .map(r=>({ r, s: scoreKit(r, opts) }))
+          .filter(x=>x.s>-999)
+          .sort((a,b)=>b.s-a.s);
+
+        if (!scored.length){
+          out.innerHTML = `<div class="section"><div class="muted" style="padding:4px 0">
+            No kit in our current catalogue matches all your requirements.
+            Try relaxing the budget range or noise setting.</div></div>`;
+          return;
+        }
+
+        const top3 = scored.slice(0,3);
+        const best = top3[0].r;
+        const reasons = wizardReasons(best, opts);
+
+        const altCards = top3.slice(1).map(({r})=>`
+          <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line)">
+            <img src="${pickImage(r,'card')}" style="width:52px;height:40px;object-fit:cover;border-radius:8px;flex:0 0 52px">
+            <div style="flex:1;min-width:0">
+              <div style="font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${r.name}</div>
+              <div class="muted" style="font-size:12px">${AED(r.price)}</div>
+            </div>
+            <button class="btn btn-ghost" style="padding:6px 10px;font-size:12px" data-altopen="${r.id}">View</button>
+          </div>`).join('');
+
         out.innerHTML = `
           <div class="section">
-            <div style="font-weight:900; color:#9ff8ff">Your Match</div>
-            <div style="margin:6px 0"><b>${top.name}</b> looks like a great fit at <span class="pill price" style="padding:4px 10px">${AED(top.price)}</span>.</div>
-            <div class="muted">${msg}</div>
-            <div style="margin-top:10px"><button class="btn btn-primary" id="wizOpen">View This Kit</button></div>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+              <span style="font-size:18px">&#127942;</span>
+              <span style="font-weight:900;color:#9ff8ff;font-size:15px">Best Match</span>
+              ${best.on_demo?'<span class="status-pill status-pill--on-demo" style="position:static;font-size:11px">On Demo</span>':''}
+            </div>
+            <div style="display:flex;gap:12px;align-items:flex-start">
+              <img src="${pickImage(best,'card')}" style="width:90px;height:72px;object-fit:cover;border-radius:10px;flex:0 0 90px">
+              <div>
+                <div style="font-weight:900;font-size:16px;margin-bottom:4px">${best.name}</div>
+                <div style="margin-bottom:8px">${AED(best.price)}</div>
+                <ul style="margin:0;padding-left:16px;color:var(--muted);font-size:13px">
+                  ${reasons.map(r=>`<li style="margin-bottom:3px">${r}</li>`).join('')}
+                </ul>
+              </div>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:12px">
+              <button class="btn btn-primary" id="wizOpen">View This Kit</button>
+              <button class="btn btn-ghost" id="wizCompare">Add to Compare</button>
+            </div>
+            ${top3.length>1?`<div style="margin-top:14px"><div style="font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.5px;margin-bottom:2px">ALSO CONSIDER</div>${altCards}</div>`:''}
           </div>`;
-        $('#wizOpen').onclick=()=>{ dlg.close(); openDetail(top.id); };
+
+        $('#wizOpen').onclick=()=>{ dlg.close(); openDetail(best.id); };
+        $('#wizCompare').onclick=()=>{
+          state.compare.add(String(best.id));
+          updateFab();
+          $('#wizCompare').textContent='Added ✓';
+          $('#wizCompare').disabled=true;
+        };
+        $$('[data-altopen]', out).forEach(btn=>{
+          btn.onclick=()=>{ dlg.close(); openDetail(btn.dataset.altopen); };
+        });
       };
     }
 
