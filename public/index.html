@@ -52,33 +52,59 @@
     padding:8px 12px; border-radius:999px; cursor:pointer; user-select:none}
   .chip.active{background:#0b2c34; border-color:#1db8c4}
 
-  /* ── Embossed grid cards ── */
-  #grid{display:grid; gap:18px; grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}
+  /* ── Embossed grid cards — brushed-metal inset-channel style ── */
+  #grid{display:grid; gap:20px; grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}
+
+  /* outer "tray" that provides the raised-platform illusion */
+  .card-wrap{
+    border-radius:20px; padding:3px;
+    background:linear-gradient(145deg,
+      rgba(255,255,255,0.18) 0%,
+      rgba(255,255,255,0.06) 30%,
+      rgba(0,0,0,0.50) 70%,
+      rgba(0,0,0,0.70) 100%);
+    box-shadow:
+      /* deep outer drop — card sits above the page */
+      0 8px 20px rgba(0,0,0,0.55),
+      0 24px 56px rgba(0,0,0,0.65),
+      0 48px 80px rgba(0,0,0,0.40),
+      /* subtle outer rim highlight (top-left) */
+      -1px -1px 0 rgba(255,255,255,0.12);
+    transition: transform .20s cubic-bezier(.22,1,.36,1),
+                box-shadow .20s ease;
+  }
+  .card-wrap:hover{
+    transform:translateY(-6px) scale(1.013);
+    box-shadow:
+      0 16px 32px rgba(0,0,0,0.60),
+      0 36px 72px rgba(0,0,0,0.70),
+      0 60px 90px rgba(0,0,0,0.45),
+      -1px -1px 0 rgba(255,255,255,0.16),
+      0 0 0 1px rgba(0,209,234,0.22),
+      0 0 48px rgba(0,209,234,0.10);
+  }
+
   .card{
     position:relative;
     display:flex; flex-direction:column;
-    background:linear-gradient(170deg,#1a3244 0%,#0e2030 55%,#081421 100%);
-    border-radius:18px; overflow:hidden;
+    border-radius:17px; overflow:hidden;
     padding-bottom:56px;
-    border:1px solid rgba(255,255,255,0.10);
-    border-top-color:rgba(255,255,255,0.20);
+    /* brushed-metal panel: lighter than --bg, dark-to-darker gradient */
+    background:
+      /* fine horizontal brushed-line texture via repeating-linear-gradient */
+      repeating-linear-gradient(
+        180deg,
+        rgba(255,255,255,0.022) 0px,
+        rgba(255,255,255,0.022) 1px,
+        transparent 1px,
+        transparent 3px
+      ),
+      linear-gradient(170deg,#1e3548 0%,#112538 40%,#0c1e30 70%,#091826 100%);
+    /* inset channel: dark top+left inner edges, bright bottom+right = pressed-in */
     box-shadow:
-      inset 0 1px 0 rgba(255,255,255,0.13),
-      0 4px 8px rgba(0,0,0,0.50),
-      0 16px 40px rgba(0,0,0,0.65),
-      0 32px 56px rgba(0,0,0,0.40);
-    transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
-  }
-  .card:hover{
-    transform:translateY(-5px) scale(1.012);
-    border-color:rgba(0,200,220,0.35);
-    border-top-color:rgba(0,200,220,0.50);
-    box-shadow:
-      inset 0 1px 0 rgba(255,255,255,0.18),
-      0 8px 16px rgba(0,0,0,0.55),
-      0 24px 52px rgba(0,0,0,0.70),
-      0 0 0 1px rgba(0,200,220,0.18),
-      0 0 36px rgba(0,200,220,0.10);
+      inset  2px  2px  6px rgba(0,0,0,0.70),   /* top-left dark channel */
+      inset -1px -1px  4px rgba(255,255,255,0.08), /* bottom-right inner shine */
+      inset  0    0   18px rgba(0,0,0,0.30);    /* inner ambient shadow */
   }
 
   /* image box */
@@ -294,7 +320,26 @@
       <button class="btn btn-ghost" data-close>Close</button>
     </div>
     <div style="padding:14px 16px 18px">
-      <div class="muted" style="margin-bottom:14px;font-size:13px">Answer a few questions and we'll match you to the right kit from our live catalogue.</div>
+      <!-- Step 1: Name -->
+      <div id="wizNameStep">
+        <div style="text-align:center;padding:18px 0 8px">
+          <div style="font-size:28px;margin-bottom:8px">&#127941;</div>
+          <div style="font-weight:900;font-size:18px;color:#9ff8ff;margin-bottom:6px">Welcome to the Kit Finder</div>
+          <div class="muted" style="font-size:13px;margin-bottom:20px">Tell us your name and we'll personalise your recommendations.</div>
+          <div style="display:flex;gap:8px;max-width:360px;margin:0 auto">
+            <input id="wizNameInput" type="text" placeholder="Your first name…"
+              style="flex:1;padding:11px 14px;border-radius:12px;border:1px solid var(--glass-brd);
+                background:rgba(255,255,255,0.05);color:var(--text);font-size:15px;outline:none;
+                box-shadow:inset 0 2px 6px rgba(0,0,0,0.4)">
+            <button id="wizNameNext" class="btn btn-primary" style="padding:11px 18px;white-space:nowrap">
+              Let's go &#8594;
+            </button>
+          </div>
+        </div>
+      </div>
+      <!-- Step 2: Questions -->
+      <div id="wizQStep" style="display:none">
+        <div id="wizGreeting" style="font-weight:700;color:#9ff8ff;font-size:14px;margin-bottom:12px"></div>
       <div style="display:grid; gap:12px; grid-template-columns:repeat(auto-fit,minmax(210px,1fr))">
         <label style="font-size:13px;font-weight:700;color:#9ff8ff">&#127891; Experience level
           <select id="wExp" class="btn" style="display:block;width:100%;margin-top:6px;font-weight:500">
@@ -347,6 +392,7 @@
         <span class="muted" style="font-size:12px">Matches from our live stock</span>
       </div>
       <div id="wizOut" style="margin-top:16px"></div>
+      </div><!-- /wizQStep -->
     </div>
   </dialog>
 
@@ -462,6 +508,7 @@
         if (r.bluetooth_audio) pills.push('Bluetooth');
         const isSelected = state.compare.has(String(r.id));
         return `
+          <div class="card-wrap">
           <div class="card" data-id="${r.id}">
             <div class="imgbox" data-open>
               <img src="${pickImage(r,'card')}" alt="">
@@ -482,11 +529,12 @@
                 </label>
               </div>
             </div>
+          </div>
           </div>`;
       }).join('');
 
       // wiring
-      $$('#grid .card').forEach(card=>{
+      $$('#grid .card-wrap').forEach(wrap=>{ const card = wrap.querySelector('.card');
         const id = String(card.dataset.id);
         card.addEventListener('click', (e)=>{
           if (e.target.closest('[data-compare]') || e.target.closest('.compare-toggle')) return;
@@ -704,6 +752,9 @@
       dlg.addEventListener('keydown', e=>{ if (e.key === 'Escape') dlg.close(); });
     }
 
+    /* ===== Wizard state ===== */
+    let wizCustomerName = '';
+
     /* ===== Wizard ===== */
     function scoreKit(r, opts){
       // opts: { lo, hi, exp, space, goal, noise, conn }
@@ -793,13 +844,38 @@
       return reasons.slice(0,4);
     }
 
+    function showWizardQuestions(){
+      const dlg = $('#wizard');
+      const name = wizCustomerName;
+      // Show the questions panel, hide the name panel
+      $('#wizNameStep').style.display = 'none';
+      $('#wizQStep').style.display = 'block';
+      // Personalise the heading
+      $('#wizGreeting').textContent = `Great to meet you, ${name}! Let's find your perfect kit.`;
+    }
+
     function openWizard(){
+      wizCustomerName = '';
       const dlg = $('#wizard');
       const out = $('#wizOut');
-      out.textContent = '';
+      out.innerHTML = '';
+      // Reset to name step
+      $('#wizNameStep').style.display = 'block';
+      $('#wizQStep').style.display = 'none';
+      $('#wizNameInput').value = '';
+      $('#wizGreeting').textContent = '';
       dlg.showModal();
       dlg.addEventListener('click', e=>{ if (e.target.closest('[data-close]')) dlg.close(); });
       dlg.addEventListener('keydown', e=>{ if (e.key === 'Escape') dlg.close(); });
+
+      // Name step — Enter or button
+      $('#wizNameNext').onclick = ()=>{
+        const n = $('#wizNameInput').value.trim();
+        if (!n){ $('#wizNameInput').focus(); return; }
+        wizCustomerName = n;
+        showWizardQuestions();
+      };
+      $('#wizNameInput').onkeydown = e=>{ if(e.key==='Enter') $('#wizNameNext').click(); };
 
       $('#wGo').onclick=()=>{
         const [lo,hi] = $('#wBud').value.split('-').map(Number);
@@ -839,15 +915,19 @@
             <button class="btn btn-ghost" style="padding:6px 10px;font-size:12px" data-altopen="${r.id}">View</button>
           </div>`).join('');
 
+        const customerName = wizCustomerName || 'there';
         out.innerHTML = `
           <div class="section">
-            <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
               <span style="font-size:18px">&#127942;</span>
-              <span style="font-weight:900;color:#9ff8ff;font-size:15px">Best Match</span>
+              <span style="font-weight:900;color:#9ff8ff;font-size:15px">${customerName}'s Best Match</span>
               ${best.on_demo?'<span class="status-pill status-pill--on-demo" style="position:static;font-size:11px">On Demo</span>':''}
             </div>
+            <div class="muted" style="font-size:12px;margin-bottom:10px">
+              Based on your answers, ${customerName}, here's what we recommend:
+            </div>
             <div style="display:flex;gap:12px;align-items:flex-start">
-              <img src="${pickImage(best,'card')}" style="width:90px;height:72px;object-fit:cover;border-radius:10px;flex:0 0 90px">
+              <img src="${pickImage(best,'card')}" style="width:90px;height:72px;object-fit:cover;border-radius:10px;flex:0 0 90px;box-shadow:0 4px 12px rgba(0,0,0,0.5)">
               <div>
                 <div style="font-weight:900;font-size:16px;margin-bottom:4px">${best.name}</div>
                 <div style="margin-bottom:8px">${AED(best.price)}</div>
@@ -856,11 +936,12 @@
                 </ul>
               </div>
             </div>
-            <div style="display:flex;gap:8px;margin-top:12px">
+            <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
               <button class="btn btn-primary" id="wizOpen">View This Kit</button>
               <button class="btn btn-ghost" id="wizCompare">Add to Compare</button>
+              <button class="btn btn-ghost" id="wizDone" style="margin-left:auto">Done ✓</button>
             </div>
-            ${top3.length>1?`<div style="margin-top:14px"><div style="font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.5px;margin-bottom:2px">ALSO CONSIDER</div>${altCards}</div>`:''}
+            ${top3.length>1?`<div style="margin-top:14px"><div style="font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.5px;margin-bottom:4px">ALSO CONSIDER FOR ${customerName.toUpperCase()}</div>${altCards}</div>`:''}
           </div>`;
 
         $('#wizOpen').onclick=()=>{ dlg.close(); openDetail(best.id); };
@@ -869,6 +950,11 @@
           updateFab();
           $('#wizCompare').textContent='Added ✓';
           $('#wizCompare').disabled=true;
+        };
+        $('#wizDone').onclick=()=>{
+          dlg.close();
+          // reset name so next open starts fresh
+          wizCustomerName = '';
         };
         $$('[data-altopen]', out).forEach(btn=>{
           btn.onclick=()=>{ dlg.close(); openDetail(btn.dataset.altopen); };
