@@ -48,9 +48,47 @@
 
   /* filter chips */
   #chips{display:flex; gap:10px; flex-wrap:wrap; margin:16px 0 10px}
-  .chip{border:1px solid var(--glass-brd); background:var(--panel); color:#cdeef2;
-    padding:8px 12px; border-radius:999px; cursor:pointer; user-select:none}
-  .chip.active{background:#0b2c34; border-color:#1db8c4}
+  .chip{
+    border:1px solid transparent; padding:8px 16px; border-radius:999px;
+    cursor:pointer; user-select:none; font-weight:600; font-size:13px;
+    transition: transform .12s ease, box-shadow .12s ease, opacity .12s ease;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.12), 0 2px 6px rgba(0,0,0,0.40);
+  }
+  .chip:hover{ transform:translateY(-1px); box-shadow: inset 0 1px 0 rgba(255,255,255,0.16), 0 4px 10px rgba(0,0,0,0.50); }
+  .chip:not(.active){ opacity:.72; }
+  .chip.active{ opacity:1; box-shadow: inset 0 1px 0 rgba(255,255,255,0.20), 0 4px 14px rgba(0,0,0,0.55), 0 0 0 2px rgba(255,255,255,0.18); transform:translateY(-1px); }
+
+  /* All — neutral silver */
+  .chip[data-filter="All"]               { background:linear-gradient(135deg,#2a3f52,#1a2d3e); color:#cdeef2; border-color:rgba(100,180,200,.35); }
+  .chip[data-filter="All"].active        { background:linear-gradient(135deg,#3a5568,#2a4255); border-color:rgba(100,180,200,.6); }
+
+  /* Electronic Drum Kits — teal */
+  .chip[data-filter="Electronic Drum Kits"]        { background:linear-gradient(135deg,#0c3a44,#082830); color:#7ef4ff; border-color:rgba(0,200,220,.35); }
+  .chip[data-filter="Electronic Drum Kits"].active  { background:linear-gradient(135deg,#0f4f5e,#0b3a47); border-color:rgba(0,200,220,.7); }
+
+  /* Multipads — indigo/purple */
+  .chip[data-filter="Multipads & Drum Machines"]        { background:linear-gradient(135deg,#1e1a4a,#150f38); color:#b8b0ff; border-color:rgba(120,100,255,.35); }
+  .chip[data-filter="Multipads & Drum Machines"].active  { background:linear-gradient(135deg,#2a2462,#1c164e); border-color:rgba(120,100,255,.7); }
+
+  /* Drum Amplification — orange/warm */
+  .chip[data-filter="Drum Amplification"]        { background:linear-gradient(135deg,#3a1f08,#2a1505); color:#ffbb70; border-color:rgba(255,150,50,.35); }
+  .chip[data-filter="Drum Amplification"].active  { background:linear-gradient(135deg,#4e2a0a,#381c07); border-color:rgba(255,150,50,.7); }
+
+  /* Accessories — slate green */
+  .chip[data-filter="Accessories"]        { background:linear-gradient(135deg,#0e3020,#091f14); color:#72e8a0; border-color:rgba(50,200,100,.35); }
+  .chip[data-filter="Accessories"].active  { background:linear-gradient(135deg,#134228,#0c2b1a); border-color:rgba(50,200,100,.7); }
+
+  /* On Demo — amber/gold (matches pill) */
+  .chip[data-filter="On Demo"]        { background:linear-gradient(135deg,#3a2c00,#261e00); color:#ffd400; border-color:rgba(255,212,0,.35); }
+  .chip[data-filter="On Demo"].active  { background:linear-gradient(135deg,#503d00,#362900); border-color:rgba(255,212,0,.7); }
+
+  /* What's New — emerald (matches pill) */
+  .chip[data-filter="What's New"]        { background:linear-gradient(135deg,#0a3020,#062015); color:#22c55e; border-color:rgba(34,197,94,.35); }
+  .chip[data-filter="What's New"].active  { background:linear-gradient(135deg,#0f4229,#0a2e1c); border-color:rgba(34,197,94,.7); }
+
+  /* Discontinued — rose/red (matches pill) */
+  .chip[data-filter="Discontinued"]        { background:linear-gradient(135deg,#3a0a14,#28060e); color:#fb7185; border-color:rgba(244,63,94,.35); }
+  .chip[data-filter="Discontinued"].active  { background:linear-gradient(135deg,#500e1c,#3a0b14); border-color:rgba(244,63,94,.7); }
 
   /* ── Embossed grid cards — brushed-metal inset-channel style ── */
   #grid{display:grid; gap:20px; grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}
