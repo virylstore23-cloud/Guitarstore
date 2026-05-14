@@ -639,3 +639,98 @@
         const ladder = $('#ladder');
         if (rows.length>=2){
           const sorted = rows.slice().sort((a,b)=>(+a.price)-(+b.price));
+          const base = sorted[0], better = sorted[sorted.length-1];
+          const diff = ((+better.price||0)-(+base.price||0));
+          const pct = base.price ? Math.round((diff/base.price)*100) : 0;
+          const hints = [];
+          if ((better.mesh||0) && !base.mesh) hints.push('mesh heads');
+          if ((better.kits_factory||0) > (base.kits_factory||0)) hints.push('more factory kits');
+          if ((better.sounds||0) > (base.sounds||0)) hints.push('more sounds');
+          if ((better.bluetooth_audio||0) && !base.bluetooth_audio) hints.push('Bluetooth audio');
+          if ((better.usb_midi||0) && !base.usb_midi) hints.push('USB/MIDI');
+          const why = hints.length ? hints.join(', ') : 'overall higher spec';
+          ladder.innerHTML = `
+            <div class="section">
+              <h4 style="margin-bottom:8px">Recommendation Ladder</h4>
+              <div class="row" style="margin-bottom:6px">
+                <span class="chip">Baseline</span>
+                <b>${base.name}</b> — <span class="pill price" style="padding:4px 10px">${AED(base.price)}</span>
+              </div>
+              <div class="row" style="margin-bottom:6px">
+                <span class="chip">Jump to</span>
+                <b>${better.name}</b> — <span class="pill price" style="padding:4px 10px">${AED(better.price)}</span>
+                <span class="chip" style="background:#143a42;border:1px solid #1a4f59">+${fmt.format(diff)} (${pct}%)</span>
+              </div>
+              <div class="muted">Why: ${why}.</div>
+            </div>`;
+        } else {
+          ladder.innerHTML = '';
+        }
+      }
+
+      const dlg = $('#cmp');
+      dlg.showModal();
+      dlg.addEventListener('click', e=>{ if (e.target.closest('[data-close]')) dlg.close(); });
+      dlg.addEventListener('keydown', e=>{ if (e.key === 'Escape') dlg.close(); });
+    }
+
+    /* ===== Wizard ===== */
+    function openWizard(){
+      const dlg = $('#wizard');
+      const out = $('#wizOut');
+      out.textContent = '';
+      dlg.showModal();
+      dlg.addEventListener('click', e=>{ if (e.target.closest('[data-close]')) dlg.close(); });
+      dlg.addEventListener('keydown', e=>{ if (e.key === 'Escape') dlg.close(); });
+      $('#wGo').onclick=()=>{
+        const [lo,hi] = $('#wBud').value.split('-').map(Number);
+        const conn = $('#wConn').value;
+        const choices = state.rows.filter(r=>{
+          const p = +r.price || 0;
+          if (p<lo || p>hi) return false;
+          if (conn==='USB/MIDI' && !r.usb_midi) return false;
+          if (conn==='Bluetooth' && !r.bluetooth_audio) return false;
+          return deriveCategory(r)==='Drum Kits';
+        }).sort((a,b)=>(+a.price)-(+b.price));
+
+        if (!choices.length){ out.innerHTML = '<div class="muted">No kit matches your preferences.</div>'; return; }
+        const top = choices[Math.min(1, choices.length-1)];
+        const msg = `Because it matches your budget, ${conn==='No preference'?'your needs':'your connectivity preference'}, and offers ${top.mesh?'mesh heads':'a solid starter spec'}.`;
+        out.innerHTML = `
+          <div class="section">
+            <div style="font-weight:900; color:#9ff8ff">Your Match</div>
+            <div style="margin:6px 0"><b>${top.name}</b> looks like a great fit at <span class="pill price" style="padding:4px 10px">${AED(top.price)}</span>.</div>
+            <div class="muted">${msg}</div>
+            <div style="margin-top:10px"><button class="btn btn-primary" id="wizOpen">View This Kit</button></div>
+          </div>`;
+        $('#wizOpen').onclick=()=>{ dlg.close(); openDetail(top.id); };
+      };
+    }
+
+    /* ===== Compare FAB ===== */
+    function updateFab(){
+      const show = state.compare.size>0;
+      const el = document.getElementById('compareFab');
+      el.style.display = show ? 'flex' : 'none';
+      document.getElementById('fabCount').textContent = state.compare.size;
+      document.getElementById('cmpCount').textContent = state.compare.size;
+    }
+    document.getElementById('compareFab').addEventListener('click', ()=>openCompare());
+
+    /* ===== header buttons ===== */
+    function wireHeader(){
+      $('#btnCompare').onclick=()=>openCompare();
+      $('#btnWizard').onclick=()=>openWizard();
+    }
+
+    /* ===== boot ===== */
+    window.addEventListener('DOMContentLoaded', async ()=>{
+      wireHeader();
+      await load();
+    });
+  </script>
+  <script type="module" src="chips-backfill.js"></script>
+  <script type="module" src="chips-for.js"></script>
+  <script type="module" src="chips-fetch.js"></script>
+</body>
+</html>
