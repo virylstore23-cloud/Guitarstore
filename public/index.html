@@ -27,6 +27,12 @@
   .card{display:flex !important;flex-direction:column !important;height:auto !important;width:100% !important;align-self:stretch !important;}
   .card .content{display:flex !important;flex-direction:column !important;flex:1 1 auto !important;min-height:0 !important;}
   .card .foot{margin-top:auto !important;}
+  /* === Card depth effect (resting shadow + hover lift) === */
+  .card-wrap{position:relative !important;z-index:1;transition:transform .28s cubic-bezier(.2,.7,.3,1),box-shadow .28s ease !important;box-shadow:0 1px 1px rgba(0,0,0,.30),0 4px 8px rgba(0,0,0,.35),0 12px 24px rgba(0,0,0,.45),0 28px 48px rgba(0,0,0,.40) !important;}
+  .card{position:relative;transition:box-shadow .28s ease,border-color .28s ease !important;}
+  .card::after{content:"";position:absolute;inset:0;border-radius:18px;pointer-events:none;box-shadow:inset 0 1px 0 rgba(255,255,255,.10),inset 0 0 0 1px rgba(255,255,255,.05);}
+  .card-wrap:hover{transform:translateY(-5px) scale(1.012) !important;z-index:50 !important;box-shadow:0 2px 2px rgba(0,0,0,.30),0 8px 16px rgba(0,0,0,.40),0 20px 40px rgba(0,0,0,.55),0 40px 70px rgba(0,0,0,.55),0 0 30px rgba(40,150,220,.18) !important;}
+  .card-wrap:hover .card{border-color:rgba(80,180,240,.35) !important;}
   :root{
     --bg:#07101a;
     --panel:#0f141a;
