@@ -22,6 +22,11 @@
   .card .foot label.compare-toggle{display:flex !important;align-items:center !important;justify-content:center !important;gap:8px !important;box-sizing:border-box !important;width:100% !important;padding:10px 14px !important;border-radius:11px !important;background:rgba(12,140,216,.10) !important;border:1px solid rgba(12,140,216,.45) !important;color:#7fd0ff !important;font-size:12.5px !important;font-weight:600 !important;cursor:pointer !important;transition:all .18s ease !important;}
   .card .foot label.compare-toggle:hover{background:rgba(12,140,216,.22) !important;color:#bfe8ff !important;}
   .card .foot label.compare-toggle.is-selected{background:#0c8cd8 !important;border-color:#0c8cd8 !important;color:#fff !important;}
+  /* === Equal-height cards (Option B) === */
+  .card-wrap{display:flex !important;align-items:stretch !important;}
+  .card{display:flex !important;flex-direction:column !important;height:auto !important;width:100% !important;align-self:stretch !important;}
+  .card .content{display:flex !important;flex-direction:column !important;flex:1 1 auto !important;min-height:0 !important;}
+  .card .foot{margin-top:auto !important;}
   :root{
     --bg:#07101a;
     --panel:#0f141a;
@@ -568,7 +573,7 @@
           'id,name,description,price,upc,upc_code,is_active,slug,category',
           'primary_image_url,detail_image_url,on_demo,on_demo_label',
           'is_new,discontinued,is_new_label,discontinued_label',
-          'features,contents,specs,kits_factory,kits_user,sounds,mesh,usb_midi,bluetooth_audio',
+          'features,contents,specs,kits_factory,kits_user,sounds,mesh,usb_midi,pills.push',
           'toms_count,crash_count,ride_zones,kick_tower'
         ].join(',');
       const headers={apikey:window.ENV.SUPABASE_ANON_KEY, Authorization:`Bearer ${window.ENV.SUPABASE_ANON_KEY}`};
@@ -632,7 +637,7 @@
 
       grid.innerHTML = shown.map(r=>{
         const upc = getUPC(r);
-        const pills = [];
+        const pills = []; const __wm = String(r.name||'').match(/strike amp\s*(\d+)\s*mk/i); if (__wm) pills.push(__wm[1] + '\u2033 woofer');
         if (r.mesh) pills.push('Mesh');
         if (r.usb_midi) pills.push('USB/MIDI');
         if (r.bluetooth_audio) pills.push('Bluetooth');
