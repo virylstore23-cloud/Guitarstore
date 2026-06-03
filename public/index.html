@@ -9,6 +9,19 @@
   <link rel="icon" type="image/png" href="/favicon.png"/>
 
 <style>
+  /* === Compact premium product card === */
+  .card{height:auto;align-self:start;border-radius:16px;overflow:hidden;padding-bottom:0 !important;}
+  .imgbox{height:160px !important;}
+  .card .content{min-height:0 !important;padding:13px 15px 15px !important;display:block !important;}
+  .card .card-name-row{margin:0 0 4px !important;}
+  .card .kit-name-pill{font-size:16px !important;}
+  .card .muted{margin:0 0 11px !important;font-size:12px !important;}
+  .card .tagrow{display:flex !important;flex-wrap:wrap !important;justify-content:center !important;gap:7px !important;margin:0 0 13px !important;}
+  .card .tagrow .chip{padding:4px 11px !important;font-size:11px !important;}
+  .card .foot{position:static !important;left:auto !important;top:auto !important;bottom:auto !important;display:block !important;width:100% !important;padding:0 !important;margin:0 !important;}
+  .card .foot label.compare-toggle{display:flex !important;align-items:center !important;justify-content:center !important;gap:8px !important;box-sizing:border-box !important;width:100% !important;padding:10px 14px !important;border-radius:11px !important;background:rgba(12,140,216,.10) !important;border:1px solid rgba(12,140,216,.45) !important;color:#7fd0ff !important;font-size:12.5px !important;font-weight:600 !important;cursor:pointer !important;transition:all .18s ease !important;}
+  .card .foot label.compare-toggle:hover{background:rgba(12,140,216,.22) !important;color:#bfe8ff !important;}
+  .card .foot label.compare-toggle.is-selected{background:#0c8cd8 !important;border-color:#0c8cd8 !important;color:#fff !important;}
   :root{
     --bg:#07101a;
     --panel:#0f141a;
