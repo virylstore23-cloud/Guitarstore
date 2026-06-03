@@ -636,6 +636,7 @@
         if (r.mesh) pills.push('Mesh');
         if (r.usb_midi) pills.push('USB/MIDI');
         if (r.bluetooth_audio) pills.push('Bluetooth');
+        if (pills.length < 3 && Array.isArray(r.features)) { for (const f of r.features) { if (pills.length >= 3) break; const t = String(f||'').trim(); if (!t || t.length > 24) continue; const k = t.toLowerCase(); const dup = pills.some(p=>p.toLowerCase()===k); const std = k==='mesh' || (k.includes('usb')&&k.includes('midi')) || k==='bluetooth' || k.indexOf('bluetooth ')===0; if (dup || std) continue; pills.push(t); } }
         const isSelected = state.compare.has(String(r.id));
         return `
           <div class="card-wrap">
